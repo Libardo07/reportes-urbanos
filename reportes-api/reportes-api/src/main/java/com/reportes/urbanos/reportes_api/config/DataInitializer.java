@@ -21,7 +21,7 @@ public class DataInitializer implements CommandLineRunner {
             System.err.println("Error: UsuarioRepository no ha sido inyectado.");
             return;
         }
-        // Crear admin principal si no existe
+        
         if (usuarioRepository.findByEmail("adminMain@gmail.com") == null) {
             Usuario adminPrincipal = new Usuario();
             adminPrincipal.setNombre("adminMain");
