@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Reportes Urbanos</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <div class="container">
+        <h2 class="title">Crear Cuenta</h2>
+        
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
+        
+        <form th:action="@{/registro}" method="post" th:object="${usuario}">
+            <div class="input-group">
+                <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre completo" required>
+                <img src="/images/icono-login.png" alt="Usuario" class="icon">
+            </div>
+            
+            <div class="input-group">
+                <input type="email" id="email" th:field="*{email}" placeholder="Correo electrónico" required>
+                <img src="/images/icono-email.png" alt="Email" class="icon">
+            </div>
+            
+            <!-- CÓDIGO NUEVO Y CORREGIDO -->
+<div class="input-group">
+    <input type="password" id="password" th:field="*{password}" placeholder="Contraseña" required>
+    <img src="/images/icono-password.png" alt="Contraseña" class="icon">
+    <img src="/images/icono-ojo-visible.png" alt="Mostrar contraseña" class="password-toggle">
+</div>
+            
+            <button type="submit" class="btn">Registrarme</button>
+        </form>
+        
+        <div class="link">
+            <p>¿Ya tienes cuenta? <a th:href="@{/login}">Inicia sesión aquí</a></p>
+        </div>
+    </div>
+    
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel del Ciudadano</title>
+</head>
+<body>
+
+<h2>Bienvenido al sistema de reportes, <span th:text="${usuario.nombre}"></span></h2>
+
+<h3>Realizar su reporte aquí</h3>
+
+<form th:action="@{/usuario/guardar-reporte}" th:object="${reporte}" method="post" id="formReporte">
+    <div>
+        <label for="titulo">Título del reporte:</label>
+        <input type="text" id="titulo" th:field="*{titulo}" placeholder="Escribir..." required>
+    </div>
+
+    <div>
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" th:field="*{descripcion}" placeholder="Escribir..." required></textarea>
+    </div>
+
+    <div>
+        <label for="direccion">Dirección exacta:</label>
+        <input type="text" id="direccion" th:field="*{direccion}" placeholder="Escribir..." required>
+    </div>
+
+    <div>
+        <label for="tipo">Tipo de reporte:</label>
+        <select name="tipoId" required>
+            <option value="" disabled selected>Escoger tipo de reporte</option>
+            <option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.nombre}"></option>
+        </select>
+    </div>
+
+    <div>
+        <label for="barrioNombre">Barrio:</label>
+        <input type="text" id="barrioNombre" name="barrioNombre" placeholder="Buscar barrio" list="listaBarrios" required>
+        <input type="hidden" id="barrioId" name="barrioId">
+        <datalist id="listaBarrios">
+            <option th:each="b : ${barrios}" th:data-id="${b.id}" th:value="${b.nombre}"></option>
+        </datalist>
+    </div>
+
+    <div>
+        <button type="submit">Enviar reporte</button>
+    </div>
+</form>
+
+<br>
+<button type="button" onclick="abrirModal()">Ver mis reportes</button>
+<button type="button" id="btnSalir">Salir</button>
+
+
+<div id="fondoModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;"></div>
+<div id="modalReportes" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; z-index:1001;">
+    <h3>Mis reportes</h3>
+    <table border="1">
+        <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Dirección</th>
+            <th>Barrio</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+        <tr th:each="r : ${reportes}">
+            <td th:text="${r.titulo}"></td>
+            <td th:text="${r.descripcion}"></td>
+            <td th:text="${r.direccion}"></td>
+            <td th:text="${r.barrio.nombre}"></td>
+            <td th:text="${r.tipo.nombre}"></td>
+            <td th:text="${r.estado}"></td>
+            <td th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></td>
+            <td>
+                <span th:if="${#strings.equalsIgnoreCase(#strings.trim(r.estado), 'pendiente')}">
+                    <a href="#" th:attr="data-url=@{'/usuario/editar-reporte/' + ${r.id}}" onclick="confirmarEditar(this)">Editar</a> |
+                    <a href="#" th:attr="data-url=@{'/usuario/eliminar-reporte/' + ${r.id}}" onclick="confirmarEliminar(this)">Eliminar</a>
+                </span>
+                <span th:unless="${#strings.equalsIgnoreCase(#strings.trim(r.estado), 'pendiente')}">
+                    No editable
+                </span>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <button type="button" onclick="cerrarModal()">Cerrar</button>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+    document.getElementById('barrioNombre').addEventListener('input', function () {
+        const input = this.value;
+        const options = document.querySelectorAll('#listaBarrios option');
+        let barrioId = '';
+        options.forEach(option => { if (option.value === input) barrioId = option.dataset.id; });
+        document.getElementById('barrioId').value = barrioId;
+    });
+
+
+    document.getElementById("formReporte").addEventListener("submit", function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: "¿Deseas enviar este reporte?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Sí, enviar",
+            cancelButtonText: "No, cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+        });
+    });
+
+
+    function confirmarEliminar(element) {
+        event.preventDefault();
+        const url = element.getAttribute("data-url");
+        Swal.fire({
+            title: "¿Eliminar este reporte?",
+            text: "Esta acción no se puede deshacer.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "No, cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    }
+
+
+    function confirmarEditar(element) {
+        event.preventDefault();
+        const url = element.getAttribute("data-url");
+        Swal.fire({
+            title: "¿Deseas editar este reporte?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: "Sí, editar",
+            cancelButtonText: "No, cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url; 
+            }
+        });
+    }
+
+    document.getElementById("btnSalir").addEventListener("click", () => {
+        Swal.fire({
+            title: "¿Cerrar sesión?",
+            text: "Se cerrará tu sesión actual.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, salir",
+            cancelButtonText: "No, quedarme"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/login";
+            }
+        });
+    });
+
+
+    function abrirModal() {
+        document.getElementById('fondoModal').style.display = 'block';
+        document.getElementById('modalReportes').style.display = 'block';
+    }
+
+
+    function cerrarModal() {
+        document.getElementById('fondoModal').style.display = 'none';
+        document.getElementById('modalReportes').style.display = 'none';
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Reporte</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+<h2>Editar reporte</h2>
+
+<form id="formEditar" th:action="@{/usuario/guardar-reporte}" th:object="${reporte}" method="post">
+    <input type="hidden" th:field="*{id}" />
+
+    <div>
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" th:field="*{titulo}" required>
+    </div>
+
+    <div>
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" th:field="*{descripcion}" required></textarea>
+    </div>
+
+    <div>
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" th:field="*{direccion}" required>
+    </div>
+
+    <div>
+        <label for="barrioNombre">Barrio:</label>
+        <input type="text" id="barrioNombre" name="barrioNombre"
+                th:value="${reporte.barrio.nombre}" placeholder="Buscar barrio" list="listaBarrios" required>
+        <input type="hidden" id="barrioId" name="barrioId" th:value="${reporte.barrio.id}">
+        <datalist id="listaBarrios">
+            <option th:each="b : ${barrios}" th:data-id="${b.id}" th:value="${b.nombre}"></option>
+        </datalist>
+    </div>
+
+    <div>
+        <label for="tipo">Tipo:</label>
+        <select name="tipoId" required>
+            <option th:each="t : ${tipos}"
+                    th:value="${t.id}"
+                    th:text="${t.nombre}"
+                    th:selected="${t.id == reporte.tipo.id}">
+            </option>
+        </select>
+    </div>
+
+    <br>
+    <button type="submit">Guardar cambios</button>
+    <a th:href="@{/usuario/inicio}">Cancelar</a>
+</form>
+
+<script>
+    document.getElementById('barrioNombre').addEventListener('input', function () {
+        const input = this.value;
+        const options = document.querySelectorAll('#listaBarrios option');
+        let barrioId = '';
+        options.forEach(option => { if (option.value === input) barrioId = option.dataset.id; });
+        document.getElementById('barrioId').value = barrioId;
+    });
+
+o
+    document.getElementById('formEditar').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        Swal.fire({
+            title: '¿Deseas guardar los cambios?',
+            text: 'El reporte será actualizado con la nueva información.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'No, cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                Swal.fire({
+                    title: 'Guardando cambios...',
+                    html: '<b>Por favor espera</b>',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                setTimeout(() => {
+                    e.target.submit(); 
+                }, 1200);
+            } else {
+                Swal.fire({
+                    title: 'Cambios cancelados',
+                    icon: 'info',
+                    showConfirmButton: false,
+                    timer: 1200
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
+
