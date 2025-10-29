@@ -40,12 +40,12 @@ public class AdminController {
         model.addAttribute("isAdminPrincipal", "adminMain@gmail.com".equals(usuario.getEmail()));
         model.addAttribute("reportes", reporteRepository.findAll());
 
-        // Asegurar que siempre haya un objeto limpio si no viene de flash
+        
         if (!model.containsAttribute("nuevoAdmin")) {
             model.addAttribute("nuevoAdmin", new Usuario());
         }
 
-        // No pasar successMessage aquí
+        
         return "admin_inicio";
     }
 
@@ -81,11 +81,11 @@ public class AdminController {
         reporte.setUsuarioAdmin(admin);
         reporte.setFechaModificacion(LocalDateTime.now());
         
-        // Forzar la persistencia
+        
         Reporte reporteGuardado = reporteRepository.save(reporte);
         System.out.println("Reporte actualizado - ID: " + reporteGuardado.getId() + ", Nuevo Estado: " + reporteGuardado.getEstado());
 
-        // Pasar el mensaje solo para el cambio de estado
+
         redirectAttrs.addFlashAttribute("successMessage", "Estado del reporte cambiado correctamente a " + estado.name());
         return "redirect:/admin/inicio";
     }
@@ -202,14 +202,14 @@ public class AdminController {
         return "redirect:/registro";
     }
 
-    // Método de depuración para rastrear solicitudes
+    
     @GetMapping("/debug")
     public String debugRequest(HttpSession session) {
         System.out.println("Solicitud recibida - Ruta: /debug, Usuario logueado: " + (session.getAttribute("usuarioLogueado") != null) + " - Hora: " + LocalDateTime.now());
         return "redirect:/login";
     }
 
-    // Nuevo método para rastrear solicitudes a rutas no definidas
+    
     @GetMapping("/track")
     public String trackRequest(HttpSession session) {
         System.out.println("Solicitud rastreada - Ruta: /track, Usuario logueado: " + (session.getAttribute("usuarioLogueado") != null) + " - Hora: " + LocalDateTime.now());
