@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Panel del Ciudadano</title>
+    <link rel="stylesheet" th:href="@{/css/styles2.css}">
 </head>
 <body>
 
@@ -91,97 +92,8 @@
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-
-    document.getElementById('barrioNombre').addEventListener('input', function () {
-        const input = this.value;
-        const options = document.querySelectorAll('#listaBarrios option');
-        let barrioId = '';
-        options.forEach(option => { if (option.value === input) barrioId = option.dataset.id; });
-        document.getElementById('barrioId').value = barrioId;
-    });
-
-
-    document.getElementById("formReporte").addEventListener("submit", function (e) {
-        e.preventDefault();
-        Swal.fire({
-            title: "¿Deseas enviar este reporte?",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonText: "Sí, enviar",
-            cancelButtonText: "No, cancelar"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                this.submit();
-            }
-        });
-    });
-
-
-    function confirmarEliminar(element) {
-        event.preventDefault();
-        const url = element.getAttribute("data-url");
-        Swal.fire({
-            title: "¿Eliminar este reporte?",
-            text: "Esta acción no se puede deshacer.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "No, cancelar"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = url;
-            }
-        });
-    }
-
-
-    function confirmarEditar(element) {
-        event.preventDefault();
-        const url = element.getAttribute("data-url");
-        Swal.fire({
-            title: "¿Deseas editar este reporte?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: "Sí, editar",
-            cancelButtonText: "No, cancelar"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = url; 
-            }
-        });
-    }
-
-    document.getElementById("btnSalir").addEventListener("click", () => {
-        Swal.fire({
-            title: "¿Cerrar sesión?",
-            text: "Se cerrará tu sesión actual.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Sí, salir",
-            cancelButtonText: "No, quedarme"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "/login";
-            }
-        });
-    });
-
-
-    function abrirModal() {
-        document.getElementById('fondoModal').style.display = 'block';
-        document.getElementById('modalReportes').style.display = 'block';
-    }
-
-
-    function cerrarModal() {
-        document.getElementById('fondoModal').style.display = 'none';
-        document.getElementById('modalReportes').style.display = 'none';
-    }
-
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{/js/script.js}"></script>
 
 </body>
 </html>

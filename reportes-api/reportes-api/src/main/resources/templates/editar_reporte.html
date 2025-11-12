@@ -53,50 +53,8 @@
     <a th:href="@{/usuario/inicio}">Cancelar</a>
 </form>
 
-<script>
-    document.getElementById('barrioNombre').addEventListener('input', function () {
-        const input = this.value;
-        const options = document.querySelectorAll('#listaBarrios option');
-        let barrioId = '';
-        options.forEach(option => { if (option.value === input) barrioId = option.dataset.id; });
-        document.getElementById('barrioId').value = barrioId;
-    });
-
-o
-    document.getElementById('formEditar').addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        Swal.fire({
-            title: '¿Deseas guardar los cambios?',
-            text: 'El reporte será actualizado con la nueva información.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, guardar',
-            cancelButtonText: 'No, cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-
-                Swal.fire({
-                    title: 'Guardando cambios...',
-                    html: '<b>Por favor espera</b>',
-                    allowOutsideClick: false,
-                    didOpen: () => { Swal.showLoading(); }
-                });
-
-                setTimeout(() => {
-                    e.target.submit(); 
-                }, 1200);
-            } else {
-                Swal.fire({
-                    title: 'Cambios cancelados',
-                    icon: 'info',
-                    showConfirmButton: false,
-                    timer: 1200
-                });
-            }
-        });
-    });
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{/js/script.js}"></script>
 
 </body>
 </html>
