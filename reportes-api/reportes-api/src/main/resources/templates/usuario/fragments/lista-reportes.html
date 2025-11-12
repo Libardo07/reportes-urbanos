@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="card" th:fragment="lista-reportes">
+    <div class="content-header">
+        <h1>Mis Reportes</h1>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Barrio</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="r : ${reportes}">
+                <td th:text="${r.titulo}"></td>
+                <td th:text="${r.descripcion}"></td>
+                <td th:text="${r.barrio.nombre}"></td>
+                <td th:text="${r.tipo.nombre}"></td>
+                <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado)}" th:text="${r.estado}"></span></td>
+                <td th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="actions">
+                    <span th:if="${#strings.equalsIgnoreCase(r.estado, 'PENDIENTE')}">
+                        <button class="action-btn edit-reporte" th:attr="data-id=${r.id}, data-url=@{'/usuario/editar-reporte/' + ${r.id}}" title="Editar">
+                            <img th:src="@{/images/icono-edit.png}" alt="Editar">
+                        </button>
+                        <button class="action-btn delete-reporte" th:attr="data-id=${r.id}, data-url=@{'/usuario/eliminar-reporte/' + ${r.id}}" title="Eliminar">
+                            <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
+                        </button>
+                    </span>
+                    <span th:unless="${#strings.equalsIgnoreCase(r.estado, 'PENDIENTE')}" title="No editable">
+                        <button class="action-btn" disabled><img th:src="@{/images/icono-edit.png}" alt="No editable" style="opacity: 0.4;"></button>
+                        <button class="action-btn" disabled><img th:src="@{/images/icono-trash.png}" alt="No eliminable" style="opacity: 0.4;"></button>
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</html>

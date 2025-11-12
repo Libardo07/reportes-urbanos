@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="card" th:fragment="lista-reportes">
+    <div class="content-header">
+        <h1>Lista de Reportes</h1>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Dirección</th>
+                <th>Barrio</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Admin Asignado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="r : ${reportes}">
+                <td th:text="${r.titulo}"></td>
+                <td th:text="${r.descripcion}"></td>
+                <td th:text="${r.direccion}"></td>
+                <td th:text="${r.barrio.nombre}"></td>
+                <td th:text="${r.tipo.nombre}"></td>
+                <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado)}" th:text="${r.estado}"></span></td>
+                <td th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></td>
+                <td th:text="${r.usuario.nombre}"></td>
+                <td th:text="${r.usuarioAdmin != null ? r.usuarioAdmin.nombre : 'No asignado'}"></td>
+                <td class="actions">
+                    <!-- El select para cambiar estado, ahora con estilo -->
+                    <div class="custom-select">
+                        <select class="estado-select form-control" th:attr="data-id=${r.id}" th:disabled="${r.estado.name() == 'RESUELTO'}">
+                            <option value="" selected disabled>Cambiar</option>
+                            <option th:value="'EN_PROGRESO'" th:selected="${r.estado.name() == 'EN_PROGRESO'}">En Progreso</option>
+                            <option th:value="'RESUELTO'" th:selected="${r.estado.name() == 'RESUELTO'}">Resuelto</option>
+                        </select>
+                    </div>
+                    <button class="action-btn delete-reporte" th:attr="data-id=${r.id}, data-url=@{'/admin/eliminar-reporte/' + ${r.id}}" title="Eliminar">
+                        <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</html>

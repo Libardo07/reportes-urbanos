@@ -4,96 +4,47 @@
     <meta charset="UTF-8">
     <title>Panel del Ciudadano</title>
     <link rel="stylesheet" th:href="@{/css/styles2.css}">
-</head>
-<body>
-
-<h2>Bienvenido al sistema de reportes, <span th:text="${usuario.nombre}"></span></h2>
-
-<h3>Realizar su reporte aquí</h3>
-
-<form th:action="@{/usuario/guardar-reporte}" th:object="${reporte}" method="post" id="formReporte">
-    <div>
-        <label for="titulo">Título del reporte:</label>
-        <input type="text" id="titulo" th:field="*{titulo}" placeholder="Escribir..." required>
-    </div>
-
-    <div>
-        <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" th:field="*{descripcion}" placeholder="Escribir..." required></textarea>
-    </div>
-
-    <div>
-        <label for="direccion">Dirección exacta:</label>
-        <input type="text" id="direccion" th:field="*{direccion}" placeholder="Escribir..." required>
-    </div>
-
-    <div>
-        <label for="tipo">Tipo de reporte:</label>
-        <select name="tipoId" required>
-            <option value="" disabled selected>Escoger tipo de reporte</option>
-            <option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.nombre}"></option>
-        </select>
-    </div>
-
-    <div>
-        <label for="barrioNombre">Barrio:</label>
-        <input type="text" id="barrioNombre" name="barrioNombre" placeholder="Buscar barrio" list="listaBarrios" required>
-        <input type="hidden" id="barrioId" name="barrioId">
-        <datalist id="listaBarrios">
-            <option th:each="b : ${barrios}" th:data-id="${b.id}" th:value="${b.nombre}"></option>
-        </datalist>
-    </div>
-
-    <div>
-        <button type="submit">Enviar reporte</button>
-    </div>
-</form>
-
-<br>
-<button type="button" onclick="abrirModal()">Ver mis reportes</button>
-<button type="button" id="btnSalir">Salir</button>
-
-
-<div id="fondoModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;"></div>
-<div id="modalReportes" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:20px; z-index:1001;">
-    <h3>Mis reportes</h3>
-    <table border="1">
-        <tr>
-            <th>Título</th>
-            <th>Descripción</th>
-            <th>Dirección</th>
-            <th>Barrio</th>
-            <th>Tipo</th>
-            <th>Estado</th>
-            <th>Fecha</th>
-            <th>Acciones</th>
-        </tr>
-        <tr th:each="r : ${reportes}">
-            <td th:text="${r.titulo}"></td>
-            <td th:text="${r.descripcion}"></td>
-            <td th:text="${r.direccion}"></td>
-            <td th:text="${r.barrio.nombre}"></td>
-            <td th:text="${r.tipo.nombre}"></td>
-            <td th:text="${r.estado}"></td>
-            <td th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></td>
-            <td>
-                <span th:if="${#strings.equalsIgnoreCase(#strings.trim(r.estado), 'pendiente')}">
-                    <a href="#" th:attr="data-url=@{'/usuario/editar-reporte/' + ${r.id}}" onclick="confirmarEditar(this)">Editar</a> |
-                    <a href="#" th:attr="data-url=@{'/usuario/eliminar-reporte/' + ${r.id}}" onclick="confirmarEliminar(this)">Eliminar</a>
-                </span>
-                <span th:unless="${#strings.equalsIgnoreCase(#strings.trim(r.estado), 'pendiente')}">
-                    No editable
-                </span>
-            </td>
-        </tr>
-    </table>
-    <br>
-    <button type="button" onclick="cerrarModal()">Cerrar</button>
-</div>
-
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script th:src="@{/js/script.js}"></script>
+</head>
+<body class="dashboard-container usuario">
+    <!-- MENÚ LATERAL -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>BIENVENIDO</h2>
+            <div class="usuario-info">
+                <img th:src="@{/images/icono-login.png}" alt="Usuario">
+                <div class="details">
+                    <div class="nombre" th:text="${usuario.nombre}">Juan Pérez</div>
+                    <div class="rol" th:text="${usuario.rol}">Ciudadano</div>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-menu">
+            <!-- El botón "Crear Reporte" se muestra por defecto -->
+            <div class="menu-item active" th:attr="data-view='/usuario/fragmento/formulario-reporte'">
+                <img th:src="@{/images/icono-plus.png}" alt="Crear">
+                <span>Crear reporte</span>
+            </div>
+            <!-- El botón "Ver Reportes" aparece para alternar -->
+            <div class="menu-item" th:attr="data-view='/usuario/fragmento/lista-reportes'">
+                <img th:src="@{/images/icono-list.png}" alt="Ver">
+                <span>Ver reportes</span>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="menu-item" onclick="logout()">
+                <img th:src="@{/images/icono-logout.png}" alt="Salir">
+                <span>Salir</span>
+            </div>
+        </div>
+    </aside>
 
+    <!-- VENTANA PRINCIPAL -->
+    <main class="content" id="content-area">
+        <!-- Por defecto, cargamos el formulario de crear reporte -->
+        <div th:replace="~{usuario/fragments/formulario-reporte :: formulario-reporte}"></div>
+    </main>
+
+    <script th:src="@{/js/script.js}"></script>
 </body>
 </html>

@@ -1,0 +1,413 @@
+/* ===================================================================================== */
+/* == ESTILOS DASHBOARD (USUARIO Y ADMIN) =========================================== */
+/* ===================================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Reset y fuentes generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ====== VARIABLES DE TEMA ====== */
+:root {
+    --usuario-color: #3498db;
+    --admin-color: #9b59b6;
+    --fondo-color: #f5f7fa;
+    --card-color: #ffffff;
+    --text-color: #333333;
+    --border-color: #e0e0e0;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+}
+
+/* ====== ESTILOS GENERALES PARA EL CUERPO ====== */
+body {
+    background-color: var(--fondo-color);
+    color: var(--text-color);
+    display: flex; /* Necesario para el layout del dashboard */
+}
+
+/* ====== ESTILOS DASHBOARD ====== */
+.dashboard-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Menú Lateral */
+.sidebar {
+    width: 280px;
+    background-color: var(--card-color);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+/* Borde superior para indicar el rol */
+.dashboard-container.usuario .sidebar {
+    border-top: 5px solid var(--usuario-color);
+}
+
+.dashboard-container.admin .sidebar {
+    border-top: 5px solid var(--admin-color);
+}
+
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.usuario-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: default;
+}
+
+.usuario-info img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.usuario-info .details {
+    text-align: left;
+}
+
+.usuario-info .nombre {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.usuario-info .rol {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Opciones del menú */
+.sidebar-menu {
+    flex-grow: 1;
+    padding: 20px 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.menu-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Estilo para el item activo según el rol */
+.dashboard-container.usuario .menu-item.active {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-left-color: var(--usuario-color);
+    color: var(--usuario-color);
+}
+
+.dashboard-container.admin .menu-item.active {
+    background-color: rgba(155, 89, 182, 0.1);
+    border-left-color: var(--admin-color);
+    color: var(--admin-color);
+}
+
+.menu-item img {
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+
+/* Pie del menú (botón de salir) */
+.sidebar-footer {
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Contenido Principal */
+.content {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.content-header {
+    margin-bottom: 25px;
+}
+
+.content-header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* Tarjetas y Formularios */
+.card {
+    background-color: var(--card-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+/* Color de foco según el rol */
+.dashboard-container.usuario .form-control:focus {
+    border-color: var(--usuario-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.dashboard-container.admin .form-control:focus {
+    border-color: var(--admin-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1);
+}
+
+/* Botones */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-usuario {
+    background-color: var(--usuario-color);
+    color: white;
+}
+
+.btn-usuario:hover {
+    background-color: #2980b9;
+}
+
+.btn-admin {
+    background-color: var(--admin-color);
+    color: white;
+}
+
+.btn-admin:hover {
+    background-color: #8e44ad;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+/* Tablas */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table th {
+    background-color: rgba(0, 0, 0, 0.02);
+    font-weight: 600;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Acciones (iconos) */
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.action-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+/* Badges de estado */
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.badge-pendiente { background-color: #f8d7da; color: #721c24; }
+.badge-en-progreso { background-color: #fff3cd; color: #856404; }
+.badge-resuelto { background-color: #d4edda; color: #155724; }
+
+/* Estilo personalizado para el SELECT del administrador */
+.custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.custom-select select {
+    width: 100%;
+    padding: 8px 35px 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: white;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Flecha del select */
+.custom-select::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #666;
+    pointer-events: none;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+    }
+    .content {
+        padding: 20px;
+    }
+
+}
+
+.swal2-container {
+    z-index: 9999 !important;
+}
+
+/* ===================================================================================== */
+/* == MEJORAS PARA LA TABLA DE REPORTES DEL ADMINISTRADOR ======================== */
+/* ===================================================================================== */
+
+/* Envuelve la tabla en un contenedor con scroll horizontal */
+.dashboard-container.admin .card {
+    overflow-x: auto; /* Añade barra de scroll horizontal si es necesario */
+}
+
+/* Hace que el texto en las celdas se ajuste (no se desborde) */
+.dashboard-container.admin .table td {
+    white-space: normal;      /* Permite que el texto se divida en varias líneas */
+    word-wrap: break-word;    /* Rompe palabras largas si es necesario */
+    max-width: 200px;         /* Establece un ancho máximo para las celdas */
+    vertical-align: top;      /* Alinea el texto hacia arriba para mejor legibilidad */
+}
+
+/* Hace la tabla un poco más compacta */
+.dashboard-container.admin .table th,
+.dashboard-container.admin .table td {
+    padding: 6px 8px; /* Reduce el padding (era 12px 15px) */
+    font-size: 12px;   /* Reduce ligeramente el tamaño de la fuente */
+}
+
+/* Opcional: Reduce el ancho de columnas que no son tan importantes */
+.dashboard-container.admin .table th:nth-child(2), /* Descripción */
+.dashboard-container.admin .table td:nth-child(2) {
+    max-width: 150px; /* Limita más la descripción */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
+    white-space: nowrap;
+}
+
+.dashboard-container.admin .table th:nth-child(3), /* Dirección */
+.dashboard-container.admin .table td:nth-child(3) {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Hace que el texto en las celdas de la tabla del admin se ajuste */
+.dashboard-container.admin .table td {
+    white-space: normal;      /* <-- AÑADE ESTA LÍNEA */
+    word-wrap: break-word;    /* <-- AÑADE ESTA LÍNEA */
+}
+
