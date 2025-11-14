@@ -213,7 +213,7 @@ function confirmDeleteReporte(reporteId, url) {
                 .then(data => {
                     if (data.success) {
                         showSuccessMessage('Reporte eliminado correctamente');
-                        loadView(data.redirectView || window.location.pathname);
+
                     } else {
                         showErrorMessage(data.error || 'Error al eliminar el reporte');
                     }
