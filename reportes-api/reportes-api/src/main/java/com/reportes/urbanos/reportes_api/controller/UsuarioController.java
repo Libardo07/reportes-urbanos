@@ -31,16 +31,12 @@ public class UsuarioController {
             return "redirect:/login";
         }
         model.addAttribute("usuario", usuario);
-        
-        // Datos necesarios para el formulario por defecto
         model.addAttribute("reporte", new Reporte());
         model.addAttribute("barrios", barrioRepository.findAll());
         model.addAttribute("tipos", tipoRepository.findAll());
         
         return "usuario_inicio";
     }
-
-    // === NUEVOS ENDPOINTS PARA FRAGMENTOS ===
 
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(HttpSession session, Model model) {
@@ -63,18 +59,15 @@ public class UsuarioController {
         Reporte reporte = reporteRepository.findById(id).orElse(null);
         
         if (reporte == null || !reporte.getUsuario().getId().equals(usuario.getId()) || !reporte.getEstado().equals(EstadoReporte.PENDIENTE)) {
-            // Podrías devolver un fragmento de error si lo creas
             return "error :: error-content"; 
         }
         
         model.addAttribute("reporte", reporte);
         model.addAttribute("barrios", barrioRepository.findAll());
         model.addAttribute("tipos", tipoRepository.findAll());
-        return "editar_reporte :: formulario-reporte"; // Usa el fragmento de editar_reporte.html
+        return "editar_reporte :: formulario-reporte"; 
     }
 
-
-    // === MÉTODOS POST MODIFICADOS ===
 
     @PostMapping("/guardar-reporte")
     public ResponseEntity<Map<String, String>> guardarReporte(@ModelAttribute Reporte reporte,
@@ -92,7 +85,7 @@ public class UsuarioController {
             Barrio barrio = barrioRepository.findById(barrioId).orElse(null);
             Tipo tipo = tipoRepository.findById(tipoId).orElse(null);
 
-            if (reporte.getId() != null) { // Es una edición
+            if (reporte.getId() != null) { 
                 Reporte reporteExistente = reporteRepository.findById(reporte.getId()).orElse(null);
                 if (reporteExistente == null || !reporteExistente.getUsuario().getId().equals(usuario.getId())) {
                     response.put("error", "No se pudo editar: el reporte no existe o no pertenece a este usuario.");

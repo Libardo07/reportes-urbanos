@@ -1,10 +1,6 @@
-/* ===================================================================================== */
-/* == ESTILOS DASHBOARD (USUARIO Y ADMIN) =========================================== */
-/* ===================================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* Reset y fuentes generales */
 * {
     margin: 0;
     padding: 0;
@@ -12,7 +8,6 @@
     font-family: 'Poppins', sans-serif;
 }
 
-/* ====== VARIABLES DE TEMA ====== */
 :root {
     --usuario-color: #3498db;
     --admin-color: #9b59b6;
@@ -25,7 +20,6 @@
     --danger-color: #e74c3c;
 }
 
-/* ====== ESTILOS GENERALES PARA EL CUERPO ====== */
 body {
     background-color: var(--fondo-color);
     color: var(--text-color);
@@ -34,14 +28,12 @@ body {
 
 }
 
-/* ====== ESTILOS DASHBOARD ====== */
 .dashboard-container {
     display: flex;
     width: 100%;
     min-height: 100vh;
 }
 
-/* Menú Lateral */
 .sidebar {
     width: 280px;
     background-color: var(--card-color);
@@ -51,7 +43,6 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Borde superior para indicar el rol */
 .dashboard-container.usuario .sidebar {
     border-top: 5px solid var(--usuario-color);
 }
@@ -102,7 +93,6 @@ body {
     color: #666;
 }
 
-/* Opciones del menú */
 .sidebar-menu {
     flex-grow: 1;
     padding: 20px 15px;
@@ -124,7 +114,6 @@ body {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
-/* Estilo para el item activo según el rol */
 .dashboard-container.usuario .menu-item.active {
     background-color: rgba(52, 152, 219, 0.1);
     border-left-color: var(--usuario-color);
@@ -143,7 +132,6 @@ body {
     margin-right: 12px;
 }
 
-/* Pie del menú (botón de salir) */
 .sidebar-footer {
     padding: 15px;
     border-top: 1px solid var(--border-color);
@@ -152,7 +140,6 @@ body {
     align-items: center;   
 }
 
-/* Contenido Principal */
 .content {
     flex-grow: 1;
     padding: 30px;
@@ -169,7 +156,6 @@ body {
     margin-bottom: 10px;
 }
 
-/* Tarjetas y Formularios */
 .card {
     background-color: var(--card-color);
     border-radius: 10px;
@@ -197,7 +183,6 @@ body {
     transition: border-color 0.3s;
 }
 
-/* Color de foco según el rol */
 .dashboard-container.usuario .form-control:focus {
     border-color: var(--usuario-color);
     outline: none;
@@ -210,7 +195,6 @@ body {
     box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1);
 }
 
-/* Botones */
 .btn {
     display: inline-block;
     padding: 10px 20px;
@@ -252,7 +236,6 @@ body {
     color: white;
 }
 
-/* Tablas */
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -274,7 +257,6 @@ body {
     border-bottom: none;
 }
 
-/* Acciones (iconos) */
 .actions {
     display: flex;
     gap: 10px;
@@ -302,7 +284,6 @@ body {
     height: 20px;
 }
 
-/* Badges de estado */
 .badge {
     padding: 4px 8px;
     border-radius: 4px;
@@ -315,7 +296,6 @@ body {
 .badge-en-progreso { background-color: #fff3cd; color: #856404; }
 .badge-resuelto { background-color: #d4edda; color: #155724; }
 
-/* Estilo personalizado para el SELECT del administrador */
 .custom-select {
     position: relative;
     display: inline-block;
@@ -335,7 +315,6 @@ body {
     font-size: 14px;
 }
 
-/* Flecha del select */
 .custom-select::after {
     content: '';
     position: absolute;
@@ -350,7 +329,6 @@ body {
     pointer-events: none;
 }
 
-/* Responsivo */
 @media (max-width: 768px) {
     .dashboard-container {
         flex-direction: column;
@@ -369,40 +347,33 @@ body {
     z-index: 9999 !important;
 }
 
-/* ===================================================================================== */
-/* == MEJORAS PARA LA TABLA DE REPORTES DEL ADMINISTRADOR ======================== */
-/* ===================================================================================== */
-
-/* Envuelve la tabla en un contenedor con scroll horizontal */
 .dashboard-container.admin .card {
-    overflow-x: auto; /* Añade barra de scroll horizontal si es necesario */
+    overflow-x: auto; 
 }
 
-/* Hace que el texto en las celdas se ajuste (no se desborde) */
 .dashboard-container.admin .table td {
-    white-space: normal;      /* Permite que el texto se divida en varias líneas */
-    word-wrap: break-word;    /* Rompe palabras largas si es necesario */
-    max-width: 200px;         /* Establece un ancho máximo para las celdas */
-    vertical-align: top;      /* Alinea el texto hacia arriba para mejor legibilidad */
+    white-space: normal;    
+    word-wrap: break-word;    
+    max-width: 200px;         
+    vertical-align: top;      
 }
 
-/* Hace la tabla un poco más compacta */
+
 .dashboard-container.admin .table th,
 .dashboard-container.admin .table td {
-    padding: 6px 8px; /* Reduce el padding (era 12px 15px) */
-    font-size: 12px;   /* Reduce ligeramente el tamaño de la fuente */
+    padding: 6px 8px; 
+    font-size: 12px;  
 }
 
-/* Opcional: Reduce el ancho de columnas que no son tan importantes */
-.dashboard-container.admin .table th:nth-child(2), /* Descripción */
+.dashboard-container.admin .table th:nth-child(2), 
 .dashboard-container.admin .table td:nth-child(2) {
-    max-width: 150px; /* Limita más la descripción */
+    max-width: 150px; 
     overflow: hidden;
-    text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
+    text-overflow: ellipsis; 
     white-space: nowrap;
 }
 
-.dashboard-container.admin .table th:nth-child(3), /* Dirección */
+.dashboard-container.admin .table th:nth-child(3), 
 .dashboard-container.admin .table td:nth-child(3) {
     max-width: 120px;
     overflow: hidden;
@@ -410,30 +381,23 @@ body {
     white-space: nowrap;
 }
 
-/* Hace que el texto en las celdas de la tabla del admin se ajuste */
 .dashboard-container.admin .table td {
-    white-space: normal;      /* <-- AÑADE ESTA LÍNEA */
-    word-wrap: break-word;    /* <-- AÑADE ESTA LÍNEA */
+    white-space: normal;   
+    word-wrap: break-word;    
 }
 
-
-/* ===================================================================================== */
-/* == ANIMACIÓN GLOW PARA BOTONES DEL MENÚ LATERAL ============================== */
-/* ===================================================================================== */
-
-/* --- Estilos base para la animación del menú --- */
 .menu-item-animated {
     position: relative;
-    display: flex; /* Mantiene la alineación del ícono y texto */
+    display: flex; 
     align-items: center;
-    padding: 12px 20px; /* Mismo padding que .menu-item */
+    padding: 12px 20px; 
     border-radius: 7px;
-    border: 1px solid transparent; /* El borde se definirá por tema */
-    font-size: 16px; /* Mismo tamaño de fuente que .menu-item */
+    border: 1px solid transparent; 
+    font-size: 16px; 
     font-weight: 500;
     letter-spacing: 1px;
     background: transparent;
-    color: var(--text-color); /* Usa el color de texto del tema */
+    color: var(--text-color); 
     cursor: pointer;
     overflow: hidden;
     box-shadow: 0 0 0 0 transparent;
@@ -443,7 +407,6 @@ body {
     margin-bottom: 10px;
 }
 
-/* --- Animación para el tema de USUARIO (color azul) --- */
 .dashboard-container.usuario .menu-item-animated {
     border-color: var(--usuario-color);
     color: var(--usuario-color);
@@ -451,7 +414,7 @@ body {
 
 .dashboard-container.usuario .menu-item-animated:hover {
     background: var(--usuario-color);
-    color: white; /* El texto se vuelve blanco al hacer hover */
+    color: white; 
     box-shadow: 0 0 30px 5px rgba(52, 152, 219, 0.5);
     -webkit-transition: all 0.2s ease-out;
     -moz-transition: all 0.2s ease-out;
@@ -464,7 +427,6 @@ body {
     animation: shine-user 0.5s 0s linear;
 }
 
-/* --- Animación para el tema de ADMINISTRADOR (color morado) --- */
 .dashboard-container.admin .menu-item-animated {
     border-color: var(--admin-color);
     color: var(--admin-color);
@@ -472,7 +434,7 @@ body {
 
 .dashboard-container.admin .menu-item-animated:hover {
     background: var(--admin-color);
-    color: white; /* El texto se vuelve blanco al hacer hover */
+    color: white; 
     box-shadow: 0 0 30px 5px rgba(155, 89, 182, 0.5);
     -webkit-transition: all 0.2s ease-out;
     -moz-transition: all 0.2s ease-out;
@@ -485,7 +447,6 @@ body {
     animation: shine-admin 0.5s 0s linear;
 }
 
-/* --- Efecto de brillo (pseudo-elemento ::before) --- */
 .menu-item-animated::before {
     content: '';
     display: block;
@@ -504,7 +465,6 @@ body {
     transform: skewX(-20deg);
 }
 
-/* --- Animaciones @keyframes para el brillo --- */
 @keyframes shine-user {
     from { opacity: 0; left: 0%; }
     50% { opacity: 1; }
@@ -517,7 +477,6 @@ body {
     to { opacity: 0; left: 100%; }
 }
 
-/* --- Efecto de clic --- */
 .menu-item-animated:active {
     box-shadow: 0 0 0 0 transparent;
     -webkit-transition: box-shadow 0.2s ease-in;
@@ -525,28 +484,23 @@ body {
     transition: box-shadow 0.2s ease-in;
 }
 
-/* ===================================================================================== */
-/* == ANIMACIÓN EXPANSIVA PARA EL BOTÓN DE SALIR ============================== */
-/* ===================================================================================== */
-
 .logout-btn-animated {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    width: 45px; /* Ancho inicial (solo el ícono) */
+    width: 45px; 
     height: 45px;
     border: none;
-    border-radius: 50%; /* Forma circular inicialmente */
+    border-radius: 50%; 
     cursor: pointer;
     position: relative;
     overflow: hidden;
     transition-duration: .3s;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
-    background-color: rgb(255, 65, 65); /* Color de fondo rojo */
-    padding: 0; /* Sin padding para controlar el tamaño con width */
+    background-color: rgb(255, 65, 65); 
+    padding: 0; 
 }
 
-/* Contenedor del ícono */
 .logout-btn-animated .sign {
     width: 100%;
     height: 100%;
@@ -556,54 +510,47 @@ body {
     transition-duration: .3s;
 }
 
-/* Estilos para la imagen del ícono */
 .logout-btn-animated .sign img {
-    width: 24px; /* Tamaño del ícono */
+    width: 24px; 
     height: 24px;
-    filter: brightness(0) invert(1); /* Vuelve la imagen blanca */
+    filter: brightness(0) invert(1); 
 }
 
-/* Contenedor del texto */
 .logout-btn-animated .text {
     position: absolute;
     right: 0%;
     width: 0%;
     opacity: 0;
     color: white;
-    font-size: 1.1em; /* Tamaño de fuente un poco más pequeño */
+    font-size: 1.1em; 
     font-weight: 600;
     transition-duration: .3s;
-    white-space: nowrap; /* Evita que el texto se parta en dos líneas */
+    white-space: nowrap; 
 }
 
-/* --- Efecto Hover --- */
 .logout-btn-animated:hover {
-    width: 125px; /* Ancho al hacer hover (para mostrar el texto) */
-    border-radius: 40px; /* Se vuelve más rectangular */
+    width: 125px; 
+    border-radius: 40px; 
     transition-duration: .3s;
 }
 
 .logout-btn-animated:hover .sign {
-    width: 30%; /* El ícono ocupa menos espacio */
+    width: 30%; 
     transition-duration: .3s;
-    padding-left: 10px; /* Un pequeño espacio a la izquierda */
+    padding-left: 10px; 
 }
 
 .logout-btn-animated:hover .text {
     opacity: 1;
-    width: 70%; /* El texto ocupa el resto del espacio */
+    width: 70%; 
     transition-duration: .3s;
     padding-right: 10px;
 }
 
-/* --- Efecto de Clic --- */
+
 .logout-btn-animated:active {
     transform: translate(2px , 2px);
 }
-
-/* ===================================================================================== */
-/* == NUEVO LOADER SPINNER ========================================================= */
-/* ===================================================================================== */
 
 .loader-overlay {
     position: fixed;
@@ -626,10 +573,10 @@ body {
     visibility: visible;
 }
 
-/* --- El nuevo spinner simple --- */
+
 .loader {
-    border: 4px solid rgba(155, 89, 182, 0.2); /* Fondo morado claro */
-    border-left-color: #9b59b6; /* Línea giratoria morada fuerte */
+    border: 4px solid rgba(155, 89, 182, 0.2); 
+    border-left-color: #9b59b6; 
     border-radius: 50%;
     width: 36px;
     height: 36px;
@@ -641,12 +588,8 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* ===================================================================================== */
-/* == ANIMACIÓN DE FLECHA DESLIZANTE PARA BOTÓN ENVIAR ========================= */
-/* ===================================================================================== */
-
 .btn-enviar-animated {
-    --clr: var(--usuario-color); /* Usamos el color del tema del usuario */
+    --clr: var(--usuario-color); 
     line-height: 1;
     text-decoration: none;
     display: inline-flex;
@@ -659,12 +602,11 @@ body {
     border-radius: 10rem;
     font-weight: 600;
     padding: 0.75rem 1.5rem;
-    padding-right: 20px; /* Cambiamos el padding a la derecha */
+    padding-right: 20px; 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     transition: background-color 0.3s;
-    /* Invertimos el orden para poner el icono a la derecha */
     flex-direction: row-reverse; 
 }
 
@@ -681,18 +623,16 @@ body {
     overflow: hidden;
 }
 
-/* --- Hover para el botón del ADMINISTRADOR (color morado) --- */
 .dashboard-container.admin .btn-enviar-animated:hover {
-    background-color: #8e44ad; /* Un morado más oscuro */
+    background-color: #8e44ad; 
 }
 
 .dashboard-container.admin .btn-enviar-animated:hover .button__icon-wrapper {
     color: #8e44ad;
 }
 
-/* --- Hover para el botón del USUARIO (color azul) --- */
 .dashboard-container.usuario .btn-enviar-animated:hover {
-    background-color: #2980b6; /* Un azul más oscuro */
+    background-color: #2980b6; 
 }
 
 .dashboard-container.usuario .btn-enviar-animated:hover .button__icon-wrapper {
@@ -714,11 +654,6 @@ body {
     transform: translate(0);
 }
 
-/* ===================================================================================== */
-/* == ANIMACIÓN "SHINE DE COLOR SÓLIDO" PARA "BIENVENIDO" =================== */
-/* ===================================================================================== */
-
-/* --- Contenedor principal del título --- */
 .welcome-title-animated {
     --main-size: 1.5em;
     display: flex;
@@ -734,7 +669,6 @@ body {
     user-select: none;
 }
 
-/* --- Cada "rebanada" del texto --- */
 .welcome-title-animated .text {
     position: absolute;
     display: flex;
@@ -745,7 +679,6 @@ body {
     white-space: nowrap;
 }
 
-/* --- Definición de las "rebanadas" con clip-path --- */
 .welcome-title-animated .text:nth-child(1) { clip-path: polygon(0% 0%, 10% 0%, 10% 100%, 0% 100%); }
 .welcome-title-animated .text:nth-child(2) { clip-path: polygon(10% 0%, 20% 0%, 20% 100%, 10% 100%); }
 .welcome-title-animated .text:nth-child(3) { clip-path: polygon(20% 0%, 30% 0%, 30% 100%, 20% 100%); }
@@ -757,7 +690,6 @@ body {
 .welcome-title-animated .text:nth-child(9) { clip-path: polygon(80% 0%, 90% 0%, 90% 100%, 80% 100%); }
 .welcome-title-animated .text:nth-child(10){ clip-path: polygon(90% 0%, 100% 0%, 100% 100%, 90% 100%); }
 
-/* --- Animación del color para el USUARIO (de negro a azul) --- */
 .dashboard-container.usuario .welcome-title-animated .text span {
     animation: shine-azul 4s linear infinite;
 }
@@ -771,8 +703,6 @@ body {
 .dashboard-container.usuario .welcome-title-animated .text:nth-child(8) span { animation-delay: 0.7s; }
 .dashboard-container.usuario .welcome-title-animated .text:nth-child(9) span { animation-delay: 0.8s; }
 .dashboard-container.usuario .welcome-title-animated .text:nth-child(10) span{ animation-delay: 0.9s; }
-
-/* --- Animación del color para el ADMINISTRADOR (de negro a morado) --- */
 .dashboard-container.admin .welcome-title-animated .text span {
     animation: shine-morado 4s linear infinite;
 }
@@ -787,23 +717,17 @@ body {
 .dashboard-container.admin .welcome-title-animated .text:nth-child(9) span { animation-delay: 0.8s; }
 .dashboard-container.admin .welcome-title-animated .text:nth-child(10) span{ animation-delay: 0.9s; }
 
-/* --- Animaciones clave que cambian el color --- */
+
 @keyframes shine-azul {
-    0%, 100% { color: #000000; } /* Negro por defecto */
-    50% { color: #3498db; } /* Azul en el pico de la animación */
+    0%, 100% { color: #000000; } 
+    50% { color: #3498db; } 
 }
 
 @keyframes shine-morado {
-    0%, 100% { color: #000000; } /* Negro por defecto */
-    50% { color: #9b59b6; } /* Morado en el pico de la animación */
+    0%, 100% { color: #000000; } 
+    50% { color: #9b59b6; } 
 }
 
-
-/* ===================================================================================== */
-/* == ESTILOS MODERNOS Y ANIMACIÓN PARA LA CAJA DE USUARIO ==================== */
-/* ===================================================================================== */
-
-/* --- Contenedor principal de la info del usuario --- */
 .dashboard-container .sidebar-header .usuario-info {
     display: flex;
     align-items: center;
@@ -815,19 +739,14 @@ body {
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.05), -5px -5px 15px rgba(255, 255, 255, 0.7);
     transition: all 0.3s ease;
     border: 1px solid rgba(0, 0, 0, 0.05);
-    
-    /* --- ESPACIO SEPARADOR --- */
-    
     margin-top: 15px;
 }
 
-/* --- Efecto Hover (neumórfico sutil) --- */
 .dashboard-container .sidebar-header .usuario-info:hover {
     transform: translateY(-2px);
     box-shadow: 7px 7px 20px rgba(0, 0, 0, 0.07), -7px -7px 20px rgba(255, 255, 255, 0.8);
 }
 
-/* --- Contenedor del ícono --- */
 .dashboard-container .sidebar-header .usuario-info img {
     width: 45px;
     height: 45px;
@@ -835,38 +754,33 @@ body {
     border-radius: 50%;
     margin-right: 15px;
     transition: all 0.3s ease;
-    
-    /* --- Combinamos la animación de entrada con la de pulso infinito --- */
     animation: 
         fadeInScale 0.5s ease-out 0.4s forwards,
         pulse-glow 2.5s ease-in-out infinite;
 }
 
-/* --- Fondo y color de brillo para el USUARIO (azul) --- */
+
 .dashboard-container.usuario .sidebar-header .usuario-info img {
     background: linear-gradient(145deg, var(--usuario-color), #5dade2);
-    --glow-color: rgba(52, 152, 219, 0.6); /* Azul con transparencia */
+    --glow-color: rgba(52, 152, 219, 0.6); 
 }
 
-/* --- Fondo y color de brillo para el ADMINISTRADOR (morado) --- */
 .dashboard-container.admin .sidebar-header .usuario-info img {
     background: linear-gradient(145deg, var(--admin-color), #af7ac5);
-    --glow-color: rgba(155, 89, 182, 0.6); /* Morado con transparencia */
+    --glow-color: rgba(155, 89, 182, 0.6); 
 }
 
-/* --- Contenedor del texto (nombre y rol) --- */
 .dashboard-container .sidebar-header .usuario-info .details {
     text-align: left;
     display: flex;
     flex-direction: column;
 }
 
-/* --- Estilos para el nombre y el rol --- */
 .dashboard-container .sidebar-header .usuario-info .nombre {
     font-weight: 700;
     font-size: 16px;
     color: #333;
-    opacity: 0; /* Inicia invisible para la animación */
+    opacity: 0;
     animation: fadeIn 0.5s ease-out 0.6s forwards;
 }
 
@@ -876,91 +790,119 @@ body {
     color: #666;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    opacity: 0; /* Inicia invisible para la animación */
+    opacity: 0; 
     animation: fadeIn 0.5s ease-out 0.8s forwards;
 }
 
-/* --- Animación de entrada para el contenedor completo --- */
 .dashboard-container .sidebar-header .usuario-info {
     opacity: 0;
     transform: translateY(10px);
     animation: fadeInUp 0.6s ease-out 0.2s forwards;
 }
 
-/* --- Definiciones de las animaciones clave --- */
 @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeInScale { to { opacity: 1; transform: scale(1); } }
 @keyframes fadeIn { to { opacity: 1; } }
-
-/* --- Animación clave que crea el pulso de brillo --- */
 @keyframes pulse-glow {
     0% { box-shadow: 0 0 0 0 var(--glow-color); }
     70% { box-shadow: 0 0 0 12px var(--glow-color); }
     100% { box-shadow: 0 0 0 0 var(--glow-color); }
 }
 
-/* ===================================================================================== */
-/* == ANIMACIONES PARA BOTONES DE ACCIÓN (EDITAR / ELIMINAR) ================ */
-/* ===================================================================================== */
-
-/* --- Estilos base para todos los botones de acción --- */
 .action-btn {
     width: 32px;
     height: 32px;
     border: none;
-    background: rgba(0, 0, 0, 0.05); /* Fondo muy sutil por defecto */
+    background: rgba(0, 0, 0, 0.05); 
     cursor: pointer;
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transición suave y profesional */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
     overflow: hidden;
 }
 
 .action-btn img {
     width: 20px;
     height: 20px;
-    transition: filter 0.3s ease; /* Para que el icono cambie de color */
-    filter: brightness(0.5); /* Icono gris oscuro por defecto */
+    transition: filter 0.3s ease; 
+    filter: brightness(0.5); 
 }
 
-/* --- Animación para el botón EDITAR --- */
 .action-btn.edit-reporte:hover {
-    background: var(--usuario-color); /* Azul para el usuario */
-    transform: scale(1.1); /* Crece un 10% */
+    background: var(--usuario-color); 
+    transform: scale(1.1); 
 }
 
 .dashboard-container.admin .action-btn.edit-reporte:hover {
-    background: var(--admin-color); /* Morado para el admin */
+    background: var(--admin-color); 
 }
 
 .action-btn.edit-reporte:hover img {
-    filter: brightness(0) invert(1); /* Vuelve el icono blanco */
+    filter: brightness(0) invert(1); 
 }
 
-/* --- Animación para el botón ELIMINAR --- */
 .action-btn.delete-reporte:hover {
-    background: #e74c3c; /* Rojo de advertencia */
-    transform: scale(1.1); /* Crece un 10% */
+    background: #e74c3c; 
+    transform: scale(1.1); 
 }
 
 .action-btn.delete-reporte:hover img {
-    filter: brightness(0) invert(1); /* Vuelve el icono blanco */
+    filter: brightness(0) invert(1); 
 }
-
-/* ===================================================================================== */
-/* == ESTILOS COMPACTOS PARA LA TABLA DE REPORTES DEL USUARIO (FORMA RÁPIDA) == */
-/* ===================================================================================== */
 
 .dashboard-container.usuario .table th,
 .dashboard-container.usuario .table td {
-    padding: 8px 12px !important; /* <-- Reduce el espacio interior */
-    font-size: 14px !important; /* <-- Hace la letra más pequeña */
+    padding: 8px 12px !important; 
+    font-size: 14px !important; 
 }
 
 .dashboard-container.usuario .table th {
-    font-size: 13px !important; /* El encabezado puede ser un poco más pequeño */
+    font-size: 13px !important; 
+}
+
+.dashboard-container.usuario .card {
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.3),
+                0 0 40px rgba(52, 152, 219, 0.1);
+    animation: floatingGlowBlue 4s ease-in-out infinite;
+    transition: transform 0.3s ease, box-shadow 0.5s ease-in-out;
+}
+
+.dashboard-container.admin .card {
+    box-shadow: 0 0 20px rgba(142, 68, 173, 0.3),
+                0 0 40px rgba(142, 68, 173, 0.1);
+    animation: floatingGlowPurple 4s ease-in-out infinite;
+    transition: transform 0.3s ease, box-shadow 0.5s ease-in-out;
+}
+
+.dashboard-container.usuario .card:hover,
+.dashboard-container.admin .card:hover {
+    transform: translateY(-5px);
+}
+
+@keyframes floatingGlowBlue {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(52, 152, 219, 0.6),
+                    0 0 40px rgba(52, 152, 219, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(52, 152, 219, 0.2),
+                    0 0 60px rgba(52, 152, 219, 0.6),
+                    0 0 90px rgba(52, 152, 219, 0.4);
+    }
+}
+
+@keyframes floatingGlowPurple {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(142, 68, 173, 0.6),
+                    0 0 40px rgba(142, 68, 173, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(142, 68, 173, 0.2),
+                    0 0 60px rgba(142, 68, 173, 0.6),
+                    0 0 90px rgba(142, 68, 173, 0.4);
+    }
 }
 
 

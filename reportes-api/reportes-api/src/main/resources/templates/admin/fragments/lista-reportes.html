@@ -31,7 +31,7 @@
                 <td th:text="${r.usuario.nombre}"></td>
                 <td th:text="${r.usuarioAdmin != null ? r.usuarioAdmin.nombre : 'No asignado'}"></td>
                 <td class="actions">
-                    <!-- El select para cambiar estado, ahora con estilo -->
+                    
                     <div class="custom-select">
                         <select class="estado-select form-control" th:attr="data-id=${r.id}" th:disabled="${r.estado.name() == 'RESUELTO'}">
                             <option value="" selected disabled>Cambiar</option>

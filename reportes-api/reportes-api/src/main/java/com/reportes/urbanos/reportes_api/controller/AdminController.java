@@ -36,7 +36,6 @@ public class AdminController {
         return "admin_inicio";
     }
 
-    // === NUEVOS ENDPOINTS PARA FRAGMENTOS ===
 
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(Model model) {
@@ -50,7 +49,6 @@ public class AdminController {
         return "admin/fragments/formulario-admin :: formulario-admin";
     }
 
-    // === MÉTODOS POST MODIFICADOS ===
 
     @PostMapping("/registrar-admin")
     public ResponseEntity<Map<String, String>> registrarAdmin(@ModelAttribute Usuario nuevoAdmin, HttpSession session) {

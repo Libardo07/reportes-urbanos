@@ -1,21 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
-
-
     const lastView = sessionStorage.getItem('lastView');
     if (lastView) {
-        // Espera un momento a que el menú esté listo y luego simula un clic en el ítem correcto
         setTimeout(() => {
             const menuItemToActivate = document.querySelector(`.menu-item[data-view="${lastView}"]`);
             if (menuItemToActivate) {
                 menuItemToActivate.click();
             }
-        }, 100); // Un pequeño retraso para asegurar que el DOM está listo
+        }, 100); 
     }
 
     const contentArea = document.getElementById('content-area');
     if (contentArea) {
-        
-        // Maneja clics en botones (Editar, Eliminar)
         contentArea.addEventListener('click', function(event) {
             const deleteBtn = event.target.closest('.delete-reporte');
             if (deleteBtn) {
@@ -37,7 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Maneja cambios en el select de estado (Admin)
         contentArea.addEventListener('change', function(event) {
             if (event.target.classList.contains('estado-select')) {
                 const reporteId = event.target.getAttribute('data-id');
@@ -48,16 +42,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // --- NUEVO: Maneja el envío de CUALQUIER formulario con AJAX ---
         contentArea.addEventListener('submit', function(event) {
             const form = event.target.closest('form[data-ajax="true"]');
             if (form) {
-                event.preventDefault(); // ¡EVITA que el navegador recargue la página!
+                event.preventDefault(); 
                 
                 const formData = new FormData(form);
                 const url = form.getAttribute('action');
                 const method = form.getAttribute('method') || 'POST';
-                const formType = form.getAttribute('data-form-type'); // 'create' o 'edit'
+                const formType = form.getAttribute('data-form-type'); 
 
                 Swal.fire({
                     title: 'Procesando...',
@@ -77,12 +70,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             showSuccessMessage(data.message || 'Operación realizada con éxito');
                             
                             if (formType === 'create') {
-                                // Si es un formulario de CREAR, solo lo limpiamos
                                 form.reset();
                                 const barrioIdInput = document.getElementById('barrioId');
                                 if (barrioIdInput) barrioIdInput.value = '';
                             } else {
-                                // Si es EDITAR o cualquier otro, recargamos la vista activa
                                 const activeMenuItem = document.querySelector('.menu-item.active');
                                 if (activeMenuItem) {
                                     loadView(activeMenuItem.getAttribute('data-view'));
@@ -101,14 +92,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Configurar la navegación del menú lateral
     setupMenuNavigation();
-    
-    // Configurar funcionalidad de login/registro
     setupLoginFeatures();
 });
 
-// --- FUNCIONES DE NAVEGACIÓN ---
 
 function setupMenuNavigation() {
     const menuItems = document.querySelectorAll('.menu-item[data-view]');
@@ -138,11 +125,6 @@ function loadView(view) {
         })
         .then(html => {
             contentArea.innerHTML = html;
-            
-            // Ya no necesitamos llamar a setupAjaxForms() aquí,
-            // el event delegation se encarga de todo.
-            
-            // Solo necesitamos configurar el datalist si es necesario
             if (view.includes('formulario-reporte') || view.includes('editar-reporte')) {
                 setupBarrioDatalist();
             }
@@ -153,7 +135,6 @@ function loadView(view) {
         });
 }
 
-// --- FUNCIONES DE COMPONENTES ---
 
 function setupBarrioDatalist() {
     const barrioInput = document.getElementById('barrioNombre');
@@ -218,7 +199,6 @@ function loadEditForm(url) {
         });
 }
 
-// --- FUNCIONES DE CONFIRMACIÓN Y MENSAJES ---
 
 function confirmDeleteReporte(reporteId, url, reloadViewUrl) {
     showConfirmDialog(

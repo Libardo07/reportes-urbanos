@@ -12,7 +12,6 @@
         <div class="loader"></div>
     </div>
 
-    <!-- MENÚ LATERAL -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="welcome-title-animated">
@@ -36,12 +35,10 @@
             </div>
         </div>
         <nav class="sidebar-menu">
-            <!-- El botón "Crear Reporte" se muestra por defecto -->
             <div class="menu-item menu-item-animated active" th:attr="data-view='/usuario/fragmento/formulario-reporte'">
                 <img th:src="@{/images/icono-plus.png}" alt="Crear">
                 <span>Crear reporte</span>
             </div>
-            <!-- El botón "Ver Reportes" aparece para alternar -->
             <div class="menu-item menu-item-animated" th:attr="data-view='/usuario/fragmento/lista-reportes'">
                 <img th:src="@{/images/icono-list.png}" alt="Ver">
                 <span>Ver reportes</span>
@@ -57,9 +54,7 @@
         </div>
     </aside>
 
-    <!-- VENTANA PRINCIPAL -->
     <main class="content" id="content-area">
-        <!-- Por defecto, cargamos el formulario de crear reporte -->
         <div th:replace="~{usuario/fragments/formulario-reporte :: formulario-reporte}"></div>
     </main>
 

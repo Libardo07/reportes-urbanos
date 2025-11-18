@@ -12,7 +12,6 @@
         <div class="loader"></div>
     </div>
 
-    <!-- MENÚ LATERAL -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="welcome-title-animated">
@@ -36,12 +35,10 @@
             </div>
         </div>
         <nav class="sidebar-menu">
-            <!-- El botón "Ver Reportes" se muestra por defecto -->
             <div class="menu-item menu-item-animated active" th:attr="data-view='/admin/fragmento/lista-reportes'">
                 <img th:src="@{/images/icono-list.png}" alt="Ver">
                 <span>Ver reportes</span>
             </div>
-            <!-- El botón "Crear Admin" aparece para alternar -->
             <div class="menu-item menu-item-animated" th:if="${usuario.email == 'adminMain@gmail.com'}" th:attr="data-view='/admin/fragmento/formulario-admin'">
                 <img th:src="@{/images/icono-registro.png}" alt="Crear">
                 <span>Crear administrador</span>
@@ -53,13 +50,12 @@
                     <img th:src="@{/images/icono-logout.png}" alt="Salir">
                 </div>
         <div class="text">Salir</div>
+        </div>
     </button>
 </div>
     </aside>
 
-    <!-- VENTANA PRINCIPAL -->
     <main class="content" id="content-area">
-        <!-- Por defecto, cargamos la lista de reportes -->
         <div th:replace="~{admin/fragments/lista-reportes :: lista-reportes}"></div>
     </main>
 
