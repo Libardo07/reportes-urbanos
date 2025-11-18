@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 event.preventDefault();
                 const reporteId = deleteBtn.getAttribute('data-id');
                 const deleteUrl = deleteBtn.getAttribute('data-url');
-                confirmDeleteReporte(reporteId, deleteUrl);
+                const reloadViewUrl = deleteBtn.getAttribute('data-reload-view');
+
+                confirmDeleteReporte(reporteId, deleteUrl, reloadViewUrl);
                 return;
             }
 
@@ -218,7 +220,7 @@ function loadEditForm(url) {
 
 // --- FUNCIONES DE CONFIRMACIÓN Y MENSAJES ---
 
-function confirmDeleteReporte(reporteId, url) {
+function confirmDeleteReporte(reporteId, url, reloadViewUrl) {
     showConfirmDialog(
         '¿Eliminar este reporte?',
         'Esta acción no se puede deshacer.',
@@ -228,6 +230,7 @@ function confirmDeleteReporte(reporteId, url) {
                 .then(data => {
                     if (data.success) {
                         showSuccessMessage('Reporte eliminado correctamente');
+                        loadView(reloadViewUrl);
 
                     } else {
                         showErrorMessage(data.error || 'Error al eliminar el reporte');

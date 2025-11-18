@@ -29,8 +29,13 @@
                         <button class="action-btn edit-reporte" th:attr="data-id=${r.id}, data-url=@{'/usuario/editar-reporte/' + ${r.id}}" title="Editar">
                             <img th:src="@{/images/icono-edit.png}" alt="Editar">
                         </button>
-                        <button class="action-btn delete-reporte" th:attr="data-id=${r.id}, data-url=@{'/usuario/eliminar-reporte/' + ${r.id}}" title="Eliminar">
-                            <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
+                        <button class="action-btn delete-reporte" 
+                            th:attr="data-id=${r.id}, 
+                                data-url=@{'/usuario/eliminar-reporte/' + ${r.id}},
+                                data-reload-view='/usuario/fragmento/lista-reportes'" 
+                            title="Eliminar">
+                        <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
+                        </button>
                         </button>
                     </span>
                     <span th:unless="${#strings.equalsIgnoreCase(r.estado, 'PENDIENTE')}" title="No editable">
