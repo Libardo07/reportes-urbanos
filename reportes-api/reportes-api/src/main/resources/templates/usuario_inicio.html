@@ -7,10 +7,26 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="dashboard-container usuario">
+
+    <div id="loader" class="loader-overlay">
+        <div class="loader"></div>
+    </div>
+
     <!-- MENÚ LATERAL -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2>BIENVENIDO</h2>
+            <div class="welcome-title-animated">
+                <div class="text"><span>BIENVENIDO</span></div>
+                <div class="text"><span>BIENVENIDO</span></div>
+                <div class="text"><span>BIENVENIDO</span></div>
+                <div class="text"><span>BIENVENIDO</span></div>
+                <div class="text"><span>BIENVENIDO</span></div>
+                <div class="text"><span>BIENVENIDO</span></div>
+                <div class="text"><span>BIENVENIDO</span></div>
+                <div class="text"><span>BIENVENIDO</span></div>
+                <div class="text"><span>BIENVENIDO</span></div>
+                <div class="text"><span>BIENVENIDO</span></div>
+            </div>
             <div class="usuario-info">
                 <img th:src="@{/images/icono-login.png}" alt="Usuario">
                 <div class="details">
@@ -21,21 +37,23 @@
         </div>
         <nav class="sidebar-menu">
             <!-- El botón "Crear Reporte" se muestra por defecto -->
-            <div class="menu-item active" th:attr="data-view='/usuario/fragmento/formulario-reporte'">
+            <div class="menu-item menu-item-animated active" th:attr="data-view='/usuario/fragmento/formulario-reporte'">
                 <img th:src="@{/images/icono-plus.png}" alt="Crear">
                 <span>Crear reporte</span>
             </div>
             <!-- El botón "Ver Reportes" aparece para alternar -->
-            <div class="menu-item" th:attr="data-view='/usuario/fragmento/lista-reportes'">
+            <div class="menu-item menu-item-animated" th:attr="data-view='/usuario/fragmento/lista-reportes'">
                 <img th:src="@{/images/icono-list.png}" alt="Ver">
                 <span>Ver reportes</span>
             </div>
         </nav>
         <div class="sidebar-footer">
-            <div class="menu-item" onclick="logout()">
-                <img th:src="@{/images/icono-logout.png}" alt="Salir">
-                <span>Salir</span>
-            </div>
+            <button class="logout-btn-animated" onclick="logout()">
+                <div class="sign">
+                    <img th:src="@{/images/icono-logout.png}" alt="Salir">
+                </div>
+            <div class="text">Salir</div>
+            </button>
         </div>
     </aside>
 

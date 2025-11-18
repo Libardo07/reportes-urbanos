@@ -181,6 +181,21 @@ function setupLoginFeatures() {
             this.alt = type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña';
         });
     });
+
+    const loginForm = document.querySelector('form[action="/login"]');
+    const loader = document.getElementById('loader');
+
+    if (loginForm && loader) {
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            loader.classList.add('show');
+
+            setTimeout(() => {
+                loginForm.submit();
+            }, 2000);
+        });
+    }
 }
 
 function loadEditForm(url) {
@@ -276,14 +291,20 @@ function showConfirmDialog(title, text, onConfirm) {
     });
 }
 
-// --- FUNCIONES DE UTILIDAD ---
 function logout() {
     showConfirmDialog(
         '¿Cerrar sesión?',
         'Se cerrará tu sesión actual.',
-        () => { window.location.href = '/logout'; }
+        () => {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.classList.add('show');
+            }
+    
+            sessionStorage.removeItem('lastView');
+            setTimeout(() => {
+                window.location.href = '/logout';
+            }, 800); 
+        }
     );
-
-        sessionStorage.removeItem('lastView');
-        window.location.href = '/logout';
 }

@@ -1,4 +1,3 @@
-/* Estilos generales */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 * {
@@ -25,16 +24,10 @@ body {
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 40px;
-    
-    /* Transición para el hover y la animación */
     transition: transform 0.3s ease, box-shadow 0.5s ease-in-out;
-    
-    /* --- EFECTO DE BRILLO (GLOW) INTENSIFICADO --- */
     box-shadow: 0 0 30px rgba(142, 68, 173, 0.4),
                 0 0 60px rgba(142, 68, 173, 0.1),
                 0 0 90px rgba(142, 68, 173, 0.1);
-    
-    /* --- ANIMACIÓN FLOTANTE --- */
     animation: floatingGlow 4s ease-in-out infinite;
 }
 
@@ -42,16 +35,14 @@ body {
     transform: translateY(-5px);
 }
 
-/* --- DEFINICIÓN DE LA ANIMACIÓN CON BRILLO MÁS ALTO --- */
+
 @keyframes floatingGlow {
     0%, 100% {
-        /* Estado normal del brillo (ya es más brillante) */
         box-shadow: 0 0 30px rgba(142, 68, 173, 0.8),
                     0 0 60px rgba(142, 68, 173, 0.6),
                     0 0 90px rgba(142, 68, 173, 0.4);
     }
     50% {
-        /* Punto más brillante de la animación (aún más intenso) */
         box-shadow: 0 0 40px rgba(142, 68, 173, 0.12),
                     0 0 80px rgba(142, 68, 173, 0.8),
                     0 0 120px rgba(142, 68, 173, 0.5);
@@ -205,7 +196,7 @@ body {
     font-size: 14px;
 }
 
-/* Estilos responsivos */
+
 @media (max-width: 480px) {
     .container {
         padding: 30px 20px;
@@ -214,4 +205,45 @@ body {
     .title {
         font-size: 24px;
     }
+}
+
+
+/* ===================================================================================== */
+/* == NUEVO LOADER SPINNER ========================================================= */
+/* ===================================================================================== */
+
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.loader-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- El nuevo spinner simple --- */
+.loader {
+    border: 4px solid rgba(155, 89, 182, 0.2); 
+    border-left-color: #9b59b6; 
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin89345 1s linear infinite;
+}
+
+@keyframes spin89345 {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
