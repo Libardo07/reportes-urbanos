@@ -1,3 +1,28 @@
+function setupRealtimeValidation() {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    const validateEmail = () => {
+        if (emailInput.value.length > 0 && emailInput.value.length < 8) {
+            emailInput.setCustomValidity('El correo debe tener al menos 8 caracteres.');
+        } else {
+            emailInput.setCustomValidity('');
+        }
+    };
+
+    const validatePassword = () => {
+        if (passwordInput.value.length > 0 && passwordInput.value.length < 6) {
+            passwordInput.setCustomValidity('La contraseña debe tener al menos 6 caracteres.');
+        } else {
+            passwordInput.setCustomValidity('');
+        }
+    };
+
+    if (emailInput) emailInput.addEventListener('input', validateEmail);
+    if (passwordInput) passwordInput.addEventListener('input', validatePassword);
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const lastView = sessionStorage.getItem('lastView');
     if (lastView) {
@@ -60,9 +85,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 fetch(url, { method: method, body: formData })
-                    .then(response => {
-                        if (!response.ok) throw new Error('La respuesta de la red no fue correcta');
-                        return response.json();
+                    .then(async response => {
+                        if (!response.ok) {
+                        const errorData = await response.json().catch(() => null);
+                        const mensajeEspecifico = errorData && (errorData.error || errorData.message) 
+                                ? errorData.error || errorData.message
+                                : 'Error del servidor (' + response.status + ')';
+        
+                        throw new Error(mensajeEspecifico);
+                    }
+                    return response.json();
+
                     })
                     .then(data => {
                         Swal.close();
@@ -73,6 +106,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 form.reset();
                                 const barrioIdInput = document.getElementById('barrioId');
                                 if (barrioIdInput) barrioIdInput.value = '';
+
+                                loadView('/usuario/fragmento/lista-reportes');
+                                
                             } else {
                                 const activeMenuItem = document.querySelector('.menu-item.active');
                                 if (activeMenuItem) {
@@ -94,6 +130,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupMenuNavigation();
     setupLoginFeatures();
+    setupBarrioDatalist();
+    setupRealtimeValidation();
+    
 });
 
 
@@ -145,7 +184,11 @@ function setupBarrioDatalist() {
             const input = this.value;
             const options = document.querySelectorAll('#listaBarrios option');
             let barrioId = '';
-            options.forEach(option => { if (option.value === input) barrioId = option.dataset.id; });
+            options.forEach(option => { 
+                if (option.value === input) {
+                    barrioId = option.dataset.id;
+                }
+            });
             barrioIdInput.value = barrioId;
         });
     }
@@ -192,6 +235,7 @@ function loadEditForm(url) {
         .then(html => {
             contentArea.innerHTML = html;
             setupBarrioDatalist();
+            contentArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
         })
         .catch(error => {
             console.error('Error al cargar el formulario de edición:', error);
@@ -279,6 +323,7 @@ function logout() {
         '¿Cerrar sesión?',
         'Se cerrará tu sesión actual.',
         () => {
+            sessionStorage.clear(); 
             const loader = document.getElementById('loader');
             if (loader) {
                 loader.classList.add('show');

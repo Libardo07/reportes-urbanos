@@ -11,8 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/usuario")
@@ -24,6 +28,16 @@ public class UsuarioController {
     @Autowired
     private TipoRepository tipoRepository;
 
+    @ModelAttribute
+    public void populateModelsWithCommonData(Model model) {
+        List<Barrio> barriosOrdenados = barrioRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(Barrio::getNombre))
+                .collect(Collectors.toList());
+        model.addAttribute("barrios", barriosOrdenados);
+        model.addAttribute("tipos", tipoRepository.findAll());
+    }
+
     @GetMapping("/inicio")
     public String inicioCiudadano(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
@@ -32,9 +46,6 @@ public class UsuarioController {
         }
         model.addAttribute("usuario", usuario);
         model.addAttribute("reporte", new Reporte());
-        model.addAttribute("barrios", barrioRepository.findAll());
-        model.addAttribute("tipos", tipoRepository.findAll());
-        
         return "usuario_inicio";
     }
 
@@ -48,8 +59,6 @@ public class UsuarioController {
     @GetMapping(value = "/fragmento/formulario-reporte", produces = "text/html")
     public String fragmentoFormularioReporte(Model model) {
         model.addAttribute("reporte", new Reporte());
-        model.addAttribute("barrios", barrioRepository.findAll());
-        model.addAttribute("tipos", tipoRepository.findAll());
         return "usuario/fragments/formulario-reporte :: formulario-reporte";
     }
     
@@ -63,8 +72,6 @@ public class UsuarioController {
         }
         
         model.addAttribute("reporte", reporte);
-        model.addAttribute("barrios", barrioRepository.findAll());
-        model.addAttribute("tipos", tipoRepository.findAll());
         return "editar_reporte :: formulario-reporte"; 
     }
 

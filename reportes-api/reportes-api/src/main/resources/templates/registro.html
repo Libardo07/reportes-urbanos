@@ -16,21 +16,21 @@
         
         <form th:action="@{/registro}" method="post" th:object="${usuario}">
             <div class="input-group">
-                <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre completo" required>
+                <input type="text" id="nombre" th:field="*{nombre}" placeholder="Nombre completo" minlength="4"required>
                 <img src="/images/icono-login.png" alt="Usuario" class="icon">
             </div>
             
             <div class="input-group">
-                <input type="email" id="email" th:field="*{email}" placeholder="Correo electrónico" required>
+                <input type="email" id="email" th:field="*{email}" placeholder="Correo electrónico" minlength="8" required>
                 <img src="/images/icono-email.png" alt="Email" class="icon">
             </div>
             
 
-<div class="input-group">
-    <input type="password" id="password" th:field="*{password}" placeholder="Contraseña" required>
-    <img src="/images/icono-password.png" alt="Contraseña" class="icon">
-    <img src="/images/icono-ojo-visible.png" alt="Mostrar contraseña" class="password-toggle">
-</div>
+            <div class="input-group">
+                <input type="password" id="password" th:field="*{password}" placeholder="Contraseña" minlength="6" required>
+                <img src="/images/icono-password.png" alt="Contraseña" class="icon">
+                <img src="/images/icono-ojo-visible.png" alt="Mostrar contraseña" class="password-toggle">
+            </div>
             
             <button type="submit" class="btn">Registrarme</button>
         </form>

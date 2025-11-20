@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import com.reportes.urbanos.reportes_api.enums.Rol;
+import jakarta.validation.constraints.Size;
 
 
 @Entity // entidad en la base de datos
@@ -21,14 +21,18 @@ public class Usuario {
     private Long id;
 
     @NotBlank(message = "El nombre no puede estar vacío")// valida los campos no pueden estar vacios ni con espacios antes de guardarlos
+    @Size(min = 4, message = "El nombre debe tener al menos 4 caracteres")
     @Column(nullable = false)
     private String nombre;
 
-    @Email(message = "El correo debe tener formato válido") // valida que el correo tenga formato valido
+    @NotBlank(message = "El correo no puede estar vacío")
+    @Email(message = "El correo debe tener formato válido")// valida que el correo tenga formato valido
+    @Size(min = 8, message = "El correo debe tener al menos 8 caracteres")
     @Column(unique = true, nullable = false) // valida que el correo sea unico 
     private String email;
 
     @NotBlank(message = "La contraseña es obligatoria" )
+    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     @Column(nullable = false)
     private String password;
 

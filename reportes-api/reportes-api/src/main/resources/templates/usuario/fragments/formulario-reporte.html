@@ -26,12 +26,14 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="barrioNombre">Barrio:</label>
-            <input type="text" id="barrioNombre" name="barrioNombre" class="form-control" placeholder="Buscar barrio" list="listaBarrios" required>
-            <input type="hidden" id="barrioId" name="barrioId">
-            <datalist id="listaBarrios">
-                <option th:each="b : ${barrios}" th:data-id="${b.id}" th:value="${b.nombre}"></option>
-            </datalist>
+            <label for="barrioId">Barrio:</label>
+            <select name="barrioId" id="barrioId" class="form-control" required>
+                <option value="" disabled selected>Seleccione un barrio</option>
+                <option th:each="barrio : ${barrios}"
+                th:value="${barrio.id}"
+                th:text="${barrio.nombre}">
+                </option>
+            </select>
         </div>
         <div>
             <button type="submit" class="btn-enviar-animated">

@@ -9,6 +9,7 @@
             <tr>
                 <th>Título</th>
                 <th>Descripción</th>
+                <th>Direccion</th>
                 <th>Barrio</th>
                 <th>Tipo</th>
                 <th>Estado</th>
@@ -20,9 +21,10 @@
             <tr th:each="r : ${reportes}">
                 <td th:text="${r.titulo}"></td>
                 <td th:text="${r.descripcion}"></td>
+                <td th:text="${r.direccion}"></td>
                 <td th:text="${r.barrio.nombre}"></td>
                 <td th:text="${r.tipo.nombre}"></td>
-                <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado)}" th:text="${r.estado}"></span></td>
+                <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado)}" th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span></td>
                 <td th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></td>
                 <td class="actions">
                     <span th:if="${#strings.equalsIgnoreCase(r.estado, 'PENDIENTE')}">

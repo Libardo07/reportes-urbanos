@@ -18,18 +18,24 @@
             <label for="direccion">Dirección:</label>
             <input type="text" id="direccion" th:field="*{direccion}" class="form-control" required>
         </div>
+        
+        
         <div class="form-group">
-            <label for="barrioNombre">Barrio:</label>
-            <input type="text" id="barrioNombre" name="barrioNombre" class="form-control" th:value="${reporte.barrio.nombre}" placeholder="Buscar barrio" list="listaBarrios" required>
-            <input type="hidden" id="barrioId" name="barrioId" th:value="${reporte.barrio.id}">
-            <datalist id="listaBarrios">
-                <option th:each="b : ${barrios}" th:data-id="${b.id}" th:value="${b.nombre}"></option>
-            </datalist>
+            <label for="tipo-select">Tipo:</label>
+            <select name="tipoId" id="tipo-select" class="form-control" required>
+            <option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.nombre}" th:selected="${t.id == reporte.tipo.id}"></option>
+            </select>
         </div>
+
         <div class="form-group">
-            <label for="tipo">Tipo:</label>
-            <select name="tipoId" class="form-control" required>
-                <option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.nombre}" th:selected="${t.id == reporte.tipo.id}"></option>
+            <label for="barrioId">Barrio:</label>
+            <select name="barrioId" id="barrioId" class="form-control" required>
+                <option value="" disabled>Seleccione un barrio</option>
+                <option th:each="barrio : ${barrios}"
+                    th:value="${barrio.id}"
+                    th:text="${barrio.nombre}"
+                    th:selected="${barrio.id == reporte.barrio.id}">
+                </optio>
             </select>
         </div>
         <br>
