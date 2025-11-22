@@ -27,7 +27,7 @@ public class Usuario {
 
     @NotBlank(message = "El correo no puede estar vacío")
     @Email(message = "El correo debe tener formato válido")// valida que el correo tenga formato valido
-    @Size(min = 8, message = "El correo debe tener al menos 8 caracteres")
+    @Size(min = 14, message = "El correo debe tener al menos 14 caracteres")
     @Column(unique = true, nullable = false) // valida que el correo sea unico 
     private String email;
 

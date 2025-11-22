@@ -1,4 +1,5 @@
 function setupRealtimeValidation() {
+    const lastView = sessionStorage.getItem('lastView');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
 
@@ -24,6 +25,8 @@ function setupRealtimeValidation() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    sessionStorage.removeItem('lastView');
     const lastView = sessionStorage.getItem('lastView');
     if (lastView) {
         setTimeout(() => {
@@ -100,24 +103,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(data => {
                         Swal.close();
                         if (data.success) {
-                            showSuccessMessage(data.message || 'Operación realizada con éxito');
-                            
+                            showSuccessMessage(data.message || 'Operación realizada con éxito');   
+                            const formType = form.getAttribute('data-form-type');
+
+                            if (formType === 'create-admin') {
+                                console.log("Creación de admin exitosa. Redirigiendo a la lista de reportes del admin.");
+                                loadView('/admin/fragmento/lista-reportes'); // <-- ¡LA CLAVE!
+                                return; // <-- ¡LA CLAVE!
+        }
+
                             if (formType === 'create') {
                                 form.reset();
                                 const barrioIdInput = document.getElementById('barrioId');
                                 if (barrioIdInput) barrioIdInput.value = '';
 
                                 loadView('/usuario/fragmento/lista-reportes');
-                                
                             } else {
-                                const activeMenuItem = document.querySelector('.menu-item.active');
-                                if (activeMenuItem) {
-                                    loadView(activeMenuItem.getAttribute('data-view'));
-                                }
-                            }
-                        } else {
-                            showErrorMessage(data.error || 'Ocurrió un error durante la operación');
-                        }
+                            console.log("Editando reporte, volviendo a la lista.");
+                            loadView('/usuario/fragmento/lista-reportes');
+                    }
+                    } else {
+                        showErrorMessage(data.error || 'Ocurrió un error durante la operación');
+                }
                     })
                     .catch(error => {
                         Swal.close();
@@ -225,6 +232,12 @@ function setupLoginFeatures() {
 }
 
 function loadEditForm(url) {
+
+    const activeMenuItem = document.querySelector('.menu-item.active');
+    if (activeMenuItem) {
+        sessionStorage.setItem('returnToView', activeMenuItem.getAttribute('data-view'));
+    }
+
     const contentArea = document.getElementById('content-area');
     if (!contentArea) return;
 
