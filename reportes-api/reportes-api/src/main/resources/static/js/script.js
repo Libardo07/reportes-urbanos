@@ -25,9 +25,8 @@ function setupRealtimeValidation() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-
-    sessionStorage.removeItem('lastView');
     const lastView = sessionStorage.getItem('lastView');
+    sessionStorage.removeItem('lastView');
     if (lastView) {
         setTimeout(() => {
             const menuItemToActivate = document.querySelector(`.menu-item[data-view="${lastView}"]`);
@@ -170,7 +169,10 @@ function loadView(view) {
             return response.text();
         })
         .then(html => {
-            contentArea.innerHTML = html;
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('[th\\:fragment], div, table');
+            contentArea.innerHTML = fragment ? fragment.outerHTML : html;
             if (view.includes('formulario-reporte') || view.includes('editar-reporte')) {
                 setupBarrioDatalist();
             }

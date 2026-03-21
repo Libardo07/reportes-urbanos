@@ -8,11 +8,11 @@
         <input type="hidden" th:field="*{id}" />
         <div class="form-group">
             <label for="titulo">Título:</label>
-            <input type="text" id="titulo" th:field="*{titulo}" class="form-control" required>
+            <input type="text" id="titulo" th:field="*{titulo}" spellcheck="true" class="form-control" required>
         </div>
         <div class="form-group">
             <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4" required></textarea>
+            <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4" spellcheck="true" required></textarea>
         </div>
         <div class="form-group">
             <label for="direccion">Dirección:</label>
@@ -22,8 +22,8 @@
         
         <div class="form-group">
             <label for="tipo-select">Tipo:</label>
-            <select name="tipoId" id="tipo-select" class="form-control" required>
-            <option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.nombre}" th:selected="${t.id == reporte.tipo.id}"></option>
+            <select name="tipoReporte" id="tipo-select" class="form-control" required>
+            <option th:each="t : ${tipos}" th:value="${t.name()}" th:text="${t.name()}" th:selected="${t == reporte.tipo}"></option>
             </select>
         </div>
 
@@ -35,7 +35,7 @@
                     th:value="${barrio.id}"
                     th:text="${barrio.nombre}"
                     th:selected="${barrio.id == reporte.barrio.id}">
-                </optio>
+                </option>
             </select>
         </div>
         <br>

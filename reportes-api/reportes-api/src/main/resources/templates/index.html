@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reportes Urbanos - Cartagena</title>
+    <link rel="stylesheet" th:href="@{/css/landing.css}">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <a href="#" class="nav-logo">
+            <div class="dot"></div>
+            Reportes Urbanos
+        </a>
+        <ul class="nav-links">
+            <li><a href="#funcionalidades">Funcionalidades</a></li>
+            <li><a href="#roles">Roles</a></li>
+            <li><a href="#equipo">Equipo</a></li>
+        </ul>
+        <a th:href="@{/login}" class="btn-nav" target="_blank">Iniciar sesión</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                📍 Cartagena de Indias, Colombia
+            </div>
+            <h1>Sistema de <span>Reportes</span><br>Urbanos</h1>
+            <p>Plataforma digital para que los ciudadanos de Cartagena reporten problemas de infraestructura y servicios públicos, conectando a los ciudadanos con los organismos encargados de resolver los problemas de la ciudad.</p>
+            <div class="hero-buttons">
+                <a th:href="@{/registro}" class="btn-primary" target="_blank">Crear cuenta gratis</a>
+                <a th:href="@{/login}" class="btn-secondary" target="_blank">Iniciar sesión</a>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-number">187</span>
+                    <span class="stat-label">Barrios de Cartagena</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">2</span>
+                    <span class="stat-label">Tipos de reporte</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Estados de gestión</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="funcionalidades">
+        <div class="section-title">
+            <h2>¿Qué puedes hacer con <span>nuestra plataforma</span>?</h2>
+            <p>Herramientas diseñadas para facilitar la comunicación entre ciudadanos y administradores de la ciudad.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3>Crear reportes</h3>
+                <p>Registra problemas de infraestructura o servicios públicos con título, descripción, dirección y barrio exacto.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Seguimiento en tiempo real</h3>
+                <p>Consulta el estado de tus reportes: Pendiente, En Progreso o Resuelto, en cualquier momento.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✏️</div>
+                <h3>Editar y eliminar</h3>
+                <p>Modifica o elimina tus reportes mientras estén en estado Pendiente, antes de ser procesados.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛠️</div>
+                <h3>Gestión administrativa</h3>
+                <p>Los administradores analizan los reportes, cambian su estado y los remiten a la entidad encargada de dar solución.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3>Acceso seguro por roles</h3>
+                <p>Sistema de autenticación con roles diferenciados para ciudadanos y administradores.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🗺️</div>
+                <h3>Cobertura total</h3>
+                <p>Todos los 187 barrios oficiales de Cartagena de Indias disponibles para localizar tu reporte.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROLES -->
+    <section class="roles" id="roles">
+        <div class="section-title">
+            <h2>Diseñado para <span>todos</span></h2>
+            <p>Dos perfiles de usuario con funciones específicas para una gestión eficiente.</p>
+        </div>
+        <div class="roles-grid">
+            <div class="role-card">
+                <div class="role-emoji">👤</div>
+                <h3>Ciudadano</h3>
+                <p>Registra problemas en tu barrio, edita tus reportes y haz seguimiento del estado de tus solicitudes desde tu panel personal.</p>
+                <span class="role-tag">Ciudadano</span>
+            </div>
+            <div class="role-card">
+                <div class="role-emoji">🛡️</div>
+                <h3>Administrador</h3>
+                <p>Analiza los reportes ciudadanos, cambia su estado de gestión y los remite a la entidad correspondiente para su resolución.</p>
+                <span class="role-tag">Admin</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="team" id="equipo">
+        <div class="section-title">
+            <h2>Nuestro <span>equipo</span></h2>
+            <p>Desarrollado por estudiantes comprometidos con la tecnología y la ciudad.</p>
+        </div>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-avatar">LV</div>
+                <h4>Libardo Villero</h4>
+                <span>Desarrollador</span>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">EA</div>
+                <h4>Emanuel Arroyo</h4>
+                <span>Desarrollador</span>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">JO</div>
+                <h4>Jose Ortiz</h4>
+                <span>Desarrollador</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <h2>¿Listo para mejorar tu ciudad?</h2>
+        <p>Únete a la plataforma y empieza a reportar problemas en tu barrio hoy mismo.</p>
+        <div class="cta-buttons">
+            <a th:href="@{/registro}" class="btn-white" target="_blank">Registrarme ahora</a>
+            <a th:href="@{/login}" class="btn-outline-white" target="_blank">Ya tengo cuenta</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2026 <span>Sistema de Reportes Urbanos</span> — Cartagena de Indias, Colombia</p>
+        <p style="margin-top: 6px;">Desarrollado por Libardo Villero • Emanuel Arroyo • Jose Ortiz</p>
+    </footer>
+
+    <script th:src="@{/js/landing.js}"></script>
+</body>
+</html>

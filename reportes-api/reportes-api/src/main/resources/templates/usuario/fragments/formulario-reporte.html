@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
 <div class="card" th:fragment="formulario-reporte">
     <div class="content-header">
         <h1>Realizar su reporte aquí</h1>
@@ -8,11 +6,11 @@
     <form th:action="@{/usuario/guardar-reporte}" th:object="${reporte}" method="post" data-ajax="true" data-form-type="create">
         <div class="form-group">
             <label for="titulo">Título del reporte:</label>
-            <input type="text" id="titulo" th:field="*{titulo}" class="form-control" placeholder="Escribir..." required>
+            <input type="text" id="titulo" th:field="*{titulo}" class="form-control" spellcheck="true" placeholder="Escribir..." required>
         </div>
         <div class="form-group">
             <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4" placeholder="Escribir..." required></textarea>
+            <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4" spellcheck="true" placeholder="Escribir..." required></textarea>
         </div>
         <div class="form-group">
             <label for="direccion">Dirección exacta:</label>
@@ -20,9 +18,9 @@
         </div>
         <div class="form-group">
             <label for="tipo">Tipo de reporte:</label>
-            <select name="tipoId" class="form-control" required>
+            <select name="tipoReporte" class="form-control" required>
                 <option value="" disabled selected>Escoger tipo de reporte</option>
-                <option th:each="t : ${tipos}" th:value="${t.id}" th:text="${t.nombre}"></option>
+                <option th:each="t : ${tipos}" th:value="${t.name()}" th:text="${t.name()}"></option>
             </select>
         </div>
         <div class="form-group">
@@ -69,4 +67,3 @@
         </div>
     </form>
 </div>
-</html>

@@ -20,6 +20,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
     @Autowired
     private ReporteRepository reporteRepository;
     @Autowired
@@ -32,10 +33,9 @@ public class AdminController {
             return "redirect:/login";
         }
         model.addAttribute("usuario", usuario);
-        model.addAttribute("reportes", reporteRepository.findAll());
+        model.addAttribute("reportes", reporteRepository.findAllByOrderByFechaCreacionDesc());
         return "admin_inicio";
     }
-
 
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(Model model) {
@@ -48,7 +48,6 @@ public class AdminController {
         model.addAttribute("nuevoAdmin", new Usuario());
         return "admin/fragments/formulario-admin :: formulario-admin";
     }
-
 
     @PostMapping("/registrar-admin")
     public ResponseEntity<Map<String, String>> registrarAdmin(@ModelAttribute Usuario nuevoAdmin, HttpSession session) {
@@ -75,7 +74,7 @@ public class AdminController {
     }
 
     @PostMapping("/cambiar-estado")
-    public ResponseEntity<Map<String, String>> cambiarEstado(@RequestParam Long reporteId, @RequestParam String nuevoEstado, HttpSession session) {
+    public ResponseEntity<Map<String, String>> cambiarEstado(@RequestParam String reporteId, @RequestParam String nuevoEstado, HttpSession session) {
         Map<String, String> response = new HashMap<>();
         Usuario admin = (Usuario) session.getAttribute("usuarioLogueado");
         if (admin == null || admin.getRol() != Rol.ADMIN) {
@@ -101,6 +100,7 @@ public class AdminController {
             }
             reporte.setEstado(estado);
             reporte.setUsuarioAdmin(admin);
+            reporte.preActualizar();
             reporteRepository.save(reporte);
             response.put("success", "true");
             response.put("message", "Estado del reporte cambiado correctamente.");
@@ -111,7 +111,7 @@ public class AdminController {
     }
 
     @PostMapping("/eliminar-reporte/{id}")
-    public ResponseEntity<Map<String, String>> eliminarReporte(@PathVariable Long id, HttpSession session) {
+    public ResponseEntity<Map<String, String>> eliminarReporte(@PathVariable String id, HttpSession session) {
         Map<String, String> response = new HashMap<>();
         Usuario admin = (Usuario) session.getAttribute("usuarioLogueado");
         if (admin == null || admin.getRol() != Rol.ADMIN) {

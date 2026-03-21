@@ -17,6 +17,11 @@ public class AuthController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @GetMapping("/")
+    public String index(){
+        return "index";
+    }
+
     @GetMapping("/login")
     public String mostrarLogin() {
         return "login";
@@ -67,4 +72,7 @@ public class AuthController {
         session.invalidate();
         return "redirect:/login";
     }
+    
+
+
 }

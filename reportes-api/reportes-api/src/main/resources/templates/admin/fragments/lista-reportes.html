@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
 <div class="card" th:fragment="lista-reportes">
     <div class="content-header">
         <h1>Lista de Reportes</h1>
@@ -25,8 +23,8 @@
                 <td th:text="${r.descripcion}"></td>
                 <td th:text="${r.direccion}"></td>
                 <td th:text="${r.barrio.nombre}"></td>
-                <td th:text="${r.tipo.nombre}"></td>
-                <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado)}" th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span></td>
+                <td th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.tipo.name(), '_', ' ')))}"></td>
+                <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado.name())}" th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span></td>
                 <td th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></td>
                 <td th:text="${r.usuario.nombre}"></td>
                 <td th:text="${r.usuarioAdmin != null ? r.usuarioAdmin.nombre : 'No asignado'}"></td>
@@ -48,4 +46,3 @@
         </tbody>
     </table>
 </div>
-</html>

@@ -24,6 +24,8 @@ body {
     background-color: var(--fondo-color);
     color: var(--text-color);
     display: flex;
+    height: 100vh;
+    overflow: hidden;
     
 
 }
@@ -32,6 +34,8 @@ body {
     display: flex;
     width: 100%;
     min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .sidebar {
@@ -300,7 +304,9 @@ body {
     position: relative;
     display: inline-block;
     width: 100%;
+    min-width: 130px;
 }
+
 
 .custom-select select {
     width: 100%;
@@ -336,6 +342,9 @@ body {
     .sidebar {
         width: 100%;
         height: auto;
+        position: sticky; top: 0; 
+        height: 100vh; 
+        overflow-y: hidden;
     }
     .content {
         padding: 20px;
@@ -940,6 +949,12 @@ body {
 
 .dashboard-container.admin .table th {
     font-size: 15px !important; 
+}
+.actions span {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
 }
 
 
