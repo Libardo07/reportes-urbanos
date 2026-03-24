@@ -80,6 +80,12 @@ body {
     z-index: 1;
 }
 
+.left-panel .icon img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
 .left-panel h2 {
     font-size: 26px;
     font-weight: 700;

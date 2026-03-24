@@ -232,7 +232,6 @@ public class DataInitializer implements CommandLineRunner {
                 new Barrio("185", "San Jose De Los Campanos"),
                 new Barrio("186", "Los Girasoles"),
                 new Barrio("187", "Ciudad Jardin")
-                // hola Ema 
             );
             barrioRepository.saveAll(barrios);
             System.out.println("Barrios de Cartagena cargados exitosamente.");
