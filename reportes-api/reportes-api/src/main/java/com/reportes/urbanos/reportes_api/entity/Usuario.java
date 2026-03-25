@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 
 @Document(collection = "usuarios")
-@Data
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario {

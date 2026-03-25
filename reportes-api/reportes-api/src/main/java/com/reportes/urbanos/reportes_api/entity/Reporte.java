@@ -9,7 +9,7 @@ import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
 import com.reportes.urbanos.reportes_api.enums.TipoReporte;
 
 @Document(collection = "reportes")
-@Data
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Reporte {
