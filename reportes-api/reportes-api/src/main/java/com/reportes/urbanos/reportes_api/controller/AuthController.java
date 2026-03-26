@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Controller
 public class AuthController {
@@ -62,7 +63,7 @@ public class AuthController {
         }
 
         usuario.setRol(Rol.CIUDADANO);
-        usuario.setFechaCreacion(LocalDateTime.now());
+        usuario.setFechaCreacion(LocalDateTime.now(ZoneId.of("America/Bogota")));
         usuarioRepository.save(usuario);
         return "redirect:/login?registroExitoso";
     }

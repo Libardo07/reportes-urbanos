@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
 import com.reportes.urbanos.reportes_api.enums.TipoReporte;
 
@@ -42,7 +44,7 @@ public class Reporte {
     private Usuario usuarioAdmin;
 
     public void preGuardar() {
-        fechaCreacion = LocalDateTime.now();
+        fechaCreacion = LocalDateTime.now(ZoneId.of("America/Bogota"));
         fechaModificacion = fechaCreacion;
         if (estado == null) {
             estado = EstadoReporte.PENDIENTE;
@@ -50,6 +52,6 @@ public class Reporte {
     }
 
     public void preActualizar() {
-        fechaModificacion = LocalDateTime.now();
+        fechaModificacion = LocalDateTime.now(ZoneId.of("America/Bogota"));
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public class AdminController {
                 return ResponseEntity.badRequest().body(response);
             }
             nuevoAdmin.setRol(Rol.ADMIN);
-            nuevoAdmin.setFechaCreacion(LocalDateTime.now());
+            nuevoAdmin.setFechaCreacion(LocalDateTime.now(ZoneId.of("America/Bogota")));
             usuarioRepository.save(nuevoAdmin);
             response.put("success", "true");
             response.put("message", "Administrador registrado correctamente.");

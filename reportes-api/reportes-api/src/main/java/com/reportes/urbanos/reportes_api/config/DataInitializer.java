@@ -8,14 +8,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-  
 
     @Override
     public void run(String... args) throws Exception {
@@ -30,7 +29,7 @@ public class DataInitializer implements CommandLineRunner {
             adminPrincipal.setEmail("adminMain@gmail.com");
             adminPrincipal.setPassword("adminMain");
             adminPrincipal.setRol(Rol.ADMIN);
-            adminPrincipal.setFechaCreacion(LocalDateTime.now());
+            adminPrincipal.setFechaCreacion(LocalDateTime.now(ZoneId.of("America/Bogota")));
             try {
                 usuarioRepository.save(adminPrincipal);
                 System.out.println("Admin principal creado exitosamente.");
