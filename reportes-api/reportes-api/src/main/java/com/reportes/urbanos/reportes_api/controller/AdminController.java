@@ -39,7 +39,7 @@ public class AdminController {
 
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(Model model) {
-        model.addAttribute("reportes", reporteRepository.findAll());
+        model.addAttribute("reportes", reporteRepository.findAllByOrderByFechaCreacionDesc());
         return "admin/fragments/lista-reportes :: lista-reportes";
     }
 
