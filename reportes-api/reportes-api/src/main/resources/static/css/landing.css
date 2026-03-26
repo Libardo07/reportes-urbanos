@@ -1,23 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-    --morado: #8e44ad;
-    --morado-oscuro: #7d3c98;
-    --morado-claro: #9b59b6;
+    --morado: #1a73e8;
+    --morado-oscuro: #1558b0;
+    --morado-claro: #4a9eff;
     --blanco: #ffffff;
-    --gris-claro: #f5f7fa;
-    --gris: #c3cfe2;
-    --texto: #2c3e50;
-    --texto-claro: #7f8c8d;
+    --gris-claro: #f0f4ff;
+    --gris: #c5d8f8;
+    --texto: #1a237e;
+    --texto-claro: #5c6bc0;
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     color: var(--texto);
     background: var(--blanco);
     overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', serif;
 }
 
 nav {
