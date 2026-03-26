@@ -513,7 +513,6 @@ footer {
 
 footer span { color: var(--morado-claro); font-weight: 600; }
 
-/* ── RESPONSIVE ── */
 @media (max-width: 768px) {
     nav { padding: 16px 24px; }
     .nav-links { display: none; }
@@ -526,4 +525,41 @@ footer span { color: var(--morado-claro); font-weight: 600; }
     .cta { padding: 60px 24px; }
     .cta h2 { font-size: 28px; }
     .stats { gap: 32px; }
+}
+
+.team-role {
+    display: block;
+    font-size: 13px;
+    color: #5c6bc0;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.team-github {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: fit-content;
+    margin: 8px auto 0;
+    padding: 8px 18px;
+    background-color: #24292e;
+    color: #ffffff;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.team-github:hover {
+    background-color: #1a1e22;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+}
+
+.team-github svg {
+    flex-shrink: 0;
 }
