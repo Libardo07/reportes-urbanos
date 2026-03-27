@@ -1036,3 +1036,92 @@ body {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* ============================================================
+   Modal overlay
+   ============================================================ */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-contenido {
+    background: var(--card-color);
+    border-radius: 12px;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(21, 88, 176, 0.2);
+    animation: modalEntrada 0.3s ease-out;
+}
+
+@keyframes modalEntrada {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-contenido h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: var(--admin-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.modal-contenido p {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.modal-contenido p:last-of-type {
+    border-bottom: none;
+}
+
+.cerrar-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.cerrar-modal:hover {
+    background: #c0392b;
+}
+
+/* Botón Ver detalles */
+.ver-detalles-btn {
+    width: auto !important;
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    background: var(--admin-color) !important;
+    color: white !important;
+    border-radius: 6px !important;
+    transition: background 0.2s !important;
+}
+
+.ver-detalles-btn:hover {
+    background: #0d47a1 !important;
+    transform: scale(1.05) !important;
+}

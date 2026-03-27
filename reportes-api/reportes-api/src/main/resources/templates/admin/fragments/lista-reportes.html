@@ -5,39 +5,39 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Título</th>
-                <th>Descripción</th>
-                <th>Dirección</th>
-                <th>Barrio</th>
-                <th>Tipo</th>
-                <th>Estado</th>
-                <th>Fecha</th>
                 <th>Usuario</th>
-                <th>Admin Asignado</th>
+                <th>Barrio</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
             <tr th:each="r : ${reportes}">
-                <td th:text="${r.titulo}"></td>
-                <td th:text="${r.descripcion}"></td>
-                <td th:text="${r.direccion}"></td>
-                <td th:text="${r.barrio.nombre}"></td>
-                <td th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.tipo.name(), '_', ' ')))}"></td>
-                <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado.name())}" th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span></td>
-                <td th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></td>
                 <td th:text="${r.usuario.nombre}"></td>
-                <td th:text="${r.usuarioAdmin != null ? r.usuarioAdmin.nombre : 'No asignado'}"></td>
+                <td th:text="${r.barrio.nombre}"></td>
+                <td>
+                    <span class="badge" 
+                          th:classappend="'badge-' + ${#strings.toLowerCase(r.estado.name())}" 
+                          th:text="${#strings.replace(r.estado.name(), '_', ' ')}">
+                    </span>
+                </td>
                 <td class="actions">
-                    
+                    <button class="action-btn ver-detalles-btn" th:attr="data-modal-id='modal-' + ${r.id}">
+                        Ver detalles
+                    </button>
+
                     <div class="custom-select">
-                        <select class="estado-select form-control" th:attr="data-id=${r.id}" th:disabled="${r.estado.name() == 'RESUELTO'}">
+                        <select class="estado-select form-control" 
+                                th:attr="data-id=${r.id}" 
+                                th:disabled="${r.estado.name() == 'RESUELTO'}">
                             <option value="" selected disabled>Cambiar</option>
                             <option th:value="'EN_PROGRESO'" th:selected="${r.estado.name() == 'EN_PROGRESO'}">En Progreso</option>
                             <option th:value="'RESUELTO'" th:selected="${r.estado.name() == 'RESUELTO'}">Resuelto</option>
                         </select>
                     </div>
-                    <button class="action-btn delete-reporte" th:attr="data-id=${r.id}, data-url=@{'/admin/eliminar-reporte/' + ${r.id}}, data-reload-view='/admin/fragmento/lista-reportes'" 
+
+                    <button class="action-btn delete-reporte" 
+                            th:attr="data-id=${r.id}, data-url=@{'/admin/eliminar-reporte/' + ${r.id}}, data-reload-view='/admin/fragmento/lista-reportes'" 
                             title="Eliminar">
                         <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
                     </button>
@@ -45,4 +45,27 @@
             </tr>
         </tbody>
     </table>
+
+    <!-- Modales fuera de la tabla -->
+    <div th:each="r : ${reportes}">
+        <div th:id="'modal-' + ${r.id}" 
+             class="modal-overlay" 
+             th:attr="data-modal-id='modal-' + ${r.id}" 
+             style="display:none;">
+            <div class="modal-contenido">
+                <button class="cerrar-modal" th:attr="data-modal-id='modal-' + ${r.id}">Cerrar</button>
+                <h2>Detalles del Reporte</h2>
+                <p><strong>Título:</strong> <span th:text="${r.titulo}"></span></p>
+                <p><strong>Descripción:</strong> <span th:text="${r.descripcion}"></span></p>
+                <p><strong>Dirección:</strong> <span th:text="${r.direccion}"></span></p>
+                <p><strong>Barrio:</strong> <span th:text="${r.barrio.nombre}"></span></p>
+                <p><strong>Tipo:</strong> <span th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.tipo.name(), '_', ' ')))}"></span></p>
+                <p><strong>Estado:</strong> <span th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span></p>
+                <p><strong>Fecha:</strong> <span th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></span></p>
+                <p><strong>Usuario:</strong> <span th:text="${r.usuario.nombre}"></span></p>
+                <p><strong>Admin Asignado:</strong> <span th:text="${r.usuarioAdmin != null ? r.usuarioAdmin.nombre : 'No asignado'}"></span></p>
+            </div>
+        </div>
+    </div>
+
 </div>

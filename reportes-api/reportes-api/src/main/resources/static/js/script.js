@@ -57,6 +57,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadEditForm(editUrl);
                 return;
             }
+
+
+            // Abrir modal
+            const verDetallesBtn = event.target.closest('.ver-detalles-btn');
+            if (verDetallesBtn) {
+                const modalId = verDetallesBtn.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'flex';
+                return;
+            }
+
+            // Cerrar con botón Cerrar
+            const cerrarBtn = event.target.closest('.cerrar-modal');
+            if (cerrarBtn) {
+                const modalId = cerrarBtn.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'none';
+                return;
+            }
+
+            // Cerrar clickando el overlay
+            if (event.target.classList.contains('modal-overlay')) {
+                const modalId = event.target.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'none';
+                return;
+            }
+            
         });
 
         contentArea.addEventListener('change', function(event) {
@@ -351,3 +376,6 @@ function logout() {
         }
     );
 }
+
+
+
