@@ -383,14 +383,16 @@ function logout() {
 }
 
 function initBarrioSelect() {
-    const barrioSelect = document.getElementById('barrioId');
-    if (barrioSelect && !barrioSelect.tomselect) {
-        new TomSelect('#barrioId', {
-            placeholder: 'Seleccione un barrio',
-            searchField: ['text'],
-            create: false
-        });
-    }
+    const search = document.getElementById('barrioSearch');
+    const select = document.getElementById('barrioId');
+    if (!search || !select) return;
+    const opciones = Array.from(select.options);
+    search.addEventListener('input', function() {
+        const texto = this.value.toUpperCase();
+        while (select.options.length > 0) select.remove(0);
+        opciones.filter(opt => !opt.value || opt.text.toUpperCase().includes(texto))
+                .forEach(opt => select.appendChild(opt.cloneNode(true)));
+    });
 }
 
 
