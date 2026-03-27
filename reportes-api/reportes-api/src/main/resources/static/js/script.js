@@ -199,7 +199,11 @@ function loadView(view) {
             const fragment = doc.querySelector('[th\\:fragment], div, table');
             contentArea.innerHTML = fragment ? fragment.outerHTML : html;
             if (view.includes('formulario-reporte') || view.includes('editar-reporte')) {
-                setupBarrioDatalist();
+                setupBarrioDatalist();  
+                setTimeout(function(){
+                    initBarrioSelect();
+                }, 100);
+                
             }
         })
         .catch(error => {
@@ -275,6 +279,7 @@ function loadEditForm(url) {
         .then(html => {
             contentArea.innerHTML = html;
             setupBarrioDatalist();
+            initBarrioSelect();
             contentArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
         })
         .catch(error => {
@@ -376,6 +381,19 @@ function logout() {
         }
     );
 }
+
+function initBarrioSelect() {
+    const barrioSelect = document.getElementById('barrioId');
+    if (barrioSelect && !barrioSelect.tomselect) {
+        new TomSelect('#barrioId', {
+            placeholder: 'Seleccione un barrio',
+            searchField: ['text'],
+            create: false
+        });
+    }
+}
+
+
 
 
 
