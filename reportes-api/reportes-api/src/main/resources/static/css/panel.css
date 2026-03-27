@@ -931,3 +931,108 @@ body {
     gap: 8px;
     align-items: center;
 }
+
+/* ============================================================
+   formulario-reporte.css
+   Estilos del componente de reporte ciudadano
+   ============================================================ */
+
+/* ---------- Campo dirección + botón mapa ---------- */
+.direccion-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-mapa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 42px;
+    height: 42px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s, opacity 0.2s;
+    overflow: hidden;
+}
+
+.btn-mapa:hover  { opacity: 0.85; }
+.btn-mapa:active { transform: scale(0.95); opacity: 0.7; }
+
+.btn-mapa img {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+}
+
+/* ---------- Contenedor del mapa ---------- */
+#mapa-container {
+    display: none;
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #3498db;
+}
+
+#mapa {
+    height: 300px;
+    width: 100%;
+}
+
+/* ---------- Pie informativo del mapa ---------- */
+.mapa-info {
+    background: #f0f4f8;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #7f8c8d;
+    text-align: center;
+}
+
+/* ---------- Banner de estado de geolocalización ---------- */
+#geo-banner {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    border-top: 1px solid #e0e0e0;
+}
+
+#geo-banner.localizando {
+    display: flex;
+    background: #eaf4fb;
+    color: #2980b9;
+}
+
+#geo-banner.encontrado {
+    display: flex;
+    background: #eafaf1;
+    color: #1e8449;
+}
+
+#geo-banner.denegado {
+    display: flex;
+    background: #fef9e7;
+    color: #b7770d;
+}
+
+/* ---------- Spinner de carga ---------- */
+.geo-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
