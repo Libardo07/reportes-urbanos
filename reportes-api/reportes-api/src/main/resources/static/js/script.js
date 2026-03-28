@@ -384,13 +384,20 @@ function logout() {
 
 function initBarrioSelect() {
     const barrioSelect = document.getElementById('barrioId');
-    if (barrioSelect && !barrioSelect.tomselect) {
-        new TomSelect('#barrioId', {
-            placeholder: 'Seleccione un barrio',
-            searchField: ['text'],
-            create: false
-        });
-    }
+    if (!barrioSelect || barrioSelect.tomselect) return;
+
+    new TomSelect('#barrioId', {
+        placeholder: '-- Seleccione un barrio --',
+        searchField: ['text'],
+        create: false,
+        maxOptions: null,
+        highlight: true,
+        render: {
+            no_results: function() {
+                return '<div class="no-results">No se encontró ningún barrio</div>';
+            }
+        }
+    });
 }
 
 
