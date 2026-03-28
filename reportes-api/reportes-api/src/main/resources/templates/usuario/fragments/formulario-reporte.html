@@ -1,6 +1,4 @@
 <div class="card" th:fragment="formulario-reporte">
-    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
     <div class="content-header">
         <h1>Realizar su reporte aquí</h1>
     </div>
@@ -48,13 +46,21 @@
 
                 <div class="form-group">
                     <label for="barrioId">Barrio:</label>
-                    <select name="barrioId" id="barrioId" class="form-control" required>
-                        <option value="">Seleccione un barrio</option>
-                        <option th:each="barrio : ${barrios}"
-                                th:value="${barrio.id}"
-                                th:text="${barrio.nombre}">
-                        </option>
-                    </select>
+
+                    <input type="hidden" name="barrioId" id="barrioId" required>
+
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select-display" id="barrioDisplay">Seleccione un barrio</div>
+                        <div class="custom-select-dropdown" id="barrioDropdown" style="display:none;">
+                            <input type="text" id="barrioFiltro" placeholder="Escribe su barrio..." autocomplete="off">
+                            <ul id="barrioLista">
+                                <option th:each="barrio : ${barrios}"
+                                        th:value="${barrio.id}"
+                                        th:text="${barrio.nombre}">
+                                </option>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
         <div>

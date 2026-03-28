@@ -1,5 +1,4 @@
 function setupRealtimeValidation() {
-    const lastView = sessionStorage.getItem('lastView');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
 
@@ -33,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (menuItemToActivate) {
                 menuItemToActivate.click();
             }
-        }, 100); 
+        }, 100);
     }
 
     const contentArea = document.getElementById('content-area');
@@ -45,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const reporteId = deleteBtn.getAttribute('data-id');
                 const deleteUrl = deleteBtn.getAttribute('data-url');
                 const reloadViewUrl = deleteBtn.getAttribute('data-reload-view');
-
                 confirmDeleteReporte(reporteId, deleteUrl, reloadViewUrl);
                 return;
             }
@@ -57,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadEditForm(editUrl);
                 return;
             }
-
 
             // Abrir modal
             const verDetallesBtn = event.target.closest('.ver-detalles-btn');
@@ -81,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById(modalId).style.display = 'none';
                 return;
             }
-            
         });
 
         contentArea.addEventListener('change', function(event) {
@@ -97,12 +93,12 @@ document.addEventListener('DOMContentLoaded', function() {
         contentArea.addEventListener('submit', function(event) {
             const form = event.target.closest('form[data-ajax="true"]');
             if (form) {
-                event.preventDefault(); 
-                
+                event.preventDefault();
+
                 const formData = new FormData(form);
                 const url = form.getAttribute('action');
                 const method = form.getAttribute('method') || 'POST';
-                const formType = form.getAttribute('data-form-type'); 
+                const formType = form.getAttribute('data-form-type');
 
                 Swal.fire({
                     title: 'Procesando...',
@@ -110,45 +106,42 @@ document.addEventListener('DOMContentLoaded', function() {
                     allowOutsideClick: false,
                     didOpen: () => Swal.showLoading()
                 });
-                
+
                 fetch(url, { method: method, body: formData })
                     .then(async response => {
                         if (!response.ok) {
-                        const errorData = await response.json().catch(() => null);
-                        const mensajeEspecifico = errorData && (errorData.error || errorData.message) 
+                            const errorData = await response.json().catch(() => null);
+                            const mensajeEspecifico = errorData && (errorData.error || errorData.message)
                                 ? errorData.error || errorData.message
                                 : 'Error del servidor (' + response.status + ')';
-        
-                        throw new Error(mensajeEspecifico);
-                    }
-                    return response.json();
-
+                            throw new Error(mensajeEspecifico);
+                        }
+                        return response.json();
                     })
                     .then(data => {
                         Swal.close();
                         if (data.success) {
-                            showSuccessMessage(data.message || 'Operación realizada con éxito');   
+                            showSuccessMessage(data.message || 'Operación realizada con éxito');
                             const formType = form.getAttribute('data-form-type');
 
                             if (formType === 'create-admin') {
                                 console.log("Creación de admin exitosa. Redirigiendo a la lista de reportes del admin.");
-                                loadView('/admin/fragmento/lista-reportes'); // <-- ¡LA CLAVE!
-                                return; // <-- ¡LA CLAVE!
-        }
+                                loadView('/admin/fragmento/lista-reportes');
+                                return;
+                            }
 
                             if (formType === 'create') {
                                 form.reset();
                                 const barrioIdInput = document.getElementById('barrioId');
                                 if (barrioIdInput) barrioIdInput.value = '';
-
                                 loadView('/usuario/fragmento/lista-reportes');
                             } else {
-                            console.log("Editando reporte, volviendo a la lista.");
-                            loadView('/usuario/fragmento/lista-reportes');
-                    }
-                    } else {
-                        showErrorMessage(data.error || 'Ocurrió un error durante la operación');
-                }
+                                console.log("Editando reporte, volviendo a la lista.");
+                                loadView('/usuario/fragmento/lista-reportes');
+                            }
+                        } else {
+                            showErrorMessage(data.error || 'Ocurrió un error durante la operación');
+                        }
                     })
                     .catch(error => {
                         Swal.close();
@@ -161,22 +154,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupMenuNavigation();
     setupLoginFeatures();
-    setupBarrioDatalist();
     setupRealtimeValidation();
-    
+    initBarrioFiltro();
 });
 
 
 function setupMenuNavigation() {
     const menuItems = document.querySelectorAll('.menu-item[data-view]');
-    
+
     menuItems.forEach(item => {
         item.addEventListener('click', function() {
             menuItems.forEach(i => i.classList.remove('active'));
             this.classList.add('active');
             const view = this.getAttribute('data-view');
             sessionStorage.setItem('lastView', view);
-            
             loadView(view);
         });
     });
@@ -187,7 +178,7 @@ function loadView(view) {
     if (!contentArea) return;
 
     contentArea.innerHTML = '<div class="card"><p style="text-align:center;">Cargando...</p></div>';
-    
+
     fetch(view)
         .then(response => {
             if (!response.ok) throw new Error('Error en la respuesta del servidor');
@@ -198,12 +189,11 @@ function loadView(view) {
             const doc = parser.parseFromString(html, 'text/html');
             const fragment = doc.querySelector('[th\\:fragment], div, table');
             contentArea.innerHTML = fragment ? fragment.outerHTML : html;
+
             if (view.includes('formulario-reporte') || view.includes('editar-reporte')) {
-                setupBarrioDatalist();  
-                setTimeout(function(){
-                    initBarrioSelect();
-                }, 100);
-                
+                setTimeout(function() {
+                    initBarrioFiltro();
+                }, 300);
             }
         })
         .catch(error => {
@@ -213,31 +203,12 @@ function loadView(view) {
 }
 
 
-function setupBarrioDatalist() {
-    const barrioInput = document.getElementById('barrioNombre');
-    const barrioIdInput = document.getElementById('barrioId');
-    
-    if (barrioInput && barrioIdInput) {
-        barrioInput.addEventListener('input', function() {
-            const input = this.value;
-            const options = document.querySelectorAll('#listaBarrios option');
-            let barrioId = '';
-            options.forEach(option => { 
-                if (option.value === input) {
-                    barrioId = option.dataset.id;
-                }
-            });
-            barrioIdInput.value = barrioId;
-        });
-    }
-}
-
 function setupLoginFeatures() {
     const passwordToggles = document.querySelectorAll('.password-toggle');
     passwordToggles.forEach(toggle => {
         const passwordInput = toggle.parentElement.querySelector('input[type="password"], input[type="text"]');
         if (!passwordInput) return;
-        
+
         toggle.addEventListener('click', function() {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
@@ -252,9 +223,7 @@ function setupLoginFeatures() {
     if (loginForm && loader) {
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
-
             loader.classList.add('show');
-
             setTimeout(() => {
                 loginForm.submit();
             }, 2000);
@@ -263,7 +232,6 @@ function setupLoginFeatures() {
 }
 
 function loadEditForm(url) {
-
     const activeMenuItem = document.querySelector('.menu-item.active');
     if (activeMenuItem) {
         sessionStorage.setItem('returnToView', activeMenuItem.getAttribute('data-view'));
@@ -278,8 +246,7 @@ function loadEditForm(url) {
         .then(response => response.text())
         .then(html => {
             contentArea.innerHTML = html;
-            setupBarrioDatalist();
-            initBarrioSelect();
+            initBarrioFiltro();
             contentArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
         })
         .catch(error => {
@@ -300,7 +267,6 @@ function confirmDeleteReporte(reporteId, url, reloadViewUrl) {
                     if (data.success) {
                         showSuccessMessage('Reporte eliminado correctamente');
                         loadView(reloadViewUrl);
-
                     } else {
                         showErrorMessage(data.error || 'Error al eliminar el reporte');
                     }
@@ -368,39 +334,87 @@ function logout() {
         '¿Cerrar sesión?',
         'Se cerrará tu sesión actual.',
         () => {
-            sessionStorage.clear(); 
+            sessionStorage.clear();
             const loader = document.getElementById('loader');
             if (loader) {
                 loader.classList.add('show');
             }
-    
             sessionStorage.removeItem('lastView');
             setTimeout(() => {
                 window.location.href = '/logout';
-            }, 800); 
+            }, 800);
         }
     );
 }
 
-function initBarrioSelect() {
-    const barrioSelect = document.getElementById('barrioId');
-    if (!barrioSelect || barrioSelect.tomselect) return;
+function initBarrioFiltro() {
+    const display  = document.getElementById('barrioDisplay');
+    const dropdown = document.getElementById('barrioDropdown');
+    const filtro   = document.getElementById('barrioFiltro');
+    const lista    = document.getElementById('barrioLista');
+    const hidden   = document.getElementById('barrioId');
 
-    new TomSelect('#barrioId', {
-        placeholder: '-- Seleccione un barrio --',
-        searchField: ['text'],
-        create: false,
-        maxOptions: null,
-        highlight: true,
-        render: {
-            no_results: function() {
-                return '<div class="no-results">No se encontró ningún barrio</div>';
-            }
+    if (!display || !dropdown) return;
+
+    // Construir los <li> a partir de las <option> que Thymeleaf renderizó
+    const optionsSource = document.querySelectorAll('#barrioLista option');
+    lista.innerHTML = '';
+
+    optionsSource.forEach(opt => {
+        const li = document.createElement('li');
+        li.textContent = opt.textContent;
+        li.dataset.id = opt.value;
+        li.addEventListener('click', function() {
+            hidden.value = this.dataset.id;
+            hidden.dataset.nombre = this.textContent;
+            display.textContent = this.textContent;
+            display.classList.remove('abierto');
+            dropdown.style.display = 'none';
+            filtro.value = '';
+            renderLista('');
+            hidden.dispatchEvent(new Event('change'));
+        });
+        lista.appendChild(li);
+    });
+
+    // Abrir/cerrar dropdown al hacer clic en el display
+    display.addEventListener('click', function() {
+        const abierto = dropdown.style.display === 'block';
+        dropdown.style.display = abierto ? 'none' : 'block';
+        display.classList.toggle('abierto', !abierto);
+        if (!abierto) filtro.focus();
+    });
+
+    // Filtrar en tiempo real mientras el usuario escribe
+    filtro.addEventListener('input', function() {
+        renderLista(this.value.toLowerCase().trim());
+    });
+
+    // Cerrar al hacer clic fuera del dropdown
+    document.addEventListener('click', function(e) {
+        if (!display.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+            display.classList.remove('abierto');
         }
     });
+
+    function renderLista(texto) {
+        const items = lista.querySelectorAll('li');
+        let visibles = 0;
+        items.forEach(li => {
+            const coincide = li.textContent.toLowerCase().includes(texto);
+            li.style.display = coincide ? '' : 'none';
+            if (coincide) visibles++;
+        });
+
+        const sinRes = lista.querySelector('.sin-resultados');
+        if (sinRes) sinRes.remove();
+
+        if (visibles === 0) {
+            const li = document.createElement('li');
+            li.className = 'sin-resultados';
+            li.textContent = 'No se encontró ningún barrio';
+            lista.appendChild(li);
+        }
+    }
 }
-
-
-
-
-

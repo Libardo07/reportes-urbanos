@@ -236,23 +236,17 @@
        Evento: cambio de barrio en el select
        Si el mapa no está abierto lo abre, luego busca el barrio
     ---------------------------------------------------------- */
-    document.getElementById('barrioId').addEventListener('change', function () {
-        var nombreBarrio = this.options[this.selectedIndex].text;
-        if (!nombreBarrio) return;
+    // DESPUÉS
+document.getElementById('barrioId').addEventListener('change', function () {
+    var nombreBarrio = this.dataset.nombre || '';
+    if (!nombreBarrio) return;
 
-        var container = document.getElementById('mapa-container');
+    var container = document.getElementById('mapa-container');
 
-        if (!mapaInicializado) {
-            container.style.display = 'block';
-            inicializarMapa();
-            setTimeout(function () { buscarBarrioEnMapa(nombreBarrio); }, 300);
-        } else {
-            if (container.style.display === 'none' || container.style.display === '') {
-                container.style.display = 'block';
-                setTimeout(function () { mapa.invalidateSize(); }, 100);
-            }
-            buscarBarrioEnMapa(nombreBarrio);
-        }
-    });
+    // Solo busca si el mapa ya está abierto e inicializado
+    if (mapaInicializado && container.style.display === 'block') {
+        buscarBarrioEnMapa(nombreBarrio);
+    }
+});
 
 })();
