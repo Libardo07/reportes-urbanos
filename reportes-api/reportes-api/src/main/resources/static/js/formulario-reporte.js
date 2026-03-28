@@ -129,48 +129,60 @@
        Si se deniega o falla, carga centrado en Cartagena.
     ---------------------------------------------------------- */
     function pedirGeolocalizacion() {
-        if (!navigator.geolocation) {
-            inicializarMapa();
-            return;
-        }
-
-        mostrarBanner('localizando', 'Obteniendo tu ubicación actual...');
-
-        navigator.geolocation.getCurrentPosition(
-            // Éxito
-            function (pos) {
-                var lat = pos.coords.latitude;
-                var lng = pos.coords.longitude;
-
-                inicializarMapa(lat, lng, 16);
-
-                // Marcador azul pulsante para la posición del usuario
-                var iconoAzul = L.divIcon({
-                    className: '',
-                    html: '<div style="width:16px;height:16px;background:#3498db;border:3px solid white;border-radius:50%;box-shadow:0 0 0 3px rgba(52,152,219,0.35);"></div>',
-                    iconSize: [16, 16],
-                    iconAnchor: [8, 8]
-                });
-
-                marcadorUsuario = L.marker([lat, lng], { icon: iconoAzul, zIndexOffset: -1 })
-                    .addTo(mapa)
-                    .bindPopup('📍 Estás aquí')
-                    .openPopup();
-
-                mostrarBanner('encontrado', 'Ubicación encontrada. Haz clic en el mapa para marcar el problema.');
-            },
-            // Error (denegado o timeout)
-            function (err) {
-                inicializarMapa();
-                var msg = err.code === 1
-                    ? 'Permiso denegado. Puedes marcar la ubicación manualmente.'
-                    : 'No se pudo obtener la ubicación. Marca el punto en el mapa.';
-                mostrarBanner('denegado', msg);
-            },
-            { timeout: 8000, maximumAge: 60000 }
-        );
+    if (!navigator.geolocation) {
+        inicializarMapa();
+        mostrarBanner('denegado', '⚠️ Tu navegador no soporta geolocalización. Puedes marcar el punto manualmente en el mapa.');
+        return;
     }
 
+    mostrarBanner('localizando', 'Obteniendo tu ubicación actual...');
+
+    navigator.geolocation.getCurrentPosition(
+        // Éxito
+        function (pos) {
+            var lat = pos.coords.latitude;
+            var lng = pos.coords.longitude;
+
+            inicializarMapa(lat, lng, 16);
+
+            var iconoAzul = L.divIcon({
+                className: '',
+                html: '<div style="width:16px;height:16px;background:#3498db;border:3px solid white;border-radius:50%;box-shadow:0 0 0 3px rgba(52,152,219,0.35);"></div>',
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+            });
+
+            marcadorUsuario = L.marker([lat, lng], { icon: iconoAzul, zIndexOffset: -1 })
+                .addTo(mapa)
+                .bindPopup('📍 Estás aquí')
+                .openPopup();
+
+            mostrarBanner('encontrado', '✅ Ubicación encontrada. Haz clic en el mapa para marcar el problema.');
+        },
+        // Error
+        function (err) {
+            inicializarMapa();
+            var msg = '';
+
+            switch (err.code) {
+                case 1:
+                    msg = '🔒 Bloqueaste el acceso a tu ubicación. Para activarla: haz clic en el candado de la barra del navegador → Permisos → Ubicación → Permitir. O puedes marcar el punto manualmente.';
+                    break;
+                case 2:
+                    msg = '📡 No se pudo detectar tu ubicación. Verifica tu conexión a internet o marca el punto manualmente en el mapa.';
+                    break;
+                case 3:
+                    msg = '⏱️ Se agotó el tiempo para obtener tu ubicación. Puedes marcar el punto manualmente en el mapa.';
+                    break;
+                default:
+                    msg = '⚠️ No se pudo obtener tu ubicación. Puedes marcar el punto manualmente en el mapa.';
+            }
+
+            mostrarBanner('denegado', msg);
+        },
+        { timeout: 8000, maximumAge: 60000 }
+    );
+}
     /* ----------------------------------------------------------
        buscarBarrioEnMapa
        Cuando el usuario elige un barrio en el select,
