@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Reportes Urbanos</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+
+    <div id="loader" class="loader-overlay">
+        <div class="loader"></div>
+    </div>
+
+    <div class="page-wrapper">
+
+        <div class="left-panel">
+            <div class="icon"><img src="/images/login.png" alt=""></div>
+            <h2>Reportes Urbanos</h2>
+            <p>Plataforma ciudadana para reportar problemas de infraestructura y servicios públicos en Cartagena de Indias.</p>
+            <a th:href="@{/registro}" class="btn-outline">Crear cuenta</a>
+        </div>
+
+        <div class="right-panel">
+            <h2>Bienvenido</h2>
+            <p class="subtitle">Ingresa a tu cuenta para continuar</p>
+
+            <div th:if="${error}" class="error-message">
+                <span th:text="${error}"></span>
+            </div>
+
+            <div th:if="${param.registroExitoso}" class="success-message">
+                ¡Registro exitoso! Ahora puedes iniciar sesión.
+            </div>
+
+            <form th:action="@{/login}" method="post" id="loginForm">
+                <div class="input-group">
+                    <img th:src="@{/images/icono-email.png}" alt="Email" class="icon">
+                    <input type="email" name="username" placeholder="Correo electrónico" required>
+                </div>
+                <div class="input-group">
+                    <img th:src="@{/images/icono-password.png}" alt="Contraseña" class="icon">
+                    <input type="password" id="password" name="password" placeholder="Contraseña" required>
+                    <img th:src="@{/images/icono-ojo-visible.png}" alt="Mostrar contraseña" class="password-toggle">
+                </div>
+                <button type="submit" class="btn">Iniciar sesión</button>
+            </form>
+        </div>
+
+    </div>
+
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html>

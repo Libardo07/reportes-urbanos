@@ -1,0 +1,82 @@
+<div class="card" th:fragment="lista-reportes">
+    <div class="content-header">
+        <h1>Lista de Reportes</h1>
+    </div>
+
+    <!-- tabla-wrapper es quien tiene overflow-x: auto, NO el card -->
+    <div class="tabla-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Tipo de servicio</th>
+                    <th>Fecha y hora</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${reportes}">
+                    <td th:text="${r.usuario.nombre}"></td>
+                    <td th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.tipo.name(), '_', ' ')))}"></td>
+                    <td th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="'badge-' + ${#strings.toLowerCase(r.estado.name())}"
+                              th:text="${#strings.replace(r.estado.name(), '_', ' ')}">
+                        </span>
+                    </td>
+                    <td class="actions">
+                        <!-- Botón Ver Detalles -->
+                        <button class="action-btn ver-detalles-btn"
+                                th:attr="data-modal-id='modal-' + ${r.id}">
+                            Ver detalles
+                        </button>
+
+                        <!-- Select estado -->
+                        <div class="custom-select">
+                            <select class="estado-select form-control"
+                                    th:attr="data-id=${r.id}"
+                                    th:disabled="${r.estado.name() == 'RESUELTO'}">
+                                <option value="" selected disabled>Cambiar</option>
+                                <option th:value="'EN_PROGRESO'" th:selected="${r.estado.name() == 'EN_PROGRESO'}">En Progreso</option>
+                                <option th:value="'RESUELTO'"    th:selected="${r.estado.name() == 'RESUELTO'}">Resuelto</option>
+                            </select>
+                        </div>
+
+                        <!-- Botón Eliminar -->
+                        <button class="action-btn delete-reporte"
+                                th:attr="data-id=${r.id},
+                                         data-url=@{'/admin/eliminar-reporte/' + ${r.id}},
+                                         data-reload-view='/admin/fragmento/lista-reportes'"
+                                title="Eliminar">
+                            <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- fin .tabla-wrapper -->
+
+    <!-- Modales FUERA de la tabla y del wrapper -->
+    <div th:each="r : ${reportes}">
+        <div th:id="'modal-' + ${r.id}"
+             class="modal-overlay"
+             th:attr="data-modal-id='modal-' + ${r.id}">
+            <div class="modal-contenido">
+                <button class="cerrar-modal" th:attr="data-modal-id='modal-' + ${r.id}">Cerrar</button>
+                <h2>Detalles del Reporte</h2>
+                <p><strong>Título:</strong>        <span th:text="${r.titulo}"></span></p>
+                <p><strong>Descripción:</strong>   <span th:text="${r.descripcion}"></span></p>
+                <p><strong>Dirección:</strong>     <span th:text="${r.direccion}"></span></p>
+                <p><strong>Barrio:</strong>        <span th:text="${r.barrio.nombre}"></span></p>
+                <p><strong>Tipo:</strong>          <span th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.tipo.name(), '_', ' ')))}"></span></p>
+                <p><strong>Estado:</strong>        <span th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span></p>
+                <p><strong>Fecha:</strong>         <span th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></span></p>
+                <p><strong>Usuario:</strong>       <span th:text="${r.usuario.nombre}"></span></p>
+                <p><strong>Admin Asignado:</strong><span th:text="${r.usuarioAdmin != null ? r.usuarioAdmin.nombre : 'No asignado'}"></span></p>
+            </div>
+        </div>
+    </div>
+
+</div>

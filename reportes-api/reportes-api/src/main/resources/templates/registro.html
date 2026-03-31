@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Reportes Urbanos</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+
+    <div class="page-wrapper">
+
+        <div class="left-panel">
+            <div class="icon"><img src="/images/registro.png" alt=""></div>
+            <h2>¡Únete ahora!</h2>
+            <p>Crea tu cuenta y empieza a reportar problemas en tu barrio de Cartagena de Indias.</p>
+            <a th:href="@{/login}" class="btn-outline">Ya tengo cuenta</a>
+        </div>
+
+        <div class="right-panel">
+            <h2>Crear cuenta</h2>
+            <p class="subtitle">Regístrate gratis y reporta problemas en tu ciudad</p>
+
+            <div th:if="${error}" class="error-message">
+                <span th:text="${error}"></span>
+            </div>
+
+            <form th:action="@{/registro}" th:object="${usuario}" method="post">
+                <div class="input-group">
+                    <img th:src="@{/images/icono-login.png}" alt="Usuario" class="icon">
+                    <input type="text" th:field="*{nombre}" placeholder="Nombre completo" minlength="4" required>
+                </div>
+                <div class="input-group">
+                    <img th:src="@{/images/icono-email.png}" alt="Email" class="icon">
+                    <input type="email" th:field="*{email}" placeholder="Correo electrónico" minlength="14" required>
+                </div>
+                <div class="input-group">
+                    <img th:src="@{/images/icono-password.png}" alt="Contraseña" class="icon">
+                    <input type="password" id="password" th:field="*{password}" placeholder="Contraseña" minlength="6" required>
+                    <img th:src="@{/images/icono-ojo-visible.png}" alt="Mostrar contraseña" class="password-toggle">
+                </div>
+                <button type="submit" class="btn">Registrarme</button>
+            </form>
+        </div>
+
+    </div>
+
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html>

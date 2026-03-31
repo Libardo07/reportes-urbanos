@@ -1,0 +1,87 @@
+<div class="card" th:fragment="formulario-reporte">
+    <div class="content-header">
+        <h1>Realizar su reporte aquí</h1>
+    </div>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Estilos del formulario -->
+    <link rel="stylesheet" th:href="@{/css/panel.css}" />
+
+    <form th:action="@{/usuario/guardar-reporte}" th:object="${reporte}" method="post" data-ajax="true" data-form-type="create">
+
+        <div class="form-group">
+            <label for="titulo">Título del reporte:</label>
+            <input type="text" id="titulo" th:field="*{titulo}" class="form-control" spellcheck="true" placeholder="Escribir..." required>
+        </div>
+
+        <div class="form-group">
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4" spellcheck="true" placeholder="Escribir..." required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="tipo">Tipo de reporte:</label>
+            <select name="tipoReporte" class="form-control" required>
+                <option value="" disabled selected>Escoger tipo de reporte</option>
+                <option th:each="t : ${tipos}" th:value="${t.name()}" th:text="${t.name()}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="direccion">Dirección exacta:</label>
+            <div class="direccion-wrapper">
+                <input type="text" id="direccion" th:field="*{direccion}" class="form-control" placeholder="Escribe o selecciona en el mapa..." required>
+                <button type="button" class="btn-mapa" id="btnMapa" title="Seleccionar en el mapa"> <img src="/images/mapa.png" alt=""></button>
+            </div>
+            <div id="mapa-container">
+                <div id="mapa"></div>
+                <div id="geo-banner">
+                    <div class="geo-spinner"></div>
+                    <span id="geo-texto">Obteniendo tu ubicación...</span>
+                </div>
+                <div class="mapa-info">Haz clic en el mapa para seleccionar la ubicación del problema</div>
+            </div>
+        </div>
+
+                <div class="form-group">
+                    <label for="barrioId">Barrio:</label>
+
+                    <input type="hidden" name="barrioId" id="barrioId" required>
+
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select-display" id="barrioDisplay">Seleccione un barrio</div>
+                        <div class="custom-select-dropdown" id="barrioDropdown" style="display:none;">
+                            <input type="text" id="barrioFiltro" placeholder="Escribe su barrio..." autocomplete="off">
+                            <ul id="barrioLista">
+                                <option th:each="barrio : ${barrios}"
+                                        th:value="${barrio.id}"
+                                        th:text="${barrio.nombre}">
+                                </option>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+        <div>
+            <button type="submit" class="btn-enviar-animated">
+                <span class="button__icon-wrapper">
+                    <svg viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="button__icon-svg" width="10">
+                        <path d="M13.376 11.552l-.264-10.44-10.44-.24.024 2.28 6.96-.048L.2 12.56l1.488 1.488 9.432-9.432-.048 6.912 2.304.024z" fill="currentColor"></path>
+                    </svg>
+                    <svg viewBox="0 0 14 15" fill="none" width="10" xmlns="http://www.w3.org/2000/svg" class="button__icon-svg button__icon-svg--copy">
+                        <path d="M13.376 11.552l-.264-10.44-10.44-.24.024 2.28 6.96-.048L.2 12.56l1.488 1.488 9.432-9.432-.048 6.912 2.304.024z" fill="currentColor"></path>
+                    </svg>
+                </span>
+                Enviar reporte
+            </button>
+        </div>
+
+    </form>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Lógica del formulario -->
+    <script th:src="@{/js/formulario-reporte.js}"></script>
+
+</div>

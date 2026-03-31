@@ -1,0 +1,888 @@
+function setupRealtimeValidation() {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    const validateEmail = () => {
+        if (emailInput.value.length > 0 && emailInput.value.length < 8) {
+            emailInput.setCustomValidity('El correo debe tener al menos 8 caracteres.');
+        } else {
+            emailInput.setCustomValidity('');
+        }
+    };
+
+    const validatePassword = () => {
+        if (passwordInput.value.length > 0 && passwordInput.value.length < 6) {
+            passwordInput.setCustomValidity('La contraseña debe tener al menos 6 caracteres.');
+        } else {
+            passwordInput.setCustomValidity('');
+        }
+    };
+
+    if (emailInput) emailInput.addEventListener('input', validateEmail);
+    if (passwordInput) passwordInput.addEventListener('input', validatePassword);
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const lastView = sessionStorage.getItem('lastView');
+    sessionStorage.removeItem('lastView');
+    if (lastView) {
+        setTimeout(() => {
+            const menuItemToActivate = document.querySelector(`.menu-item[data-view="${lastView}"]`);
+            if (menuItemToActivate) {
+                menuItemToActivate.click();
+            }
+        }, 100);
+    }
+
+    const contentArea = document.getElementById('content-area');
+    if (contentArea) {
+        contentArea.addEventListener('click', function(event) {
+            const deleteBtn = event.target.closest('.delete-reporte');
+            if (deleteBtn) {
+                event.preventDefault();
+                const reporteId = deleteBtn.getAttribute('data-id');
+                const deleteUrl = deleteBtn.getAttribute('data-url');
+                const reloadViewUrl = deleteBtn.getAttribute('data-reload-view');
+                confirmDeleteReporte(reporteId, deleteUrl, reloadViewUrl);
+                return;
+            }
+
+            const editBtn = event.target.closest('.edit-reporte');
+            if (editBtn) {
+                event.preventDefault();
+                const editUrl = editBtn.getAttribute('data-url');
+                loadEditForm(editUrl);
+                return;
+            }
+
+            // Abrir modal
+            const verDetallesBtn = event.target.closest('.ver-detalles-btn');
+            if (verDetallesBtn) {
+                const modalId = verDetallesBtn.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'flex';
+                return;
+            }
+
+            // Cerrar con botón Cerrar
+            const cerrarBtn = event.target.closest('.cerrar-modal');
+            if (cerrarBtn) {
+                const modalId = cerrarBtn.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'none';
+                return;
+            }
+
+            // Cerrar clickando el overlay
+            if (event.target.classList.contains('modal-overlay')) {
+                const modalId = event.target.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'none';
+                return;
+            }
+        });
+
+        contentArea.addEventListener('change', function(event) {
+            if (event.target.classList.contains('estado-select')) {
+                const reporteId = event.target.getAttribute('data-id');
+                const nuevoEstado = event.target.value;
+                if (nuevoEstado) {
+                    confirmarCambioEstado(reporteId, nuevoEstado);
+                }
+            }
+        });
+
+        contentArea.addEventListener('submit', function(event) {
+            const form = event.target.closest('form[data-ajax="true"]');
+            if (form) {
+                event.preventDefault();
+
+                const formData = new FormData(form);
+                const url = form.getAttribute('action');
+                const method = form.getAttribute('method') || 'POST';
+                const formType = form.getAttribute('data-form-type');
+
+                Swal.fire({
+                    title: 'Procesando...',
+                    html: 'Por favor, espera un momento.',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                fetch(url, { method: method, body: formData })
+                    .then(async response => {
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => null);
+                            const mensajeEspecifico = errorData && (errorData.error || errorData.message)
+                                ? errorData.error || errorData.message
+                                : 'Error del servidor (' + response.status + ')';
+                            throw new Error(mensajeEspecifico);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.close();
+                        if (data.success) {
+                            showSuccessMessage(data.message || 'Operación realizada con éxito');
+                            const formType = form.getAttribute('data-form-type');
+
+                            if (formType === 'create-admin') {
+                                console.log("Creación de admin exitosa. Redirigiendo a la lista de reportes del admin.");
+                                loadView('/admin/fragmento/lista-reportes');
+                                return;
+                            }
+
+                            if (formType === 'create') {
+                                form.reset();
+                                const barrioIdInput = document.getElementById('barrioId');
+                                if (barrioIdInput) barrioIdInput.value = '';
+                                loadView('/usuario/fragmento/lista-reportes');
+                            } else {
+                                console.log("Editando reporte, volviendo a la lista.");
+                                loadView('/usuario/fragmento/lista-reportes');
+                            }
+                        } else {
+                            showErrorMessage(data.error || 'Ocurrió un error durante la operación');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.close();
+                        showErrorMessage('Error en la solicitud: ' + error.message);
+                        console.error('Error:', error);
+                    });
+            }
+        });
+    }
+
+    setupMenuNavigation();
+    setupLoginFeatures();
+    setupRealtimeValidation();
+    initBarrioFiltro();
+});
+
+
+function setupMenuNavigation() {
+    const menuItems = document.querySelectorAll('.menu-item[data-view]');
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', function() {
+            menuItems.forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            const view = this.getAttribute('data-view');
+            sessionStorage.setItem('lastView', view);
+            loadView(view);
+        });
+    });
+}
+
+function loadView(view) {
+    const contentArea = document.getElementById('content-area');
+    if (!contentArea) return;
+
+    contentArea.innerHTML = '<div class="card"><p style="text-align:center;">Cargando...</p></div>';
+
+    fetch(view)
+        .then(response => {
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
+            return response.text();
+        })
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('[th\\:fragment], div, table');
+            contentArea.innerHTML = fragment ? fragment.outerHTML : html;
+
+            if (view.includes('formulario-reporte') || view.includes('editar-reporte')) {
+                setTimeout(function() {
+                    initBarrioFiltro();
+                }, 300);
+            }
+
+            // Re-ejecutar scripts del fragmento cargado
+            contentArea.querySelectorAll('script').forEach(oldScript => {
+                const newScript = document.createElement('script');
+                if (oldScript.src) {
+                    newScript.src = oldScript.src;
+                } else {
+                    newScript.textContent = oldScript.textContent;
+                }
+                document.body.appendChild(newScript);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar la vista:', error);
+            contentArea.innerHTML = '<div class="card error-message">Error al cargar el contenido. Por favor, inténtalo de nuevo.</div>';
+        });
+}
+
+
+function setupLoginFeatures() {
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    passwordToggles.forEach(toggle => {
+        const passwordInput = toggle.parentElement.querySelector('input[type="password"], input[type="text"]');
+        if (!passwordInput) return;
+
+        toggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.src = type === 'password' ? '/images/icono-ojo-visible.png' : '/images/icono-ojo-oculto.png';
+            this.alt = type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña';
+        });
+    });
+
+    const loginForm = document.querySelector('form[action="/login"]');
+    const loader = document.getElementById('loader');
+
+    if (loginForm && loader) {
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            loader.classList.add('show');
+            setTimeout(() => {
+                loginForm.submit();
+            }, 2000);
+        });
+    }
+}
+
+function loadEditForm(url) {
+    const activeMenuItem = document.querySelector('.menu-item.active');
+    if (activeMenuItem) {
+        sessionStorage.setItem('returnToView', activeMenuItem.getAttribute('data-view'));
+    }
+
+    const contentArea = document.getElementById('content-area');
+    if (!contentArea) return;
+
+    contentArea.innerHTML = '<div class="card"><p style="text-align:center;">Cargando formulario...</p></div>';
+
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            contentArea.innerHTML = html;
+            initBarrioFiltro();
+            contentArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Re-ejecutar scripts del fragmento cargado
+            contentArea.querySelectorAll('script').forEach(oldScript => {
+                const newScript = document.createElement('script');
+                if (oldScript.src) {
+                    newScript.src = oldScript.src;
+                } else {
+                    newScript.textContent = oldScript.textContent;
+                }
+                document.body.appendChild(newScript);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar el formulario de edición:', error);
+            contentArea.innerHTML = '<div class="card error-message">Error al cargar el formulario.</div>';
+        });
+}
+
+
+function confirmDeleteReporte(reporteId, url, reloadViewUrl) {
+    showConfirmDialog(
+        '¿Eliminar este reporte?',
+        'Esta acción no se puede deshacer.',
+        () => {
+            fetch(url, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccessMessage('Reporte eliminado correctamente');
+                        loadView(reloadViewUrl);
+                    } else {
+                        showErrorMessage(data.error || 'Error al eliminar el reporte');
+                    }
+                })
+                .catch(error => {
+                    showErrorMessage('Error en la solicitud: ' + error.message);
+                    console.error('Error:', error);
+                });
+        }
+    );
+}
+
+function confirmarCambioEstado(reporteId, nuevoEstado) {
+    showConfirmDialog(
+        '¿Cambiar el estado del reporte?',
+        `El reporte cambiará a estado: ${nuevoEstado.replace('_', ' ')}.`,
+        () => {
+            const formData = new FormData();
+            formData.append('reporteId', reporteId);
+            formData.append('nuevoEstado', nuevoEstado);
+
+            fetch('/admin/cambiar-estado', { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccessMessage('Estado cambiado correctamente');
+                        loadView('/admin/fragmento/lista-reportes');
+                    } else {
+                        showErrorMessage(data.error || 'Error al cambiar el estado');
+                    }
+                })
+                .catch(error => {
+                    showErrorMessage('Error en la solicitud: ' + error.message);
+                    console.error('Error:', error);
+                });
+        }
+    );
+}
+
+function showSuccessMessage(message) {
+    Swal.fire({ icon: 'success', title: 'Éxito', text: message, timer: 3000, showConfirmButton: false });
+}
+
+function showErrorMessage(message) {
+    Swal.fire({ icon: 'error', title: 'Error', text: message, confirmButtonText: 'OK' });
+}
+
+function showConfirmDialog(title, text, onConfirm) {
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            onConfirm();
+        }
+    });
+}
+
+function logout() {
+    showConfirmDialog(
+        '¿Cerrar sesión?',
+        'Se cerrará tu sesión actual.',
+        () => {
+            sessionStorage.clear();
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.classList.add('show');
+            }
+            sessionStorage.removeItem('lastView');
+            setTimeout(() => {
+                window.location.href = '/logout';
+            }, 800);
+        }
+    );
+}
+
+function initBarrioFiltro() {
+    const display  = document.getElementById('barrioDisplay');
+    const dropdown = document.getElementById('barrioDropdown');
+    const filtro   = document.getElementById('barrioFiltro');
+    const lista    = document.getElementById('barrioLista');
+    const hidden   = document.getElementById('barrioId');
+
+    if (!display || !dropdown) return;
+
+    // Construir los <li> a partir de las <option> que Thymeleaf renderizó
+    const optionsSource = document.querySelectorAll('#barrioLista option');
+    lista.innerHTML = '';
+
+    optionsSource.forEach(opt => {
+        const li = document.createElement('li');
+        li.textContent = opt.textContent;
+        li.dataset.id = opt.value;
+        li.addEventListener('click', function() {
+            hidden.value = this.dataset.id;
+            hidden.dataset.nombre = this.textContent;
+            display.textContent = this.textContent;
+            display.classList.remove('abierto');
+            dropdown.style.display = 'none';
+            filtro.value = '';
+            renderLista('');
+            hidden.dispatchEvent(new Event('change'));
+        });
+        lista.appendChild(li);
+    });
+
+    // Abrir/cerrar dropdown al hacer clic en el display
+    display.addEventListener('click', function() {
+        const abierto = dropdown.style.display === 'block';
+        dropdown.style.display = abierto ? 'none' : 'block';
+        display.classList.toggle('abierto', !abierto);
+        if (!abierto) filtro.focus();
+    });
+
+    // Filtrar en tiempo real mientras el usuario escribe
+    filtro.addEventListener('input', function() {
+        renderLista(this.value.toLowerCase().trim());
+    });
+
+    // Cerrar al hacer clic fuera del dropdown
+    document.addEventListener('click', function(e) {
+        if (!display.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+            display.classList.remove('abierto');
+        }
+    });
+
+    function renderLista(texto) {
+        const items = lista.querySelectorAll('li');
+        let visibles = 0;
+        items.forEach(li => {
+            const coincide = li.textContent.toLowerCase().includes(texto);
+            li.style.display = coincide ? '' : 'none';
+            if (coincide) visibles++;
+        });
+
+        const sinRes = lista.querySelector('.sin-resultados');
+        if (sinRes) sinRes.remove();
+
+        if (visibles === 0) {
+            const li = document.createElement('li');
+            li.className = 'sin-resultados';
+            li.textContent = 'No se encontró ningún barrio';
+            lista.appendChild(li);
+        }
+    }
+}function setupRealtimeValidation() {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    const validateEmail = () => {
+        if (emailInput.value.length > 0 && emailInput.value.length < 8) {
+            emailInput.setCustomValidity('El correo debe tener al menos 8 caracteres.');
+        } else {
+            emailInput.setCustomValidity('');
+        }
+    };
+
+    const validatePassword = () => {
+        if (passwordInput.value.length > 0 && passwordInput.value.length < 6) {
+            passwordInput.setCustomValidity('La contraseña debe tener al menos 6 caracteres.');
+        } else {
+            passwordInput.setCustomValidity('');
+        }
+    };
+
+    if (emailInput) emailInput.addEventListener('input', validateEmail);
+    if (passwordInput) passwordInput.addEventListener('input', validatePassword);
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const lastView = sessionStorage.getItem('lastView');
+    sessionStorage.removeItem('lastView');
+    if (lastView) {
+        setTimeout(() => {
+            const menuItemToActivate = document.querySelector(`.menu-item[data-view="${lastView}"]`);
+            if (menuItemToActivate) {
+                menuItemToActivate.click();
+            }
+        }, 100);
+    }
+
+    const contentArea = document.getElementById('content-area');
+    if (contentArea) {
+        contentArea.addEventListener('click', function(event) {
+            const deleteBtn = event.target.closest('.delete-reporte');
+            if (deleteBtn) {
+                event.preventDefault();
+                const reporteId = deleteBtn.getAttribute('data-id');
+                const deleteUrl = deleteBtn.getAttribute('data-url');
+                const reloadViewUrl = deleteBtn.getAttribute('data-reload-view');
+                confirmDeleteReporte(reporteId, deleteUrl, reloadViewUrl);
+                return;
+            }
+
+            const editBtn = event.target.closest('.edit-reporte');
+            if (editBtn) {
+                event.preventDefault();
+                const editUrl = editBtn.getAttribute('data-url');
+                loadEditForm(editUrl);
+                return;
+            }
+
+            // Abrir modal
+            const verDetallesBtn = event.target.closest('.ver-detalles-btn');
+            if (verDetallesBtn) {
+                const modalId = verDetallesBtn.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'flex';
+                return;
+            }
+
+            // Cerrar con botón Cerrar
+            const cerrarBtn = event.target.closest('.cerrar-modal');
+            if (cerrarBtn) {
+                const modalId = cerrarBtn.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'none';
+                return;
+            }
+
+            // Cerrar clickando el overlay
+            if (event.target.classList.contains('modal-overlay')) {
+                const modalId = event.target.getAttribute('data-modal-id');
+                document.getElementById(modalId).style.display = 'none';
+                return;
+            }
+        });
+
+        contentArea.addEventListener('change', function(event) {
+            if (event.target.classList.contains('estado-select')) {
+                const reporteId = event.target.getAttribute('data-id');
+                const nuevoEstado = event.target.value;
+                if (nuevoEstado) {
+                    confirmarCambioEstado(reporteId, nuevoEstado);
+                }
+            }
+        });
+
+        contentArea.addEventListener('submit', function(event) {
+            const form = event.target.closest('form[data-ajax="true"]');
+            if (form) {
+                event.preventDefault();
+
+                const formData = new FormData(form);
+                const url = form.getAttribute('action');
+                const method = form.getAttribute('method') || 'POST';
+                const formType = form.getAttribute('data-form-type');
+
+                Swal.fire({
+                    title: 'Procesando...',
+                    html: 'Por favor, espera un momento.',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                fetch(url, { method: method, body: formData })
+                    .then(async response => {
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => null);
+                            const mensajeEspecifico = errorData && (errorData.error || errorData.message)
+                                ? errorData.error || errorData.message
+                                : 'Error del servidor (' + response.status + ')';
+                            throw new Error(mensajeEspecifico);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.close();
+                        if (data.success) {
+                            showSuccessMessage(data.message || 'Operación realizada con éxito');
+                            const formType = form.getAttribute('data-form-type');
+
+                            if (formType === 'create-admin') {
+                                console.log("Creación de admin exitosa. Redirigiendo a la lista de reportes del admin.");
+                                loadView('/admin/fragmento/lista-reportes');
+                                return;
+                            }
+
+                            if (formType === 'create') {
+                                form.reset();
+                                const barrioIdInput = document.getElementById('barrioId');
+                                if (barrioIdInput) barrioIdInput.value = '';
+                                loadView('/usuario/fragmento/lista-reportes');
+                            } else {
+                                console.log("Editando reporte, volviendo a la lista.");
+                                loadView('/usuario/fragmento/lista-reportes');
+                            }
+                        } else {
+                            showErrorMessage(data.error || 'Ocurrió un error durante la operación');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.close();
+                        showErrorMessage('Error en la solicitud: ' + error.message);
+                        console.error('Error:', error);
+                    });
+            }
+        });
+    }
+
+    setupMenuNavigation();
+    setupLoginFeatures();
+    setupRealtimeValidation();
+    initBarrioFiltro();
+});
+
+
+function setupMenuNavigation() {
+    const menuItems = document.querySelectorAll('.menu-item[data-view]');
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', function() {
+            menuItems.forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            const view = this.getAttribute('data-view');
+            sessionStorage.setItem('lastView', view);
+            loadView(view);
+        });
+    });
+}
+
+function loadView(view) {
+    const contentArea = document.getElementById('content-area');
+    if (!contentArea) return;
+
+    contentArea.innerHTML = '<div class="card"><p style="text-align:center;">Cargando...</p></div>';
+
+    fetch(view)
+        .then(response => {
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
+            return response.text();
+        })
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('[th\\:fragment], div, table');
+            contentArea.innerHTML = fragment ? fragment.outerHTML : html;
+
+            if (view.includes('formulario-reporte') || view.includes('editar-reporte')) {
+                setTimeout(function() {
+                    initBarrioFiltro();
+                }, 300);
+            }
+
+            // Re-ejecutar scripts del fragmento cargado
+            contentArea.querySelectorAll('script').forEach(oldScript => {
+                const newScript = document.createElement('script');
+                if (oldScript.src) {
+                    newScript.src = oldScript.src;
+                } else {
+                    newScript.textContent = oldScript.textContent;
+                }
+                document.body.appendChild(newScript);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar la vista:', error);
+            contentArea.innerHTML = '<div class="card error-message">Error al cargar el contenido. Por favor, inténtalo de nuevo.</div>';
+        });
+}
+
+
+function setupLoginFeatures() {
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    passwordToggles.forEach(toggle => {
+        const passwordInput = toggle.parentElement.querySelector('input[type="password"], input[type="text"]');
+        if (!passwordInput) return;
+
+        toggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.src = type === 'password' ? '/images/icono-ojo-visible.png' : '/images/icono-ojo-oculto.png';
+            this.alt = type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña';
+        });
+    });
+
+    const loginForm = document.querySelector('form[action="/login"]');
+    const loader = document.getElementById('loader');
+
+    if (loginForm && loader) {
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            loader.classList.add('show');
+            setTimeout(() => {
+                loginForm.submit();
+            }, 2000);
+        });
+    }
+}
+
+function loadEditForm(url) {
+    const activeMenuItem = document.querySelector('.menu-item.active');
+    if (activeMenuItem) {
+        sessionStorage.setItem('returnToView', activeMenuItem.getAttribute('data-view'));
+    }
+
+    const contentArea = document.getElementById('content-area');
+    if (!contentArea) return;
+
+    contentArea.innerHTML = '<div class="card"><p style="text-align:center;">Cargando formulario...</p></div>';
+
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            // Parsear igual que loadView
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('[th\\:fragment], div, table');
+            contentArea.innerHTML = fragment ? fragment.outerHTML : html;
+
+            initBarrioFiltro();
+            contentArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Re-ejecutar scripts
+            contentArea.querySelectorAll('script').forEach(oldScript => {
+                const newScript = document.createElement('script');
+                if (oldScript.src) {
+                    newScript.src = oldScript.src;
+                } else {
+                    newScript.textContent = oldScript.textContent;
+                }
+                document.body.appendChild(newScript);
+            });
+        })
+        .catch(error => {
+            console.error('Error al cargar el formulario de edición:', error);
+            contentArea.innerHTML = '<div class="card error-message">Error al cargar el formulario.</div>';
+        });
+}
+
+
+function confirmDeleteReporte(reporteId, url, reloadViewUrl) {
+    showConfirmDialog(
+        '¿Eliminar este reporte?',
+        'Esta acción no se puede deshacer.',
+        () => {
+            fetch(url, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccessMessage('Reporte eliminado correctamente');
+                        loadView(reloadViewUrl);
+                    } else {
+                        showErrorMessage(data.error || 'Error al eliminar el reporte');
+                    }
+                })
+                .catch(error => {
+                    showErrorMessage('Error en la solicitud: ' + error.message);
+                    console.error('Error:', error);
+                });
+        }
+    );
+}
+
+function confirmarCambioEstado(reporteId, nuevoEstado) {
+    showConfirmDialog(
+        '¿Cambiar el estado del reporte?',
+        `El reporte cambiará a estado: ${nuevoEstado.replace('_', ' ')}.`,
+        () => {
+            const formData = new FormData();
+            formData.append('reporteId', reporteId);
+            formData.append('nuevoEstado', nuevoEstado);
+
+            fetch('/admin/cambiar-estado', { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccessMessage('Estado cambiado correctamente');
+                        loadView('/admin/fragmento/lista-reportes');
+                    } else {
+                        showErrorMessage(data.error || 'Error al cambiar el estado');
+                    }
+                })
+                .catch(error => {
+                    showErrorMessage('Error en la solicitud: ' + error.message);
+                    console.error('Error:', error);
+                });
+        }
+    );
+}
+
+function showSuccessMessage(message) {
+    Swal.fire({ icon: 'success', title: 'Éxito', text: message, timer: 3000, showConfirmButton: false });
+}
+
+function showErrorMessage(message) {
+    Swal.fire({ icon: 'error', title: 'Error', text: message, confirmButtonText: 'OK' });
+}
+
+function showConfirmDialog(title, text, onConfirm) {
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            onConfirm();
+        }
+    });
+}
+
+function logout() {
+    showConfirmDialog(
+        '¿Cerrar sesión?',
+        'Se cerrará tu sesión actual.',
+        () => {
+            sessionStorage.clear();
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.classList.add('show');
+            }
+            sessionStorage.removeItem('lastView');
+            setTimeout(() => {
+                window.location.href = '/logout';
+            }, 800);
+        }
+    );
+}
+
+function initBarrioFiltro() {
+    const display  = document.getElementById('barrioDisplay');
+    const dropdown = document.getElementById('barrioDropdown');
+    const filtro   = document.getElementById('barrioFiltro');
+    const lista    = document.getElementById('barrioLista');
+    const hidden   = document.getElementById('barrioId');
+
+    if (!display || !dropdown) return;
+
+    // Construir los <li> a partir de las <option> que Thymeleaf renderizó
+    const optionsSource = document.querySelectorAll('#barrioLista option');
+    lista.innerHTML = '';
+
+    optionsSource.forEach(opt => {
+        const li = document.createElement('li');
+        li.textContent = opt.textContent;
+        li.dataset.id = opt.value;
+        li.addEventListener('click', function() {
+            hidden.value = this.dataset.id;
+            hidden.dataset.nombre = this.textContent;
+            display.textContent = this.textContent;
+            display.classList.remove('abierto');
+            dropdown.style.display = 'none';
+            filtro.value = '';
+            renderLista('');
+            hidden.dispatchEvent(new Event('change'));
+        });
+        lista.appendChild(li);
+    });
+
+    // Abrir/cerrar dropdown al hacer clic en el display
+    display.addEventListener('click', function() {
+        const abierto = dropdown.style.display === 'block';
+        dropdown.style.display = abierto ? 'none' : 'block';
+        display.classList.toggle('abierto', !abierto);
+        if (!abierto) filtro.focus();
+    });
+
+    // Filtrar en tiempo real mientras el usuario escribe
+    filtro.addEventListener('input', function() {
+        renderLista(this.value.toLowerCase().trim());
+    });
+
+    // Cerrar al hacer clic fuera del dropdown
+    document.addEventListener('click', function(e) {
+        if (!display.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+            display.classList.remove('abierto');
+        }
+    });
+
+    function renderLista(texto) {
+        const items = lista.querySelectorAll('li');
+        let visibles = 0;
+        items.forEach(li => {
+            const coincide = li.textContent.toLowerCase().includes(texto);
+            li.style.display = coincide ? '' : 'none';
+            if (coincide) visibles++;
+        });
+
+        const sinRes = lista.querySelector('.sin-resultados');
+        if (sinRes) sinRes.remove();
+
+        if (visibles === 0) {
+            const li = document.createElement('li');
+            li.className = 'sin-resultados';
+            li.textContent = 'No se encontró ningún barrio';
+            lista.appendChild(li);
+        }
+    }
+}
