@@ -334,3 +334,70 @@ body {
         padding: 32px 24px;
     }
 }
+
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 16px 0;
+    color: #999;
+    font-size: 13px;
+}
+
+.separator::before,
+.separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.separator span {
+    padding: 0 10px;
+}
+
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 13px;
+    background: white;
+    color: #333;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-google:hover {
+    border-color: #1a73e8;
+    color: #1a73e8;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(26, 115, 232, 0.15);
+}
+
+.btn-google img {
+    width: 20px;
+    height: 20px;
+}
+
+.forgot-password {
+    text-align: left;
+    margin-top: 12px;
+}
+
+.forgot-password a {
+    font-size: 13px;
+    color: #1a73e8;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.forgot-password a:hover {
+    color: #1558b0;
+    text-decoration: underline;
+}

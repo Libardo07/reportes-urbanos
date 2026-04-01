@@ -2,13 +2,11 @@ package com.reportes.urbanos.reportes_api.controller;
 
 import com.reportes.urbanos.reportes_api.entity.*;
 import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
-import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.enums.TipoReporte;
 import com.reportes.urbanos.reportes_api.repository.*;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +25,14 @@ public class UsuarioController {
     private ReporteRepository reporteRepository;
     @Autowired
     private BarrioRepository barrioRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    // Método utilitario para obtener el usuario logueado desde Spring Security
+    private Usuario getUsuarioLogueado() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return usuarioRepository.findByEmail(email);
+    }
 
     @ModelAttribute
     public void populateModelsWithCommonData(Model model) {
@@ -39,20 +45,17 @@ public class UsuarioController {
     }
 
     @GetMapping("/inicio")
-    public String inicioCiudadano(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuario == null || usuario.getRol() != Rol.CIUDADANO) {
-            return "redirect:/login";
-        }
+    public String inicioCiudadano(Model model) {
+        Usuario usuario = getUsuarioLogueado();
         model.addAttribute("usuario", usuario);
         model.addAttribute("reporte", new Reporte());
         return "usuario_inicio";
     }
 
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
-    public String fragmentoListaReportes(HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        model.addAttribute("reportes", reporteRepository.findByUsuarioOrderByFechaCreacionDesc(usuario));
+    public String fragmentoListaReportes(Model model) {
+        Usuario usuario = getUsuarioLogueado();
+        model.addAttribute("reportes", reporteRepository.findByUsuarioOrderByFechaModificacionDesc(usuario));
         return "usuario/fragments/lista-reportes :: lista-reportes";
     }
 
@@ -63,10 +66,13 @@ public class UsuarioController {
     }
 
     @GetMapping(value = "/editar-reporte/{id}", produces = "text/html")
-    public String fragmentoEditarReporte(@PathVariable String id, HttpSession session, Model model) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
+    public String fragmentoEditarReporte(@PathVariable String id, Model model) {
+        Usuario usuario = getUsuarioLogueado();
         Reporte reporte = reporteRepository.findById(id).orElse(null);
-        if (reporte == null || !reporte.getUsuario().getId().equals(usuario.getId()) || !reporte.getEstado().equals(EstadoReporte.PENDIENTE)) {
+        if (reporte == null
+                || reporte.getUsuario() == null
+                || !reporte.getUsuario().getId().equals(usuario.getId())
+                || !reporte.getEstado().equals(EstadoReporte.PENDIENTE)) {
             return "error :: error-content";
         }
         model.addAttribute("reporte", reporte);
@@ -75,15 +81,10 @@ public class UsuarioController {
 
     @PostMapping("/guardar-reporte")
     public ResponseEntity<Map<String, String>> guardarReporte(@ModelAttribute Reporte reporte,
-                                                                @RequestParam String barrioId,
-                                                                @RequestParam String tipoReporte,
-                                                                HttpSession session) {
+                                                            @RequestParam String barrioId,
+                                                            @RequestParam String tipoReporte) {
         Map<String, String> response = new HashMap<>();
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuario == null || usuario.getRol() != Rol.CIUDADANO) {
-            response.put("error", "Usuario no autorizado.");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }
+        Usuario usuario = getUsuarioLogueado();
         try {
             Barrio barrio = barrioRepository.findById(barrioId).orElse(null);
             TipoReporte tipo = TipoReporte.valueOf(tipoReporte);
@@ -122,13 +123,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/eliminar-reporte/{id}")
-    public ResponseEntity<Map<String, String>> eliminarReporte(@PathVariable String id, HttpSession session) {
+    public ResponseEntity<Map<String, String>> eliminarReporte(@PathVariable String id) {
         Map<String, String> response = new HashMap<>();
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuario == null || usuario.getRol() != Rol.CIUDADANO) {
-            response.put("error", "Usuario no autorizado.");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }
+        Usuario usuario = getUsuarioLogueado();
         try {
             Reporte reporte = reporteRepository.findById(id).orElse(null);
             if (reporte == null || !reporte.getUsuario().getId().equals(usuario.getId())) {

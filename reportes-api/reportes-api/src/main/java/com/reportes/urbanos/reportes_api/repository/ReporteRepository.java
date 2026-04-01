@@ -9,7 +9,8 @@ import java.util.List;
 
 @Repository
 public interface ReporteRepository extends MongoRepository<Reporte, String> {
-    List<Reporte> findByUsuarioOrderByFechaCreacionDesc(Usuario usuario);
+    List<Reporte> findByUsuarioOrderByFechaModificacionDesc(Usuario usuario);
+    List<Reporte> findAllByOrderByFechaModificacionDesc();
     List<Reporte> findAllByOrderByFechaCreacionDesc();
 }
 

@@ -243,9 +243,6 @@ body {
     color: white;
 }
 
-/* ============================================================
-   TABLA WRAPPER — el scroll horizontal va aquí, nunca en .card
-   ============================================================ */
 .tabla-wrapper {
     overflow-x: auto;
     width: 100%;
@@ -256,7 +253,7 @@ body {
     border-collapse: collapse;
     margin-top: 20px;
     table-layout: fixed;
-    min-width: 700px; /* evita que la tabla se comprima demasiado */
+    min-width: 700px; 
 }
 
 .table th, .table td {
@@ -274,9 +271,6 @@ body {
     border-bottom: none;
 }
 
-/* ============================================================
-   ACCIONES — flex directo, sin span intermediario
-   ============================================================ */
 .actions {
     display: flex;
     flex-direction: row;
@@ -287,26 +281,25 @@ body {
 }
 
 .actions span {
-    display: contents; /* el span no crea contenedor extra */
+    display: contents; 
 }
-
-/* ============================================================
-   ANCHOS DE COLUMNA ADMIN (5 columnas)
-   ============================================================ */
 .dashboard-container.admin .table th:nth-child(1),
 .dashboard-container.admin .table td:nth-child(1) { width: 13%; }
 
 .dashboard-container.admin .table th:nth-child(2),
-.dashboard-container.admin .table td:nth-child(2) { width: 18%; max-width: unset; }
+.dashboard-container.admin .table td:nth-child(2) { width: 15%; }
 
 .dashboard-container.admin .table th:nth-child(3),
-.dashboard-container.admin .table td:nth-child(3) { width: 17%; max-width: unset; }
+.dashboard-container.admin .table td:nth-child(3) { width: 15%; }
 
 .dashboard-container.admin .table th:nth-child(4),
-.dashboard-container.admin .table td:nth-child(4) { width: 12%; }
+.dashboard-container.admin .table td:nth-child(4) { width: 15%; }
 
 .dashboard-container.admin .table th:nth-child(5),
-.dashboard-container.admin .table td:nth-child(5) { width: 40%; overflow: visible; }
+.dashboard-container.admin .table td:nth-child(5) { width: 12%; }
+
+.dashboard-container.admin .table th:nth-child(6),
+.dashboard-container.admin .table td:nth-child(6) { width: 30%; overflow: visible; }
 
 /* Ellipsis en columnas de texto */
 .dashboard-container.admin .table th:nth-child(1),
@@ -322,12 +315,12 @@ body {
 
 .dashboard-container.admin .table th,
 .dashboard-container.admin .table td {
-    padding: 7px 10px !important;
-    font-size: 11px !important;
+    padding: 12px 15px !important;
+    font-size: 14px !important;
 }
 
 .dashboard-container.admin .table th {
-    font-size: 15px !important;
+    font-size: 14px !important;
 }
 
 /* Select fijo para no empujar el trash */
@@ -960,88 +953,138 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ============================================================
-   Modal overlay
+   MODAL
    ============================================================ */
 .modal-overlay {
     display: none;
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(10, 20, 60, 0.5);
+    backdrop-filter: blur(4px);
     z-index: 1000;
     justify-content: center;
     align-items: center;
 }
 
+.modal-overlay.activo {
+    display: flex;
+}
+
 .modal-contenido {
-    background: var(--card-color);
-    border-radius: 12px;
-    padding: 30px;
+    background: #fff;
+    border-radius: 16px;
     width: 90%;
-    max-width: 500px;
-    max-height: 85vh;
+    max-width: 540px;
+    max-height: 88vh;
     overflow-y: auto;
-    position: relative;
-    box-shadow: 0 10px 40px rgba(21, 88, 176, 0.2);
-    animation: modalEntrada 0.3s ease-out;
+    box-shadow: 0 24px 64px rgba(21, 88, 176, 0.2);
+    animation: modalEntrada 0.25s ease-out;
 }
 
 @keyframes modalEntrada {
-    from { opacity: 0; transform: translateY(-20px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(-14px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.modal-contenido h2 {
-    margin-bottom: 20px;
-    font-size: 20px;
-    color: var(--admin-color);
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 10px;
-}
-
-.modal-contenido p {
-    padding: 8px 0;
+.modal-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 22px 22px 14px;
     border-bottom: 1px solid var(--border-color);
-    font-size: 14px;
-    color: var(--text-color);
 }
 
-.modal-contenido p:last-of-type { border-bottom: none; }
+.modal-title-block h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--admin-color);
+    margin: 0;
+    line-height: 1.3;
+}
 
 .cerrar-modal {
-    position: absolute;
-    top: 15px; right: 15px;
-    background: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
+    background: rgba(231, 76, 60, 0.08);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.2);
+    border-radius: 8px;
+    padding: 5px 10px;
     cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: background 0.2s;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    margin-left: 12px;
 }
 
-.cerrar-modal:hover { background: #c0392b; }
+.cerrar-modal:hover {
+    background: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+}
 
+.modal-body {
+    padding: 18px 22px 22px;
+}
+
+.modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.modal-field {
+    background: var(--fondo-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.modal-field-full {
+    grid-column: 1 / -1;
+}
+
+.modal-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #5c6bc0;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.modal-value {
+    font-size: 14px;
+    color: var(--text-color);
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* Botón Ver */
 .ver-detalles-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     width: auto !important;
-    height: auto !important;
-    padding: 6px 12px !important;
-    font-size: 13px !important;
-    font-weight: 500 !important;
+    height: 30px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
     background: var(--admin-color) !important;
     color: white !important;
     border-radius: 6px !important;
-    transition: background 0.2s !important;
-    overflow: visible !important;
+    transition: all 0.2s !important;
     white-space: nowrap;
     flex-shrink: 0;
+    overflow: visible !important;
 }
 
 .ver-detalles-btn:hover {
     background: #0d47a1 !important;
-    transform: scale(1.05) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 10px rgba(21, 88, 176, 0.3) !important;
 }
 
 .custom-select-wrapper {
@@ -1142,4 +1185,32 @@ body {
 .custom-select-dropdown ul li.sin-resultados:hover {
     background: none;
     color: #999;
+}
+
+.dashboard-container.admin .btn-enviar-animated {
+    --clr: #1a237e;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper .form-control {
+    padding-right: 45px;
+}
+
+.password-toggle-panel {
+    position: absolute;
+    right: 14px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.password-toggle-panel:hover {
+    opacity: 1;
 }

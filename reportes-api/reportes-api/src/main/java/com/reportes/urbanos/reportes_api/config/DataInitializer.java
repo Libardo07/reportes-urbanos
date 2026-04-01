@@ -4,7 +4,9 @@ import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -16,6 +18,18 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Value("${admin.email}")
+    private String adminEmail;
+
+    @Value("${admin.password}")
+    private String adminPassword;
+
+    @Value("${admin.nombre}")
+    private String adminNombre;
+
     @Override
     public void run(String... args) throws Exception {
         if (usuarioRepository == null) {
@@ -25,9 +39,9 @@ public class DataInitializer implements CommandLineRunner {
 
         if (usuarioRepository.findByEmail("adminMain@gmail.com") == null) {
             Usuario adminPrincipal = new Usuario();
-            adminPrincipal.setNombre("adminMain");
-            adminPrincipal.setEmail("adminMain@gmail.com");
-            adminPrincipal.setPassword("adminMain");
+            adminPrincipal.setNombre(adminNombre);
+            adminPrincipal.setEmail(adminEmail);
+            adminPrincipal.setPassword(passwordEncoder.encode(adminPassword));
             adminPrincipal.setRol(Rol.ADMIN);
             adminPrincipal.setFechaCreacion(LocalDateTime.now(ZoneId.of("America/Bogota")));
             try {

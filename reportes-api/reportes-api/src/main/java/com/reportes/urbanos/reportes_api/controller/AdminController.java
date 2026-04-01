@@ -6,13 +6,16 @@ import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -24,23 +27,33 @@ public class AdminController {
 
     @Autowired
     private ReporteRepository reporteRepository;
+
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Value("${admin.email}")
+    private String adminEmail;
+
+    // Método utilitario para obtener el usuario logueado desde Spring Security
+    private Usuario getUsuarioLogueado() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return usuarioRepository.findByEmail(email);
+    }
+
     @GetMapping("/inicio")
-    public String mostrarPanelAdmin(Model model, HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogueado");
-        if (usuario == null || usuario.getRol() != Rol.ADMIN) {
-            return "redirect:/login";
-        }
+    public String mostrarPanelAdmin(Model model) {
+        Usuario usuario = getUsuarioLogueado();
         model.addAttribute("usuario", usuario);
-        model.addAttribute("reportes", reporteRepository.findAllByOrderByFechaCreacionDesc());
+        model.addAttribute("reportes", reporteRepository.findAllByOrderByFechaModificacionDesc());
         return "admin_inicio";
     }
 
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(Model model) {
-        model.addAttribute("reportes", reporteRepository.findAllByOrderByFechaCreacionDesc());
+        model.addAttribute("reportes", reporteRepository.findAllByOrderByFechaModificacionDesc());
         return "admin/fragments/lista-reportes :: lista-reportes";
     }
 
@@ -51,10 +64,10 @@ public class AdminController {
     }
 
     @PostMapping("/registrar-admin")
-    public ResponseEntity<Map<String, String>> registrarAdmin(@ModelAttribute Usuario nuevoAdmin, HttpSession session) {
+    public ResponseEntity<Map<String, String>> registrarAdmin(@ModelAttribute Usuario nuevoAdmin) {
         Map<String, String> response = new HashMap<>();
-        Usuario adminPrincipal = (Usuario) session.getAttribute("usuarioLogueado");
-        if (adminPrincipal == null || !adminPrincipal.getEmail().equals("adminMain@gmail.com")) {
+        Usuario adminPrincipal = getUsuarioLogueado();
+        if (adminPrincipal == null || !adminPrincipal.getEmail().equals(adminEmail)) {
             response.put("error", "Solo el administrador principal puede registrar nuevos administradores.");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
@@ -65,6 +78,7 @@ public class AdminController {
             }
             nuevoAdmin.setRol(Rol.ADMIN);
             nuevoAdmin.setFechaCreacion(LocalDateTime.now(ZoneId.of("America/Bogota")));
+            nuevoAdmin.setPassword(passwordEncoder.encode(nuevoAdmin.getPassword()));
             usuarioRepository.save(nuevoAdmin);
             response.put("success", "true");
             response.put("message", "Administrador registrado correctamente.");
@@ -75,13 +89,10 @@ public class AdminController {
     }
 
     @PostMapping("/cambiar-estado")
-    public ResponseEntity<Map<String, String>> cambiarEstado(@RequestParam String reporteId, @RequestParam String nuevoEstado, HttpSession session) {
+    public ResponseEntity<Map<String, String>> cambiarEstado(@RequestParam String reporteId,
+                                                            @RequestParam String nuevoEstado) {
         Map<String, String> response = new HashMap<>();
-        Usuario admin = (Usuario) session.getAttribute("usuarioLogueado");
-        if (admin == null || admin.getRol() != Rol.ADMIN) {
-            response.put("error", "Usuario no autorizado.");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }
+        Usuario admin = getUsuarioLogueado();
         try {
             Reporte reporte = reporteRepository.findById(reporteId).orElse(null);
             if (reporte == null) {
@@ -112,13 +123,8 @@ public class AdminController {
     }
 
     @PostMapping("/eliminar-reporte/{id}")
-    public ResponseEntity<Map<String, String>> eliminarReporte(@PathVariable String id, HttpSession session) {
+    public ResponseEntity<Map<String, String>> eliminarReporte(@PathVariable String id) {
         Map<String, String> response = new HashMap<>();
-        Usuario admin = (Usuario) session.getAttribute("usuarioLogueado");
-        if (admin == null || admin.getRol() != Rol.ADMIN) {
-            response.put("error", "Usuario no autorizado.");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }
         try {
             Reporte reporte = reporteRepository.findById(id).orElse(null);
             if (reporte == null) {

@@ -191,10 +191,22 @@ function loadView(view) {
             contentArea.innerHTML = fragment ? fragment.outerHTML : html;
 
             if (view.includes('formulario-reporte') || view.includes('editar-reporte')) {
-                setTimeout(function() {
-                    initBarrioFiltro();
-                }, 300);
-            }
+            setTimeout(function() {
+                initBarrioFiltro();
+            }, 300);
+        }
+
+        if (view.includes('formulario-reporte') || view.includes('editar-reporte')) {
+            var scriptAnterior = document.querySelector('script[src*="formulario-reporte.js"]');
+            if (scriptAnterior) scriptAnterior.remove();
+            var script = document.createElement('script');
+            script.src = '/js/formulario-reporte.js?t=' + Date.now();
+            document.body.appendChild(script);
+        }
+
+        // Inicializar ojitos en vistas cargadas dinámicamente
+        setupPasswordToggles();
+        
         })
         .catch(error => {
             console.error('Error al cargar la vista:', error);
@@ -204,6 +216,7 @@ function loadView(view) {
 
 
 function setupLoginFeatures() {
+    // Ojito para login y registro (páginas completas)
     const passwordToggles = document.querySelectorAll('.password-toggle');
     passwordToggles.forEach(toggle => {
         const passwordInput = toggle.parentElement.querySelector('input[type="password"], input[type="text"]');
@@ -231,6 +244,22 @@ function setupLoginFeatures() {
     }
 }
 
+// Ojito para formularios cargados dinámicamente en el panel (formulario-admin, etc.)
+function setupPasswordToggles() {
+    const toggles = document.querySelectorAll('.password-toggle-panel');
+    toggles.forEach(toggle => {
+        const passwordInput = toggle.closest('.password-wrapper').querySelector('input');
+        if (!passwordInput) return;
+
+        toggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.src = type === 'password' ? '/images/icono-ojo-visible.png' : '/images/icono-ojo-oculto.png';
+            this.alt = type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña';
+        });
+    });
+}
+
 function loadEditForm(url) {
     const activeMenuItem = document.querySelector('.menu-item.active');
     if (activeMenuItem) {
@@ -247,6 +276,15 @@ function loadEditForm(url) {
         .then(html => {
             contentArea.innerHTML = html;
             initBarrioFiltro();
+            setupPasswordToggles();
+
+            // Cargar mapa en editar reporte
+            var scriptAnterior = document.querySelector('script[src*="formulario-reporte.js"]');
+            if (scriptAnterior) scriptAnterior.remove();
+            var script = document.createElement('script');
+            script.src = '/js/formulario-reporte.js?t=' + Date.now();
+            document.body.appendChild(script);
+
             contentArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
         })
         .catch(error => {
@@ -356,7 +394,6 @@ function initBarrioFiltro() {
 
     if (!display || !dropdown) return;
 
-    // Construir los <li> a partir de las <option> que Thymeleaf renderizó
     const optionsSource = document.querySelectorAll('#barrioLista option');
     lista.innerHTML = '';
 
@@ -377,7 +414,6 @@ function initBarrioFiltro() {
         lista.appendChild(li);
     });
 
-    // Abrir/cerrar dropdown al hacer clic en el display
     display.addEventListener('click', function() {
         const abierto = dropdown.style.display === 'block';
         dropdown.style.display = abierto ? 'none' : 'block';
@@ -385,12 +421,10 @@ function initBarrioFiltro() {
         if (!abierto) filtro.focus();
     });
 
-    // Filtrar en tiempo real mientras el usuario escribe
     filtro.addEventListener('input', function() {
         renderLista(this.value.toLowerCase().trim());
     });
 
-    // Cerrar al hacer clic fuera del dropdown
     document.addEventListener('click', function(e) {
         if (!display.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.style.display = 'none';
@@ -418,3 +452,14 @@ function initBarrioFiltro() {
         }
     }
 }
+
+// Limpia el parámetro ?error de la URL sin recargar la página
+if (window.location.search.includes('error')) {
+    window.history.replaceState(null, '', '/login');
+}
+
+// Evita que el usuario pueda volver atrás con el botón del navegador
+history.pushState(null, null, location.href);
+window.onpopstate = function() {
+    history.pushState(null, null, location.href);
+};
