@@ -1,5 +1,7 @@
 package com.reportes.urbanos.reportes_api.controller;
 
+import com.reportes.urbanos.reportes_api.config.ReporteService;
+import com.reportes.urbanos.reportes_api.config.UsuarioService;
 import com.reportes.urbanos.reportes_api.entity.Reporte;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
@@ -26,6 +28,9 @@ import java.util.Map;
 public class AdminController {
 
     @Autowired
+    private ReporteService reporteService;
+
+    @Autowired
     private ReporteRepository reporteRepository;
 
     @Autowired
@@ -34,26 +39,29 @@ public class AdminController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @Value("${admin.email}")
     private String adminEmail;
 
     // Método utilitario para obtener el usuario logueado desde Spring Security
     private Usuario getUsuarioLogueado() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return usuarioRepository.findByEmail(email);
+        return usuarioService.getUsuarioPorEmail(email);
     }
 
     @GetMapping("/inicio")
     public String mostrarPanelAdmin(Model model) {
         Usuario usuario = getUsuarioLogueado();
         model.addAttribute("usuario", usuario);
-        model.addAttribute("reportes", reporteRepository.findAllByOrderByFechaModificacionDesc());
+        model.addAttribute("reportes", reporteService.getReportesAdmin());
         return "admin_inicio";
     }
 
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(Model model) {
-        model.addAttribute("reportes", reporteRepository.findAllByOrderByFechaModificacionDesc());
+        model.addAttribute("reportes", reporteService.getReportesAdmin());
         return "admin/fragments/lista-reportes :: lista-reportes";
     }
 
@@ -113,7 +121,7 @@ public class AdminController {
             reporte.setEstado(estado);
             reporte.setUsuarioAdmin(admin);
             reporte.preActualizar();
-            reporteRepository.save(reporte);
+            reporteService.guardarReporte(reporte);
             response.put("success", "true");
             response.put("message", "Estado del reporte cambiado correctamente.");
         } catch (Exception e) {
@@ -131,7 +139,7 @@ public class AdminController {
                 response.put("error", "Reporte no encontrado.");
                 return ResponseEntity.badRequest().body(response);
             }
-            reporteRepository.delete(reporte);
+            reporteService.eliminarReporte(reporte);
             response.put("success", "true");
             response.put("message", "Reporte eliminado correctamente.");
         } catch (Exception e) {

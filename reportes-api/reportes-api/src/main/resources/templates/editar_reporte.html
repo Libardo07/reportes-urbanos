@@ -34,7 +34,7 @@
             <div class="direccion-wrapper">
                 <input type="text" id="direccion" th:field="*{direccion}" class="form-control" placeholder="Escribe o selecciona en el mapa..." required>
                 <button type="button" class="btn-mapa" id="btnMapa" title="Seleccionar en el mapa">
-                    <img src="/images/mapa.png" alt="">
+                    <img src="/images/mapa.png" alt="" loading="lazy">
                 </button>
             </div>
             <div id="mapa-container">
@@ -50,10 +50,10 @@
         <div class="form-group">
             <label for="barrioId">Barrio:</label>
             <input type="hidden" name="barrioId" id="barrioId"
-                   th:value="${reporte.barrio != null ? reporte.barrio.id : ''}" required>
+                    th:value="${reporte.barrio != null ? reporte.barrio.id : ''}" required>
             <div class="custom-select-wrapper">
                 <div class="custom-select-display" id="barrioDisplay"
-                     th:text="${reporte.barrio != null ? reporte.barrio.nombre : 'Seleccione un barrio'}">
+                    th:text="${reporte.barrio != null ? reporte.barrio.nombre : 'Seleccione un barrio'}">
                     Seleccione un barrio
                 </div>
                 <div class="custom-select-dropdown" id="barrioDropdown" style="display:none;">

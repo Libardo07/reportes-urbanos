@@ -27,7 +27,7 @@
                 <div class="text"><span>BIENVENIDO</span></div>
             </div>
             <div class="usuario-info">
-                <img th:src="@{/images/icono-login.png}" alt="Usuario">
+                <img th:src="@{/images/icono-login.png}" alt="Usuario" loading="lazy">
                 <div class="details">
                     <div class="nombre" th:text="${usuario.nombre}">Ana Gómez</div>
                     <div class="rol" th:text="${usuario.rol}">Admin</div>
@@ -36,18 +36,18 @@
         </div>
         <nav class="sidebar-menu">
             <div class="menu-item menu-item-animated active" th:attr="data-view='/admin/fragmento/lista-reportes'">
-                <img th:src="@{/images/icono-list.png}" alt="Ver">
+                <img th:src="@{/images/icono-list.png}" alt="Ver" loading="lazy">
                 <span>Ver reportes</span>
             </div>
             <div class="menu-item menu-item-animated" th:if="${usuario.email == 'adminMain@gmail.com'}" th:attr="data-view='/admin/fragmento/formulario-admin'">
-                <img th:src="@{/images/icono-registro.png}" alt="Crear">
+                <img th:src="@{/images/icono-registro.png}" alt="Crear" loading="lazy">
                 <span>Crear administrador</span>
             </div>
         </nav>
         <div class="sidebar-footer">
             <button class="logout-btn-animated" onclick="logout()">
                 <div class="sign">
-                    <img th:src="@{/images/icono-logout.png}" alt="Salir">
+                    <img th:src="@{/images/icono-logout.png}" alt="Salir" loading="lazy">
                 </div>
         <div class="text">Salir</div>
         </div>

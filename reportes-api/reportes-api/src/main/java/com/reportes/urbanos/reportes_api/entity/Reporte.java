@@ -3,6 +3,7 @@ package com.reportes.urbanos.reportes_api.entity;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -10,6 +11,14 @@ import java.time.ZoneId;
 import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
 import com.reportes.urbanos.reportes_api.enums.TipoReporte;
 
+
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+
+
+@CompoundIndexes({
+    @CompoundIndex(name = "idx_usuario_fecha", def = "{'usuario.$id': 1, 'fechaModificacion': -1}"),
+    @CompoundIndex(name = "idx_fecha_modificacion", def = "{'fechaModificacion': -1}")
+})
 @Document(collection = "reportes")
 @Getter @Setter
 @NoArgsConstructor

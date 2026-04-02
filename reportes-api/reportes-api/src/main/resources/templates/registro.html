@@ -11,7 +11,7 @@
     <div class="page-wrapper">
 
         <div class="left-panel">
-            <div class="icon"><img src="/images/registro.png" alt=""></div>
+            <div class="icon"><img src="/images/registro.png" alt="" loading="lazy"></div>
             <h2>¡Únete ahora!</h2>
             <p>Crea tu cuenta y empieza a reportar problemas en tu barrio de Cartagena de Indias.</p>
             <a th:href="@{/login}" class="btn-outline">Ya tengo cuenta</a>
@@ -27,17 +27,17 @@
 
             <form th:action="@{/registro}" th:object="${usuario}" method="post">
                 <div class="input-group">
-                    <img th:src="@{/images/icono-login.png}" alt="Usuario" class="icon">
+                    <img th:src="@{/images/icono-login.png}" alt="Usuario" class="icon" loading="lazy">
                     <input type="text" th:field="*{nombre}" placeholder="Nombre completo" minlength="4" required>
                 </div>
                 <div class="input-group">
-                    <img th:src="@{/images/icono-email.png}" alt="Email" class="icon">
+                    <img th:src="@{/images/icono-email.png}" alt="Email" class="icon" loading="lazy">
                     <input type="email" th:field="*{email}" placeholder="Correo electrónico" minlength="14" required>
                 </div>
                 <div class="input-group">
-                    <img th:src="@{/images/icono-password.png}" alt="Contraseña" class="icon">
+                    <img th:src="@{/images/icono-password.png}" alt="Contraseña" class="icon" loading="lazy">
                     <input type="password" id="password" th:field="*{password}" placeholder="Contraseña" minlength="6" required>
-                    <img th:src="@{/images/icono-ojo-visible.png}" alt="Mostrar contraseña" class="password-toggle">
+                    <img th:src="@{/images/icono-ojo-visible.png}" alt="Mostrar contraseña" class="password-toggle" loading="lazy">
                 </div>
                 <button type="submit" class="btn">Registrarme</button>
             </form>

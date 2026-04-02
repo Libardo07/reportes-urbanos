@@ -1,5 +1,6 @@
 package com.reportes.urbanos.reportes_api.controller;
 
+import com.reportes.urbanos.reportes_api.config.UsuarioService;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
@@ -22,6 +23,9 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @GetMapping("/")
     public String index() {
         return "index";
@@ -33,7 +37,7 @@ public class AuthController {
                                 Model model,
                                 Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
-            Usuario usuario = usuarioRepository.findByEmail(authentication.getName());
+            Usuario usuario = usuarioService.getUsuarioPorEmail(authentication.getName());
             if (usuario != null && usuario.getRol() == Rol.ADMIN) {
                 return "redirect:/admin/inicio";
             }

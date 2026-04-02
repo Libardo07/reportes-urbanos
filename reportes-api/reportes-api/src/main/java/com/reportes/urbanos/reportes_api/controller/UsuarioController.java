@@ -1,5 +1,7 @@
 package com.reportes.urbanos.reportes_api.controller;
 
+import com.reportes.urbanos.reportes_api.config.BarrioService;
+import com.reportes.urbanos.reportes_api.config.ReporteService;
 import com.reportes.urbanos.reportes_api.entity.*;
 import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
 import com.reportes.urbanos.reportes_api.enums.TipoReporte;
@@ -11,20 +13,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @Controller
 @RequestMapping("/usuario")
 public class UsuarioController {
 
     @Autowired
+    private ReporteService reporteService;  
+
+    @Autowired
     private ReporteRepository reporteRepository;
     @Autowired
     private BarrioRepository barrioRepository;
+    @Autowired
+    private BarrioService barrioService;
     @Autowired
     private UsuarioRepository usuarioRepository;
 
@@ -36,13 +41,9 @@ public class UsuarioController {
 
     @ModelAttribute
     public void populateModelsWithCommonData(Model model) {
-        List<Barrio> barriosOrdenados = barrioRepository.findAll()
-                .stream()
-                .sorted(Comparator.comparing(Barrio::getNombre))
-                .collect(Collectors.toList());
-        model.addAttribute("barrios", barriosOrdenados);
-        model.addAttribute("tipos", TipoReporte.values());
-    }
+    model.addAttribute("barrios", barrioService.getBarriosOrdenados());
+    model.addAttribute("tipos", TipoReporte.values());
+}
 
     @GetMapping("/inicio")
     public String inicioCiudadano(Model model) {
@@ -55,7 +56,7 @@ public class UsuarioController {
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(Model model) {
         Usuario usuario = getUsuarioLogueado();
-        model.addAttribute("reportes", reporteRepository.findByUsuarioOrderByFechaModificacionDesc(usuario));
+        model.addAttribute("reportes", reporteService.getReportesUsuario(usuario));
         return "usuario/fragments/lista-reportes :: lista-reportes";
     }
 
@@ -105,14 +106,14 @@ public class UsuarioController {
                 reporteExistente.setBarrio(barrio);
                 reporteExistente.setTipo(tipo);
                 reporteExistente.preActualizar();
-                reporteRepository.save(reporteExistente);
+                reporteService.guardarReporte(reporteExistente);
                 response.put("message", "Reporte actualizado correctamente.");
             } else {
                 reporte.setBarrio(barrio);
                 reporte.setTipo(tipo);
                 reporte.setUsuario(usuario);
                 reporte.preGuardar();
-                reporteRepository.save(reporte);
+                reporteService.guardarReporte(reporte);
                 response.put("message", "Reporte creado correctamente.");
             }
             response.put("success", "true");
@@ -136,7 +137,7 @@ public class UsuarioController {
                 response.put("error", "Este reporte ya está en estado '" + reporte.getEstado() + "' y no puede ser eliminado.");
                 return ResponseEntity.badRequest().body(response);
             }
-            reporteRepository.delete(reporte);
+            reporteService.eliminarReporte(reporte);
             response.put("success", "true");
             response.put("message", "Reporte eliminado correctamente.");
         } catch (Exception e) {
