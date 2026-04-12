@@ -13,6 +13,10 @@
 
 ---
 
+![Hero](./assets/hero.png)
+
+---
+
 ## 📋 About the Project
 
 **Urban Reports System** is a civic web platform that allows citizens of Cartagena de Indias to report infrastructure and public service problems in their neighborhoods, connecting them directly with the administrators responsible for resolving them.
@@ -23,6 +27,8 @@ Citizens can register issues such as damaged roads, broken street lights, water 
 
 ## ✨ Features
 
+![Features](./assets/features.png)
+
 - 📝 **Create reports** with title, description, address and neighborhood
 - 📊 **Real-time status tracking** — Pending, In Progress, Resolved
 - ✏️ **Edit and delete** reports while in Pending status
@@ -32,6 +38,18 @@ Citizens can register issues such as damaged roads, broken street lights, water 
 - ⚡ **Redis caching** for improved performance
 - 🗺️ **Full coverage** of all 187 neighborhoods of Cartagena de Indias
 - 🐳 **Dockerized** for easy deployment
+
+---
+
+## 🖥️ Screenshots
+
+| Login | Citizen Dashboard |
+|-------|------------------|
+| ![Login](./assets/login.png) | ![Dashboard](./assets/dashboard.png) |
+
+| User Roles | Team |
+|------------|------|
+| ![Roles](./assets/roles.png) | ![Team](./assets/team.png) |
 
 ---
 
@@ -105,6 +123,8 @@ The application will be available at `http://localhost:9093`
 ---
 
 ## 👥 User Roles
+
+![Roles](./assets/roles.png)
 
 ### 👤 Citizen
 - Register and log in (email or Google)
