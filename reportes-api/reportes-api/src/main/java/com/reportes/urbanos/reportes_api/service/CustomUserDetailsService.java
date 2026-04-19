@@ -3,12 +3,14 @@ package com.reportes.urbanos.reportes_api.service;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -24,6 +26,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (usuario == null) {
             throw new UsernameNotFoundException("Usuario no encontrado: " + email);
         }
+
+        // Bloquear login si no ha verificado el email
+        if (!usuario.isEmailVerificado()) {
+            throw new DisabledException("Email no verificado");
+        }
+
         return new User(
             usuario.getEmail(),
             usuario.getPassword(),

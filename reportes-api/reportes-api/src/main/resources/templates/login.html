@@ -29,6 +29,22 @@
                 <span th:text="${error}"></span>
             </div>
 
+            <div th:if="${noVerificado}" class="error-message">
+                Debes verificar tu correo antes de iniciar sesión. Revisa tu bandeja de entrada.
+            </div>
+
+            <div th:if="${verificacionEnviada}" class="success-message">
+                📧 Te enviamos un correo de verificación. Revisa tu bandeja de entrada.
+            </div>
+
+            <div th:if="${verificacionExitosa}" class="success-message">
+                ✅ ¡Correo verificado! Ya puedes iniciar sesión.
+            </div>
+
+            <div th:if="${tokenInvalido}" class="error-message">
+                El enlace de verificación es inválido o ha expirado. Regístrate de nuevo.
+            </div>
+
             <div th:if="${param.registroExitoso}" class="success-message">
                 ¡Registro exitoso! Ahora puedes iniciar sesión.
             </div>
