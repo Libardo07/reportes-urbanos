@@ -15,7 +15,7 @@ public class EmailValidationService {
     private final RestTemplate restTemplate;
 
     private static final String API_URL =
-        "https://emailvalidation.abstractapi.com/v1/?api_key={key}&email={email}";
+        "https://emailreputation.abstractapi.com/v1/?api_key={key}&email={email}";
 
     public EmailValidationService() {
         this.restTemplate = new RestTemplate();
