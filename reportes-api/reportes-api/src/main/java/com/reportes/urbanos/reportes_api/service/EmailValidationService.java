@@ -34,8 +34,16 @@ public class EmailValidationService {
 
             if (response == null) {
                 log.warn("AbstractAPI no retornó respuesta para: {}", email);
-                return null; // Si la API falla, dejamos pasar
+                return null;
             }
+
+            // ⬇️ AGREGA ESTE LOG TEMPORAL
+            log.info("=== AbstractAPI Response ===");
+            log.info("Email: {}", response.email());
+            log.info("Deliverability: {}", response.deliverability());
+            log.info("isDisposable: {}", response.isDisposableEmail());
+            log.info("isMxFound: {}", response.isMxFound());
+            log.info("===========================");
 
             if (response.isDisposableEmail() != null && response.isDisposableEmail().value()) {
                 return "No se permiten correos temporales o desechables.";
@@ -49,12 +57,11 @@ public class EmailValidationService {
                 return "El correo electrónico no es válido o no existe.";
             }
 
-            log.info("Email validado OK: {} → {}", email, response.deliverability());
-            return null; // Todo bien ✅
+            return null;
 
         } catch (Exception e) {
             log.warn("Error al contactar AbstractAPI, se omite validación: {}", e.getMessage());
-            return null; // Si la API está caída, no bloqueamos el registro
+            return null;
         }
     }
 }
