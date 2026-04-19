@@ -1,11 +1,12 @@
 package com.reportes.urbanos.reportes_api.controller;
 
-import com.reportes.urbanos.reportes_api.config.BarrioService;
-import com.reportes.urbanos.reportes_api.config.ReporteService;
 import com.reportes.urbanos.reportes_api.entity.*;
 import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
 import com.reportes.urbanos.reportes_api.enums.TipoReporte;
 import com.reportes.urbanos.reportes_api.repository.*;
+import com.reportes.urbanos.reportes_api.service.BarrioService;
+import com.reportes.urbanos.reportes_api.service.ReporteService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;

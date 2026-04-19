@@ -1,13 +1,14 @@
 package com.reportes.urbanos.reportes_api.controller;
 
-import com.reportes.urbanos.reportes_api.config.ReporteService;
-import com.reportes.urbanos.reportes_api.config.UsuarioService;
 import com.reportes.urbanos.reportes_api.entity.Reporte;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
+import com.reportes.urbanos.reportes_api.service.ReporteService;
+import com.reportes.urbanos.reportes_api.service.UsuarioService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

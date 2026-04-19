@@ -3,6 +3,9 @@ package com.reportes.urbanos.reportes_api.config;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
+import com.reportes.urbanos.reportes_api.service.CustomOAuth2UserService;
+import com.reportes.urbanos.reportes_api.service.CustomUserDetailsService;
+
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

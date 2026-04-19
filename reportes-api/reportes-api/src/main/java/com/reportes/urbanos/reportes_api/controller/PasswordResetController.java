@@ -1,11 +1,12 @@
 package com.reportes.urbanos.reportes_api.controller;
 
-import com.reportes.urbanos.reportes_api.config.PasswordResetService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import com.reportes.urbanos.reportes_api.service.PasswordResetService;
 
 @Controller
 @RequestMapping("/recuperar-password")

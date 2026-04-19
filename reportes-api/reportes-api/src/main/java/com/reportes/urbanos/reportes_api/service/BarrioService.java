@@ -1,4 +1,4 @@
-package com.reportes.urbanos.reportes_api.config;
+package com.reportes.urbanos.reportes_api.service;
 
 import com.reportes.urbanos.reportes_api.entity.Barrio;
 import com.reportes.urbanos.reportes_api.repository.BarrioRepository;

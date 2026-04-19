@@ -1,9 +1,11 @@
 package com.reportes.urbanos.reportes_api.controller;
 
-import com.reportes.urbanos.reportes_api.config.UsuarioService;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
+import com.reportes.urbanos.reportes_api.service.EmailValidationService;
+import com.reportes.urbanos.reportes_api.service.UsuarioService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,9 @@ public class AuthController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private EmailValidationService emailValidationService;
 
     @GetMapping("/")
     public String index() {
@@ -60,14 +65,26 @@ public class AuthController {
 
     @PostMapping("/registro")
     public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
+
+        // 1. Validar que el email es real con AbstractAPI
+        String emailError = emailValidationService.validarEmail(usuario.getEmail());
+        if (emailError != null) {
+            model.addAttribute("error", emailError);
+            return "registro";
+        }
+
+        // 2. Verificar que no esté ya registrado
         if (usuarioRepository.findByEmail(usuario.getEmail()) != null) {
             model.addAttribute("error", "Ya existe un usuario con ese correo.");
             return "registro";
         }
+
+        // 3. Guardar usuario
         usuario.setRol(Rol.CIUDADANO);
         usuario.setFechaCreacion(LocalDateTime.now(ZoneId.of("America/Bogota")));
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuarioRepository.save(usuario);
+
         return "redirect:/login?registroExitoso";
     }
 
