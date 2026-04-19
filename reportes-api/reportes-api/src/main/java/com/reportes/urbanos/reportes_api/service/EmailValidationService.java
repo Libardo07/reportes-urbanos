@@ -21,10 +21,10 @@ public class EmailValidationService {
         this.restTemplate = new RestTemplate();
     }
 
-    /**
-     * @return null si el email es válido, o un mensaje de error si no lo es.
-     */
     public String validarEmail(String email) {
+
+        log.info(">>> API KEY que está usando Spring: [{}]", apiKey);
+
         try {
             AbstractApiEmailResponse response = restTemplate.getForObject(
                 API_URL,
@@ -37,7 +37,6 @@ public class EmailValidationService {
                 return null;
             }
 
-            // ⬇️ AGREGA ESTE LOG TEMPORAL
             log.info("=== AbstractAPI Response ===");
             log.info("Email: {}", response.email());
             log.info("Deliverability: {}", response.deliverability());
