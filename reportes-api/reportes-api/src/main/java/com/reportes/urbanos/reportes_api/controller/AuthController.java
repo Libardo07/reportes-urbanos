@@ -1,11 +1,13 @@
 package com.reportes.urbanos.reportes_api.controller;
 
+import com.reportes.urbanos.reportes_api.service.UsuarioService;
+import com.reportes.urbanos.reportes_api.service.VerificacionService;
+
+import jakarta.servlet.http.HttpSession;
+
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
-import com.reportes.urbanos.reportes_api.service.EmailValidationService;
-import com.reportes.urbanos.reportes_api.service.UsuarioService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -29,7 +31,7 @@ public class AuthController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private EmailValidationService emailValidationService;
+    private VerificacionService verificacionService;
 
     @GetMapping("/")
     public String index() {
@@ -40,7 +42,8 @@ public class AuthController {
     public String mostrarLogin(@RequestParam(value = "error", required = false) String error,
                                 @RequestParam(value = "registroExitoso", required = false) String registroExitoso,
                                 Model model,
-                                Authentication authentication) {
+                                Authentication authentication,
+                                HttpSession session) {
         if (authentication != null && authentication.isAuthenticated()) {
             Usuario usuario = usuarioService.getUsuarioPorEmail(authentication.getName());
             if (usuario != null && usuario.getRol() == Rol.ADMIN) {
@@ -49,7 +52,14 @@ public class AuthController {
             return "redirect:/usuario/inicio";
         }
         if (error != null) {
-            model.addAttribute("error", "Correo o contraseña incorrectos.");
+            String emailParam = (String) session.getAttribute("emailNoVerificado");
+            if (emailParam != null) {
+                model.addAttribute("error", "Debes verificar tu correo antes de iniciar sesión.");
+                model.addAttribute("emailNoVerificado", emailParam);
+                session.removeAttribute("emailNoVerificado");
+            } else {
+                model.addAttribute("error", "Correo o contraseña incorrectos.");
+            }
         }
         if (registroExitoso != null) {
             model.addAttribute("registroExitoso", true);
@@ -64,32 +74,20 @@ public class AuthController {
     }
 
     @PostMapping("/registro")
-    public String registrarUsuario(@ModelAttribute Usuario usuario, Model model) {
-
-        // 1. Validar que el email es real con AbstractAPI
-        String emailError = emailValidationService.validarEmail(usuario.getEmail());
-        if (emailError != null) {
-            model.addAttribute("error", emailError);
-            return "registro";
-        }
-
-        // 2. Verificar que no esté ya registrado
+    public String registrarUsuario(@ModelAttribute Usuario usuario, Model model, HttpSession session) {
         if (usuarioRepository.findByEmail(usuario.getEmail()) != null) {
             model.addAttribute("error", "Ya existe un usuario con ese correo.");
             return "registro";
         }
-
-        // 3. Guardar usuario
         usuario.setRol(Rol.CIUDADANO);
         usuario.setFechaCreacion(LocalDateTime.now(ZoneId.of("America/Bogota")));
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setVerificado(false);
         usuarioRepository.save(usuario);
 
-        return "redirect:/login?registroExitoso";
+        verificacionService.enviarCodigo(usuario.getEmail());
+        session.setAttribute("emailPendiente", usuario.getEmail());
+
+        return "redirect:/verificar-correo";
     }
-
-
-    
-
-    
 }

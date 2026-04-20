@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Correo - Reportes Urbanos</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/verificacion.css}">
+</head>
+<body>
+
+    <div id="loader" class="loader-overlay">
+        <div class="loader"></div>
+    </div>
+
+    <div class="page-wrapper">
+
+        <div class="left-panel">
+            <div class="icon">
+                <div class="email-icon">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                </div>
+            </div>
+            <h2>Verifica tu correo</h2>
+            <p>Hemos enviado un código de verificación a tu correo electrónico. Ingresa el código para activar tu cuenta.</p>
+            <a th:href="@{/registro}" class="btn-outline">Volver al registro</a>
+        </div>
+
+        <div class="right-panel">
+            <h2>Verifica tu correo</h2>
+            <p class="subtitle">Hemos enviado un código de verificación a tu correo electrónico</p>
+
+            <!-- Email destino -->
+            <div class="email-destino">
+                <div class="email-destino-icon">G</div>
+                <div class="email-destino-info">
+                    <span class="email-destino-label">ENVIAR A</span>
+                    <span class="email-destino-valor" th:text="${emailOculto}">l*****a@gmail.com</span>
+                </div>
+            </div>
+
+            <!-- Temporizador -->
+            <div class="temporizador-wrapper">
+                <div class="temporizador-icono">⏱</div>
+                <div id="temporizador" class="temporizador">05:00</div>
+            </div>
+            <p class="temporizador-texto">El código expira cuando el tiempo llegue a cero</p>
+
+            <!-- Mensaje de ayuda escalonado -->
+            <div id="mensaje-ayuda" class="mensaje-ayuda" style="display:none;">
+                <span id="texto-ayuda"></span>
+            </div>
+
+            <!-- Error -->
+            <div id="error-codigo" class="error-message" style="display:none;"></div>
+
+            <!-- Campos de código -->
+            <p class="codigo-label">Ingresa el código de 6 dígitos</p>
+            <div class="codigo-inputs">
+                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            </div>
+
+            <!-- Intentos -->
+            <div id="intentos-wrapper" class="intentos-wrapper" style="display:none;">
+                <div class="intentos-dots" id="intentos-dots"></div>
+                <span id="intentos-texto" class="intentos-texto"></span>
+            </div>
+
+            <!-- Botón verificar -->
+            <button id="btn-verificar" class="btn" onclick="verificarCodigo()">Verificar código</button>
+
+            <!-- Reenviar y cambiar correo -->
+            <div class="verificacion-footer">
+                <button class="btn-link" id="btn-reenviar" onclick="reenviarCodigo()">
+                    ↻ Reenviar código
+                </button>
+                <button class="btn-link" onclick="mostrarCambiarCorreo()">
+                    Cambiar correo electrónico
+                </button>
+            </div>
+
+            <!-- Modal cambiar correo -->
+            <div id="modal-cambiar-correo" class="modal-cambiar" style="display:none;">
+                <div class="modal-cambiar-inner">
+                    <h3>Cambiar correo electrónico</h3>
+                    <p>Ingresa un nuevo correo. Se enviará un nuevo código de verificación.</p>
+                    <div class="input-group" style="margin-top:16px;">
+                        <input type="email" id="nuevo-email" class="form-control" placeholder="Nuevo correo electrónico">
+                    </div>
+                    <div id="error-cambiar" class="error-message" style="display:none; margin-top:8px;"></div>
+                    <div style="display:flex; gap:10px; margin-top:16px;">
+                        <button class="btn" style="flex:1;" onclick="cambiarCorreo()">Confirmar</button>
+                        <button class="btn" style="flex:1; background:#e74c3c;" onclick="cerrarCambiarCorreo()">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/verificacion.js}"></script>
+</body>
+</html>

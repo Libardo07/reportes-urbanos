@@ -51,6 +51,12 @@ public class DataInitializer implements CommandLineRunner {
                 System.err.println("Error al guardar el admin principal: " + e.getMessage());
             }
         }
+        usuarioRepository.findAll().forEach(u -> {
+            if (!u.isVerificado()) {
+                u.setVerificado(true);
+                usuarioRepository.save(u);
+            }
+        });
 
         
     }

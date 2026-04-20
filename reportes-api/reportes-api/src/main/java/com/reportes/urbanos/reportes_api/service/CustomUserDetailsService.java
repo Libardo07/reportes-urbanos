@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 
 @Service
@@ -26,12 +25,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (usuario == null) {
             throw new UsernameNotFoundException("Usuario no encontrado: " + email);
         }
-
-        // Bloquear login si no ha verificado el email
-        if (!usuario.isEmailVerificado()) {
-            throw new DisabledException("Email no verificado");
+        if (!usuario.isVerificado()) {
+            throw new DisabledException("Correo no verificado");
         }
-
         return new User(
             usuario.getEmail(),
             usuario.getPassword(),

@@ -7,28 +7,28 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
-@Document(collection = "password_reset_tokens")
+@Document(collection = "verificacion_codigos")
 @Getter @Setter
 @NoArgsConstructor
-public class PasswordResetToken {
+public class VerificacionCodigo {
 
     @Id
     private String id;
-
-    private String token;
-
     private String email;
-
+    private String codigo;
     private LocalDateTime expiracion;
+    private int intentos = 0;
+    private int reenvios = 0;
 
-    public PasswordResetToken(String token, String email) {
-        this.token = token;
+    public VerificacionCodigo(String email, String codigo) {
         this.email = email;
-        this.expiracion = LocalDateTime.now().plusMinutes(30);
+        this.codigo = codigo;
+        this.expiracion = LocalDateTime.now(ZoneId.of("America/Bogota")).plusMinutes(5);
     }
 
     public boolean isExpirado() {
-        return LocalDateTime.now().isAfter(expiracion);
+        return LocalDateTime.now(ZoneId.of("America/Bogota")).isAfter(expiracion);
     }
 }
