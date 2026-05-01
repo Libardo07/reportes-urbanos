@@ -69,7 +69,8 @@ public class VerificacionService {
             helper.setText(buildEmailHtml(enlace), true);
             mailSender.send(message);
         } catch (Exception e) {
-            throw new RuntimeException("Error al enviar email de verificación", e);
+            throw new RuntimeException("Error al enviar email: " + e.getMessage() 
+          + " | Causa: " + (e.getCause() != null ? e.getCause().getMessage() : "ninguna"), e);
         }
     }
 
