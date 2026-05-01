@@ -25,7 +25,7 @@ public class PasswordResetToken {
     public PasswordResetToken(String token, String email) {
         this.token = token;
         this.email = email;
-        this.expiracion = LocalDateTime.now().plusMinutes(30);
+        this.expiracion = LocalDateTime.now().plusMinutes(15);
     }
 
     public boolean isExpirado() {

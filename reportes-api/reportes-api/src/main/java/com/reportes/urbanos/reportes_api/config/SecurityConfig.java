@@ -5,32 +5,28 @@ import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
 import com.reportes.urbanos.reportes_api.service.CustomOAuth2UserService;
 import com.reportes.urbanos.reportes_api.service.CustomUserDetailsService;
-
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
+    @Autowired private CustomUserDetailsService  userDetailsService;
+    @Autowired private UsuarioRepository         usuarioRepository;
+    @Autowired private CustomOAuth2UserService   customOAuth2UserService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,11 +38,14 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/registro", "/verificar-correo", "/verificar-codigo", 
-                "/reenviar-codigo", "/cambiar-correo-verificacion",
-                "/recuperar-password", "/recuperar-password/**", 
-                "/css/**", "/js/**", "/images/**").permitAll()
-                
+                .requestMatchers(
+                    "/", "/login", "/registro",
+                    "/verificar-correo", "/verificar-correo/confirmar", 
+                    "/verificar-correo/estado","/reenviar-verificacion", 
+                    "/reenviar-desde-login","/cambiar-correo-verificacion",
+                    "/recuperar-password", "/recuperar-password/**",
+                    "/css/**", "/js/**", "/images/**"
+                ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/usuario/**").hasRole("CIUDADANO")
                 .anyRequest().authenticated()
@@ -57,14 +56,13 @@ public class SecurityConfig {
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .successHandler(authenticationSuccessHandler())
-                .failureUrl("/login?error")
+                .failureHandler(authenticationFailureHandler())
                 .permitAll()
             )
             .oauth2Login(oauth2 -> oauth2
                 .loginPage("/login")
                 .userInfoEndpoint(userInfo -> userInfo
-                    .userService(customOAuth2UserService)
-                )
+                    .userService(customOAuth2UserService))
                 .successHandler(authenticationSuccessHandler())
             )
             .logout(logout -> logout
@@ -79,21 +77,33 @@ public class SecurityConfig {
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
-            String email = authentication.getName();
+            String email    = authentication.getName();
             Usuario usuario = usuarioRepository.findByEmail(email);
             HttpSession session = request.getSession();
             session.setAttribute("usuarioLogueado", usuario);
-            if (usuario.getRol() == Rol.ADMIN) {
-                response.sendRedirect("/admin/inicio");
-            } else {
-                response.sendRedirect("/usuario/inicio");
+            response.sendRedirect(
+                usuario.getRol() == Rol.ADMIN ? "/admin/inicio" : "/usuario/inicio"
+            );
+        };
+    }
+
+    // ── Captura DisabledException y guarda el email en sesión ────────────────
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return (request, response, exception) -> {
+            Throwable cause = exception.getCause() != null ? exception.getCause() : exception;
+            if (cause instanceof DisabledException) {
+                String email = request.getParameter("username");
+                request.getSession().setAttribute("emailNoVerificado", email);
             }
+            response.sendRedirect("/login?error");
         };
     }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        AuthenticationManagerBuilder builder =
+            http.getSharedObject(AuthenticationManagerBuilder.class);
         builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         return builder.build();
     }

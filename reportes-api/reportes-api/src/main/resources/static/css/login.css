@@ -29,12 +29,12 @@ body {
     align-items: center;
     min-height: 100vh;
     background-color: var(--fondo-color);
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .page-wrapper {
     display: flex;
-    width: 900px;
+    width: min(900px, 95vw);
     min-height: 560px;
     border-radius: 24px;
     overflow: hidden;
@@ -323,7 +323,7 @@ body {
 @media (max-width: 700px) {
     .page-wrapper {
         flex-direction: column;
-        width: 95%;
+        width: 95vw;
     }
     .left-panel {
         width: 100%;
@@ -400,4 +400,38 @@ body {
 .forgot-password a:hover {
     color: #1558b0;
     text-decoration: underline;
+}
+
+/* ── Avisos del login ──────────────────────────────────────── */
+.login-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+
+.login-notice p  { margin: 2px 0 0; font-size: 12px; }
+.login-notice a  { font-weight: 600; text-decoration: underline; }
+
+.login-notice--warn {
+    background: #fff8e1;
+    border: 1px solid #f6c90e;
+    color: #7d5a00;
+}
+.login-notice--warn a    { color: #7d5a00; }
+
+.login-notice--error {
+    background: #fdf2f2;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.login-notice--success {
+    background: #eafaf1;
+    border: 1px solid #a9dfbf;
+    color: #1e6b3d;
 }

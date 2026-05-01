@@ -1,11 +1,35 @@
 /* ============================================================
-   VERIFICACIÓN DE CORREO — estilos adicionales al login.css
+   VERIFICACIÓN DE CORREO
    ============================================================ */
 
-.email-icon {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.2);
+/* ── Spinner de carga ──────────────────────────────────────── */
+.spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, .4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin .65s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.spinner--dark {
+    border-color: rgba(26, 115, 232, .3);
+    border-top-color: #1a73e8;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Panel izquierdo ───────────────────────────────────────── */
+.ve-left-icon {
+    width: 88px;
+    height: 88px;
+    background: rgba(255, 255, 255, .18);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -13,8 +37,38 @@
     margin: 0 auto 20px;
 }
 
-/* Destino del correo */
-.email-destino {
+/* ── Cabecera del panel derecho ────────────────────────────── */
+.ve-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.ve-header-icon {
+    width: 60px;
+    height: 60px;
+    background: #f0f4ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+}
+
+.ve-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a237e;
+    margin: 0 0 6px;
+}
+
+.ve-header p {
+    font-size: 13px;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+/* ── Tarjeta email destino ─────────────────────────────────── */
+.ve-email-card {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -22,10 +76,10 @@
     border: 1.5px solid #c5d8f8;
     border-radius: 12px;
     padding: 12px 16px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
-.email-destino-icon {
+.ve-email-avatar {
     width: 36px;
     height: 36px;
     background: #1a73e8;
@@ -39,179 +93,150 @@
     flex-shrink: 0;
 }
 
-.email-destino-info {
+.ve-email-info {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
 }
 
-.email-destino-label {
+.ve-email-label {
     font-size: 10px;
     font-weight: 700;
     color: #5c6bc0;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: .5px;
 }
 
-.email-destino-valor {
+.ve-email-value {
     font-size: 14px;
     font-weight: 600;
     color: #1a237e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Temporizador */
-.temporizador-wrapper {
+.ve-email-check {
+    width: 24px;
+    height: 24px;
+    background: #eafaf1;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    margin-bottom: 6px;
+    flex-shrink: 0;
 }
 
-.temporizador-icono {
-    font-size: 18px;
+/* ── Pasos ─────────────────────────────────────────────────── */
+.ve-steps {
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
-.temporizador {
-    font-size: 28px;
+.ve-steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    position: relative;
+}
+
+.ve-steps li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 24px;
+    width: 2px;
+    height: 16px;
+    background: #c5d8f8;
+}
+
+.ve-step-num {
+    width: 24px;
+    height: 24px;
+    background: #1a73e8;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
     font-weight: 700;
-    color: #1a73e8;
-    font-family: 'Space Grotesk', sans-serif;
-    letter-spacing: 2px;
+    flex-shrink: 0;
 }
 
-.temporizador.expirando {
-    color: #e74c3c;
-    animation: parpadeo 1s infinite;
+.ve-steps p {
+    font-size: 13px;
+    color: #3c4043;
+    margin: 3px 0 16px;
+    line-height: 1.5;
 }
 
-@keyframes parpadeo {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-}
-
-.temporizador-texto {
-    font-size: 12px;
-    color: #7f8c8d;
-    text-align: center;
-    margin-bottom: 16px;
-}
-
-/* Mensaje de ayuda */
-.mensaje-ayuda {
-    background: #fff8e1;
-    border: 1px solid #f39c12;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 12px;
-    color: #856404;
-    margin-bottom: 14px;
+/* ── Nota de seguridad ─────────────────────────────────────── */
+.ve-security-note {
     display: flex;
     align-items: flex-start;
     gap: 8px;
-}
-
-.mensaje-ayuda::before {
-    content: '⚠';
-    flex-shrink: 0;
-    font-size: 14px;
-}
-
-/* Código inputs */
-.codigo-label {
-    font-size: 13px;
-    color: #5c6bc0;
-    text-align: center;
-    margin-bottom: 12px;
-    font-weight: 500;
-}
-
-.codigo-inputs {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 16px;
-}
-
-.codigo-input {
-    width: 44px;
-    height: 52px;
-    border: 2px solid #c5d8f8;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 700;
-    color: #1a237e;
     background: #f0f4ff;
-    outline: none;
-    transition: all 0.2s;
-    font-family: 'Space Grotesk', sans-serif;
+    border: 1px solid #c5d8f8;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #3c4043;
+    line-height: 1.5;
+    margin-bottom: 20px;
 }
 
-.codigo-input:focus {
-    border-color: #1a73e8;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
-    transform: scale(1.05);
-}
-
-.codigo-input.correcto {
-    border-color: #2ecc71;
-    background: #eafaf1;
-    color: #1e8449;
-}
-
-.codigo-input.incorrecto {
-    border-color: #e74c3c;
-    background: #fdf2f2;
-    animation: shake 0.3s ease-in-out;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
-}
-
-/* Intentos */
-.intentos-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
+/* ── Alertas ───────────────────────────────────────────────── */
+.ve-alerta {
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    line-height: 1.5;
     margin-bottom: 14px;
 }
 
-.intentos-dots {
+.ve-alerta--success { background: #eafaf1; border: 1px solid #a9dfbf; color: #1e6b3d; }
+.ve-alerta--warn    { background: #fff8e1; border: 1px solid #f6c90e; color: #7d5a00; }
+.ve-alerta--error   { background: #fdf2f2; border: 1px solid #f5c6cb; color: #721c24; }
+
+/* ── Acciones ──────────────────────────────────────────────── */
+.ve-actions {
     display: flex;
-    gap: 6px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
 }
 
-.intento-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #c5d8f8;
-    transition: background 0.2s;
-}
-
-.intento-dot.usado {
-    background: #e74c3c;
-}
-
-.intentos-texto {
+.ve-spam-hint {
     font-size: 11px;
-    color: #7f8c8d;
+    color: #9e9e9e;
+    text-align: center;
+    margin: 0;
 }
 
-/* Footer de verificación */
-.verificacion-footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 16px;
-    flex-wrap: wrap;
-    gap: 8px;
+/* ── Botones ───────────────────────────────────────────────── */
+.btn-secondary {
+    background: #f0f4ff;
+    color: #1a73e8;
+    border: 1.5px solid #c5d8f8;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
 }
+.btn-secondary:hover { background: #e3ecfd; border-color: #1a73e8; }
 
 .btn-link {
     background: none;
@@ -220,53 +245,238 @@
     font-size: 13px;
     cursor: pointer;
     padding: 0;
-    font-family: 'Inter', sans-serif;
-    text-decoration: none;
-    transition: color 0.2s;
+    font-family: inherit;
+    transition: color .2s;
 }
+.btn-link:hover    { color: #1558b0; text-decoration: underline; }
+.btn-link:disabled { color: #bbb; cursor: not-allowed; }
 
-.btn-link:hover {
-    color: #1558b0;
-    text-decoration: underline;
+.ve-btn-danger {
+    background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
 }
+.ve-btn-danger:hover { opacity: .9; }
 
-.btn-link:disabled {
-    color: #bbb;
-    cursor: not-allowed;
-    text-decoration: none;
-}
-
-/* Modal cambiar correo */
-.modal-cambiar {
+/* ══════════════════════════════════════════════
+   MODALES (genérico)
+══════════════════════════════════════════════ */
+.ve-modal-overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
     z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(3px);
 }
 
-.modal-cambiar-inner {
+.ve-modal {
     background: white;
     border-radius: 16px;
-    padding: 28px;
     width: 90%;
-    max-width: 400px;
-    box-shadow: 0 20px 60px rgba(21, 88, 176, 0.2);
+    max-width: 420px;
+    box-shadow: 0 24px 64px rgba(21, 88, 176, .2);
+    overflow: hidden;
+    animation: modalIn .2s ease;
 }
 
-.modal-cambiar-inner h3 {
-    font-size: 18px;
+@keyframes modalIn {
+    from { transform: scale(.94) translateY(8px); opacity: 0; }
+    to   { transform: scale(1)   translateY(0);   opacity: 1; }
+}
+
+/* Cabecera del modal */
+.ve-modal-header {
+    background: linear-gradient(135deg, #1a73e8, #1557b0);
+    padding: 24px 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.ve-modal-header--warn {
+    background: linear-gradient(135deg, #f39c12, #d68910);
+}
+
+.ve-modal-header-icon {
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, .18);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.ve-modal-header h3 {
+    color: white;
+    font-size: 17px;
     font-weight: 700;
-    color: #1a237e;
-    margin-bottom: 8px;
-    font-family: 'Space Grotesk', sans-serif;
+    margin: 0;
+    letter-spacing: -.2px;
 }
 
-.modal-cambiar-inner p {
+/* Botón cerrar flota sobre la cabecera */
+.ve-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, .15);
+    border: none;
+    cursor: pointer;
+    color: white;
+    padding: 5px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    transition: background .2s;
+}
+.ve-modal-close:hover { background: rgba(255, 255, 255, .28); }
+
+/* Cuerpo del modal */
+.ve-modal-body {
+    padding: 20px 28px 8px;
+}
+
+.ve-modal-body p {
     font-size: 13px;
     color: #5c6bc0;
-    margin-bottom: 0;
+    line-height: 1.6;
+    margin: 0 0 16px;
+    text-align: center;
+}
+
+.ve-modal-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5c6bc0;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.ve-modal-field {
+    margin-bottom: 12px;
+}
+
+/* Campo de texto igual al del sistema */
+.ve-modal-field .form-control {
+    width: 100%;
+    padding: 13px 45px 13px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--text-color);
+    background: var(--fondo-color);
+    transition: all 0.3s ease;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.ve-modal-field .form-control:focus {
+    border-color: var(--primary-color);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+}
+
+.ve-modal-field .form-control::placeholder {
+    color: #aab4c8;
+    font-size: 13px;
+}
+
+/* Acciones del modal */
+.ve-modal-actions {
+    display: flex;
+    gap: 10px;
+    padding: 12px 28px 24px;
+}
+
+.ve-modal-actions .btn,
+.ve-modal-actions .btn-secondary {
+    flex: 1;
+    width: 100%;
+    padding: 13px;          /* ← mismo padding que .btn del sistema */
+    font-size: 14px;
+    text-align: center;
+    justify-content: center;
+    margin-top: 0;          /* ← .btn tiene margin-top:8px, lo neutralizamos */
+}
+/* ══════════════════════════════════════════════
+   PÁGINAS DE RESULTADO (éxito / error)
+══════════════════════════════════════════════ */
+.ve-resultado-wrapper {
+    min-height: 100vh;
+    background: #f4f7fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.ve-resultado-card {
+    background: white;
+    border-radius: 20px;
+    padding: 52px 44px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 32px rgba(26, 115, 232, .10);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ve-resultado-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    animation: popIn .45s cubic-bezier(.175, .885, .32, 1.275) forwards;
+}
+
+.ve-resultado-icon--exito { background: linear-gradient(135deg, #2ecc71, #1e8449); }
+.ve-resultado-icon--error { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+@keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+.ve-resultado-card h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a237e;
+    margin: 0 0 12px;
+}
+
+.ve-resultado-card p {
+    font-size: 14px;
+    color: #5c6bc0;
+    line-height: 1.7;
+    margin: 0 0 28px;
+}
+
+.ve-resultado-btn { width: 100%; margin-bottom: 24px; }
+
+.ve-resultado-acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.ve-resultado-acciones .btn,
+.ve-resultado-acciones .btn-secondary { width: 100%; }
+
+.ve-resultado-footer {
+    font-size: 11px;
+    color: #bdc1c6;
 }

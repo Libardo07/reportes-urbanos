@@ -3,108 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificar Correo - Reportes Urbanos</title>
+    <title>Verifica tu correo — Reportes Urbanos</title>
     <link rel="stylesheet" th:href="@{/css/login.css}">
     <link rel="stylesheet" th:href="@{/css/verificacion.css}">
 </head>
 <body>
 
-    <div id="loader" class="loader-overlay">
-        <div class="loader"></div>
-    </div>
+<div class="page-wrapper">
 
-    <div class="page-wrapper">
-
-        <div class="left-panel">
-            <div class="icon">
-                <div class="email-icon">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                        <polyline points="22,6 12,13 2,6"/>
-                    </svg>
-                </div>
-            </div>
-            <h2>Verifica tu correo</h2>
-            <p>Hemos enviado un código de verificación a tu correo electrónico. Ingresa el código para activar tu cuenta.</p>
-            <a th:href="@{/registro}" class="btn-outline">Volver al registro</a>
-        </div>
-
-        <div class="right-panel">
-            <h2>Verifica tu correo</h2>
-            <p class="subtitle">Hemos enviado un código de verificación a tu correo electrónico</p>
-
-            <!-- Email destino -->
-            <div class="email-destino">
-                <div class="email-destino-icon">G</div>
-                <div class="email-destino-info">
-                    <span class="email-destino-label">ENVIAR A</span>
-                    <span class="email-destino-valor" th:text="${emailOculto}">l*****a@gmail.com</span>
-                </div>
-            </div>
-
-            <!-- Temporizador -->
-            <div class="temporizador-wrapper">
-                <div class="temporizador-icono">⏱</div>
-                <div id="temporizador" class="temporizador">05:00</div>
-            </div>
-            <p class="temporizador-texto">El código expira cuando el tiempo llegue a cero</p>
-
-            <!-- Mensaje de ayuda escalonado -->
-            <div id="mensaje-ayuda" class="mensaje-ayuda" style="display:none;">
-                <span id="texto-ayuda"></span>
-            </div>
-
-            <!-- Error -->
-            <div id="error-codigo" class="error-message" style="display:none;"></div>
-
-            <!-- Campos de código -->
-            <p class="codigo-label">Ingresa el código de 6 dígitos</p>
-            <div class="codigo-inputs">
-                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-                <input type="text" class="codigo-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
-            </div>
-
-            <!-- Intentos -->
-            <div id="intentos-wrapper" class="intentos-wrapper" style="display:none;">
-                <div class="intentos-dots" id="intentos-dots"></div>
-                <span id="intentos-texto" class="intentos-texto"></span>
-            </div>
-
-            <!-- Botón verificar -->
-            <button id="btn-verificar" class="btn" onclick="verificarCodigo()">Verificar código</button>
-
-            <!-- Reenviar y cambiar correo -->
-            <div class="verificacion-footer">
-                <button class="btn-link" id="btn-reenviar" onclick="reenviarCodigo()">
-                    ↻ Reenviar código
-                </button>
-                <button class="btn-link" onclick="mostrarCambiarCorreo()">
-                    Cambiar correo electrónico
-                </button>
-            </div>
-
-            <!-- Modal cambiar correo -->
-            <div id="modal-cambiar-correo" class="modal-cambiar" style="display:none;">
-                <div class="modal-cambiar-inner">
-                    <h3>Cambiar correo electrónico</h3>
-                    <p>Ingresa un nuevo correo. Se enviará un nuevo código de verificación.</p>
-                    <div class="input-group" style="margin-top:16px;">
-                        <input type="email" id="nuevo-email" class="form-control" placeholder="Nuevo correo electrónico">
-                    </div>
-                    <div id="error-cambiar" class="error-message" style="display:none; margin-top:8px;"></div>
-                    <div style="display:flex; gap:10px; margin-top:16px;">
-                        <button class="btn" style="flex:1;" onclick="cambiarCorreo()">Confirmar</button>
-                        <button class="btn" style="flex:1; background:#e74c3c;" onclick="cerrarCambiarCorreo()">Cancelar</button>
-                    </div>
-                </div>
+    <!-- Panel izquierdo -->
+    <div class="left-panel">
+        <div class="icon">
+            <div class="ve-left-icon">
+                <svg width="52" height="52" viewBox="0 0 24 24" fill="none"
+                     stroke="white" stroke-width="1.5" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4
+                             c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
             </div>
         </div>
+        <h2>Revisa tu bandeja</h2>
+        <p>Te enviamos un enlace seguro. Solo haz clic en el botón del correo
+           para activar tu cuenta. No necesitas escribir nada.</p>
+        <button class="btn-outline" onclick="mostrarModalSalir()">
+            Volver al registro
+        </button>
     </div>
 
-    <script th:src="@{/js/verificacion.js}"></script>
+    <!-- Panel derecho -->
+    <div class="right-panel">
+
+        <!-- Cabecera -->
+        <div class="ve-header">
+            <div class="ve-header-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                     stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4
+                             c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+            </div>
+            <h2>Verifica tu correo electrónico</h2>
+            <p>Hemos enviado un enlace de verificación a tu dirección de correo</p>
+        </div>
+
+        <!-- Tarjeta email destino -->
+        <div class="ve-email-card">
+            <div class="ve-email-avatar">G</div>
+            <div class="ve-email-info">
+                <span class="ve-email-label">ENLACE ENVIADO A</span>
+                <span class="ve-email-value" id="emailOculto"
+                      th:text="${emailOculto}">l*****a@gmail.com</span>
+            </div>
+            <div class="ve-email-check">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                     stroke="#1e8449" stroke-width="2.8" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Pasos -->
+        <ol class="ve-steps">
+            <li>
+                <span class="ve-step-num">1</span>
+                <p>Abre tu aplicación de correo electrónico</p>
+            </li>
+            <li>
+                <span class="ve-step-num">2</span>
+                <p>Busca el correo de <strong>Reportes Urbanos</strong></p>
+            </li>
+            <li>
+                <span class="ve-step-num">3</span>
+                <p>Haz clic en <strong>"Verificar correo electrónico"</strong></p>
+            </li>
+        </ol>
+
+        <!-- Nota de seguridad -->
+        <div class="ve-security-note">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="#5c6bc0" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>El enlace es válido por <strong>24 horas</strong> y solo puede
+                  usarse una vez. Esta página detecta la verificación
+                  <strong>automáticamente</strong>.</span>
+        </div>
+
+        <!-- Alerta de estado -->
+        <div id="ve-alerta" class="ve-alerta" style="display:none;" role="alert"></div>
+
+        <!-- Acciones -->
+        <div class="ve-actions">
+            <button id="btn-reenviar" class="btn" onclick="reenviarEnlace()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                     stroke-linejoin="round" style="margin-right:7px;vertical-align:middle;">
+                    <polyline points="1 4 1 10 7 10"/>
+                    <path d="M3.51 15a9 9 0 1 0 .49-3.75"/>
+                </svg>
+                Reenviar enlace de verificación
+            </button>
+            <button class="btn-link" onclick="abrirModalCorreo()">
+                Cambiar correo electrónico
+            </button>
+        </div>
+
+        <p class="ve-spam-hint">
+            ¿No lo encuentras? Revisa tu carpeta de
+            <strong>Spam</strong> o <strong>Correo no deseado</strong>.
+        </p>
+
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODAL: Cambiar correo
+══════════════════════════════════════════════ -->
+<div id="modal-cambiar-correo" class="ve-modal-overlay" style="display:none;"
+     onclick="if(event.target===this) cerrarModalCorreo()">
+    <div class="ve-modal" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-correo">
+
+        <button class="ve-modal-close" onclick="cerrarModalCorreo()" aria-label="Cerrar">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+
+        <!-- Cabecera azul del modal -->
+        <div class="ve-modal-header">
+            <div class="ve-modal-header-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="white" stroke-width="1.8" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4
+                             c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+            </div>
+            <h3 id="titulo-modal-correo">Cambiar correo electrónico</h3>
+        </div>
+
+        <!-- Cuerpo del modal -->
+        <div class="ve-modal-body">
+            <p>Ingresa un nuevo correo. Te enviaremos un nuevo enlace de verificación.</p>
+            <div class="ve-modal-field">
+                <label class="ve-modal-label" for="nuevo-email">Nuevo correo electrónico</label>
+                <input type="email" id="nuevo-email" class="form-control"
+                       placeholder="nuevo@gmail.com" autocomplete="email">
+            </div>
+            <div id="modal-error" class="ve-alerta ve-alerta--error"
+                 style="display:none;" role="alert"></div>
+        </div>
+
+        <!-- Acciones del modal -->
+        <div class="ve-modal-actions">
+            <button id="btn-confirmar-correo" class="btn" onclick="cambiarCorreo()">
+                Confirmar cambio
+            </button>
+            <button class="btn-secondary" onclick="cerrarModalCorreo()">
+                Cancelar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MODAL: Confirmación al salir
+══════════════════════════════════════════════ -->
+<div id="modal-salir" class="ve-modal-overlay" style="display:none;"
+     onclick="if(event.target===this) cerrarModalSalir()">
+    <div class="ve-modal ve-modal--warn" role="dialog" aria-modal="true">
+
+        <!-- Cabecera naranja -->
+        <div class="ve-modal-header ve-modal-header--warn">
+            <div class="ve-modal-header-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="white" stroke-width="2" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94
+                             a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+            </div>
+            <h3>¿Deseas salir?</h3>
+        </div>
+
+        <div class="ve-modal-body">
+            <p>Si abandonas esta página tu registro quedará pendiente.
+               Por seguridad, deberás esperar <strong>1 minuto</strong>
+               antes de poder registrarte nuevamente con el mismo correo.</p>
+        </div>
+
+        <div class="ve-modal-actions">
+            <button class="btn ve-btn-danger" onclick="confirmarSalida()">
+                Sí, salir
+            </button>
+            <button class="btn-secondary" onclick="cerrarModalSalir()">
+                Quedarme aquí
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script th:src="@{/js/verificacion.js}"></script>
 </body>
 </html>

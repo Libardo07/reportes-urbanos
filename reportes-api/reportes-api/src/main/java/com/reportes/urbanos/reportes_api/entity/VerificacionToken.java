@@ -9,23 +9,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-@Document(collection = "verificacion_codigos")
-@Getter @Setter
-@NoArgsConstructor
-public class VerificacionCodigo {
+@Document(collection = "verificacion_tokens")
+@Getter @Setter @NoArgsConstructor
+public class VerificacionToken {
 
     @Id
     private String id;
     private String email;
-    private String codigo;
+    private String token;
     private LocalDateTime expiracion;
-    private int intentos = 0;
+    private boolean usado = false;
     private int reenvios = 0;
 
-    public VerificacionCodigo(String email, String codigo) {
-        this.email = email;
-        this.codigo = codigo;
-        this.expiracion = LocalDateTime.now(ZoneId.of("America/Bogota")).plusMinutes(5);
+    public VerificacionToken(String email, String token) {
+        this.email     = email;
+        this.token     = token;
+        this.expiracion = LocalDateTime.now(ZoneId.of("America/Bogota")).plusHours(24);
     }
 
     public boolean isExpirado() {

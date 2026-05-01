@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enlace inválido — Reportes Urbanos</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/verificacion.css}">
+</head>
+<body>
+<div class="ve-resultado-wrapper">
+    <div class="ve-resultado-card">
+
+        <div class="ve-resultado-icon ve-resultado-icon--error">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="2.5" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </div>
+
+        <div th:switch="${error}">
+            <div th:case="'EXPIRADO'">
+                <h1>Enlace expirado</h1>
+                <p>Este enlace de verificación venció. Los enlaces son válidos
+                   por <strong>24 horas</strong>.</p>
+            </div>
+            <div th:case="'YA_USADO'">
+                <h1>Enlace ya utilizado</h1>
+                <p>Este enlace ya fue usado anteriormente.
+                   Es posible que tu correo ya esté verificado.</p>
+            </div>
+            <div th:case="*">
+                <h1>Enlace inválido</h1>
+                <p>Este enlace de verificación no es válido o no existe.</p>
+            </div>
+        </div>
+
+        <div class="ve-resultado-acciones">
+            <a th:href="@{/login}" class="btn">Iniciar sesión</a>
+            <a th:href="@{/registro}" class="btn-secondary">Crear cuenta nueva</a>
+        </div>
+
+        <span class="ve-resultado-footer">
+            Reportes Urbanos · Cartagena de Indias
+        </span>
+    </div>
+</div>
+<script th:src="@{/js/verificacion_fallida.js}"></script>
+</body>
+</html>

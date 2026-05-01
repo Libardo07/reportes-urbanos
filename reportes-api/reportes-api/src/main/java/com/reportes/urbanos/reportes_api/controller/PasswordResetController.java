@@ -43,7 +43,7 @@ public class PasswordResetController {
                                 Model model) {
         String resultado = passwordResetService.resetearPassword(token, nuevaPassword, confirmarPassword);
         if (resultado.equals("ok")) {
-            return "redirect:/login?passwordReseteado";
+            return "reset_exitoso";
         }
         model.addAttribute("error", resultado);
         model.addAttribute("token", token);

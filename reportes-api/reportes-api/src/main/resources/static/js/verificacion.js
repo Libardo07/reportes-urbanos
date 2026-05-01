@@ -1,260 +1,205 @@
-// ============================================================
-// VERIFICACIÓN DE CORREO — verificacion.js
-// ============================================================
+'use strict';
 
-let tiempoRestante = 300; // 5 minutos en segundos
-let intervalo;
-let reenviosHechos = 0;
-let intentosUsados = 0;
-const MAX_INTENTOS = 5;
+let pollingInterval   = null;
+let yaVerificado      = false;
 
-const MENSAJES_AYUDA = [
-    "Asegúrate de que el correo esté activo y sea accesible. Revisa tu bandeja de entrada y carpeta de spam.",
-    "Los correos de Gmail suelen recibir nuestras notificaciones más rápido.",
-    "Si usas Outlook, Hotmail o Yahoo es posible que el correo no llegue. Te recomendamos usar Gmail."
-];
-
-// Iniciar temporizador
-function iniciarTemporizador() {
-    clearInterval(intervalo);
-    intervalo = setInterval(function() {
-        tiempoRestante--;
-        actualizarTemporizador();
-        if (tiempoRestante <= 0) {
-            clearInterval(intervalo);
-            document.getElementById('temporizador').textContent = '00:00';
-            document.getElementById('temporizador').classList.add('expirando');
-            mostrarError('El código ha expirado. Por favor reenvía el código.');
-            document.getElementById('btn-verificar').disabled = true;
-        }
-    }, 1000);
-}
-
-function actualizarTemporizador() {
-    const minutos = Math.floor(tiempoRestante / 60);
-    const segundos = tiempoRestante % 60;
-    const texto = String(minutos).padStart(2, '0') + ':' + String(segundos).padStart(2, '0');
-    const el = document.getElementById('temporizador');
-    el.textContent = texto;
-    if (tiempoRestante <= 60) {
-        el.classList.add('expirando');
-    }
-}
-
-// Manejo de inputs del código
-document.addEventListener('DOMContentLoaded', function() {
-    iniciarTemporizador();
-    iniciarIntentosDots();
-
-    const inputs = document.querySelectorAll('.codigo-input');
-    inputs.forEach((input, index) => {
-        input.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-            if (this.value && index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-            if (getCodigo().length === 6) {
-                verificarCodigo();
-            }
-        });
-
-        input.addEventListener('keydown', function(e) {
-            if (e.key === 'Backspace' && !this.value && index > 0) {
-                inputs[index - 1].focus();
-            }
-        });
-
-        input.addEventListener('paste', function(e) {
-            e.preventDefault();
-            const pegado = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
-            pegado.split('').forEach((char, i) => {
-                if (inputs[index + i]) inputs[index + i].value = char;
-            });
-            if (getCodigo().length === 6) verificarCodigo();
-        });
-    });
+// ── Arranque ────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    bloquearNavegacionAtras();
+    window.addEventListener('beforeunload', advertenciaAlSalir);
+    iniciarPolling();
 });
 
-function getCodigo() {
-    return Array.from(document.querySelectorAll('.codigo-input'))
-        .map(i => i.value).join('');
+// ══════════════════════════════════════════════════════════════════════════════
+// POLLING — detecta la verificación automáticamente cada 3 s
+// ══════════════════════════════════════════════════════════════════════════════
+function iniciarPolling() {
+    pollingInterval = setInterval(() => {
+        fetch('/verificar-correo/estado')
+            .then(r => r.json())
+            .then(({ verificado, sinSesion }) => {
+                if (sinSesion) { clearInterval(pollingInterval); return; }
+                if (verificado) {
+                    clearInterval(pollingInterval);
+                    yaVerificado = true;
+                    window.removeEventListener('beforeunload', advertenciaAlSalir);
+                    mostrarAlerta('success',
+                        '✅ ¡Tu correo fue verificado! Redirigiendo al inicio de sesión...');
+                    setTimeout(() =>
+                        window.location.replace('/login?verificacionExitosa'), 2500);
+                }
+            })
+            .catch(() => {}); // silencioso — sigue intentando
+    }, 3000);
 }
 
-function iniciarIntentosDots() {
-    const dots = document.getElementById('intentos-dots');
-    dots.innerHTML = '';
-    for (let i = 0; i < MAX_INTENTOS; i++) {
-        const dot = document.createElement('div');
-        dot.className = 'intento-dot';
-        dot.id = 'dot-' + i;
-        dots.appendChild(dot);
+// ══════════════════════════════════════════════════════════════════════════════
+// NAVEGACIÓN — advertencias y bloqueo
+// ══════════════════════════════════════════════════════════════════════════════
+function advertenciaAlSalir(e) {
+    e.preventDefault();
+    e.returnValue = 'Si sales deberás esperar 1 minuto para registrarte de nuevo.';
+    return e.returnValue;
+}
+
+function bloquearNavegacionAtras() {
+    history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', () => {
+        if (!yaVerificado) mostrarModalSalir();
+        history.pushState(null, '', window.location.href);
+    });
+}
+
+// ── Modal: confirmar salida ─────────────────────────────────────────────────
+function mostrarModalSalir() {
+    document.getElementById('modal-salir').style.display = 'flex';
+}
+
+function cerrarModalSalir() {
+    document.getElementById('modal-salir').style.display = 'none';
+}
+
+function confirmarSalida() {
+    clearInterval(pollingInterval);
+    window.removeEventListener('beforeunload', advertenciaAlSalir);
+    cerrarModalSalir();
+    window.location.replace('/registro');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// REENVIAR ENLACE
+// ══════════════════════════════════════════════════════════════════════════════
+function reenviarEnlace() {
+    const btn = document.getElementById('btn-reenviar');
+    setLoadingBtn(btn, true, 'Enviando...');
+
+    fetch('/reenviar-verificacion', { method: 'POST' })
+        .then(r => r.json())
+        .then(({ resultado }) => {
+            if (resultado === 'OK') {
+                mostrarAlerta('success', '✓ Enlace reenviado. Revisa tu bandeja de entrada.');
+                iniciarCooldown(btn, 60);
+            } else if (resultado === 'LIMITE') {
+                mostrarAlerta('warn',
+                    '⚠ Alcanzaste el límite de 3 reenvíos. ' +
+                    'Si no recibes el correo, intenta crear una cuenta nueva.');
+                btn.disabled = true;
+                btn.textContent = 'Límite alcanzado';
+            } else {
+                mostrarAlerta('error', 'Error al reenviar. Intenta de nuevo.');
+                restaurarBtn(btn);
+            }
+        })
+        .catch(() => {
+            mostrarAlerta('error', 'Error de conexión. Intenta de nuevo.');
+            restaurarBtn(btn);
+        });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CAMBIAR CORREO
+// ══════════════════════════════════════════════════════════════════════════════
+function abrirModalCorreo() {
+    document.getElementById('modal-cambiar-correo').style.display = 'flex';
+    setTimeout(() => document.getElementById('nuevo-email').focus(), 80);
+}
+
+function cerrarModalCorreo() {
+    document.getElementById('modal-cambiar-correo').style.display = 'none';
+    document.getElementById('nuevo-email').value = '';
+    ocultarModalError();
+}
+
+function cambiarCorreo() {
+    const input      = document.getElementById('nuevo-email');
+    const nuevoEmail = input.value.trim();
+    const btnConf    = document.getElementById('btn-confirmar-correo');
+
+    if (!nuevoEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nuevoEmail)) {
+        mostrarModalError('Ingresa un correo electrónico válido.');
+        return;
     }
+
+    ocultarModalError();
+    setLoadingBtn(btnConf, true, 'Confirmando...');
+
+    fetch('/cambiar-correo-verificacion', {
+        method: 'POST',
+        body: new URLSearchParams({ nuevoEmail })
+    })
+        .then(r => r.json())
+        .then(({ resultado, emailOculto }) => {
+            if (resultado === 'OK') {
+                cerrarModalCorreo();
+                const el = document.getElementById('emailOculto');
+                if (el) el.textContent = emailOculto;
+                mostrarAlerta('success',
+                    '✓ Correo actualizado. Revisa tu nueva bandeja de entrada.');
+            } else if (resultado === 'YA_EXISTE') {
+                mostrarModalError('Este correo ya tiene una cuenta registrada.');
+                restaurarBtn(btnConf);
+            } else {
+                mostrarModalError('Ocurrió un error. Intenta de nuevo.');
+                restaurarBtn(btnConf);
+            }
+        })
+        .catch(() => {
+            mostrarModalError('Error de conexión. Intenta de nuevo.');
+            restaurarBtn(btnConf);
+        });
 }
 
-function actualizarIntentosDots(intentosUsados) {
-    const wrapper = document.getElementById('intentos-wrapper');
-    wrapper.style.display = 'flex';
-    for (let i = 0; i < MAX_INTENTOS; i++) {
-        const dot = document.getElementById('dot-' + i);
-        if (dot) {
-            dot.classList.toggle('usado', i < intentosUsados);
-        }
-    }
-    const restantes = MAX_INTENTOS - intentosUsados;
-    document.getElementById('intentos-texto').textContent =
-        restantes + ' intento' + (restantes === 1 ? '' : 's') + ' disponible' + (restantes === 1 ? '' : 's');
+// ══════════════════════════════════════════════════════════════════════════════
+// UTILIDADES
+// ══════════════════════════════════════════════════════════════════════════════
+function mostrarAlerta(tipo, mensaje) {
+    const el = document.getElementById('ve-alerta');
+    el.className = `ve-alerta ve-alerta--${tipo}`;
+    el.textContent = mensaje;
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function mostrarError(msg) {
-    const el = document.getElementById('error-codigo');
+function mostrarModalError(msg) {
+    const el = document.getElementById('modal-error');
     el.textContent = msg;
     el.style.display = 'block';
 }
 
-function ocultarError() {
-    document.getElementById('error-codigo').style.display = 'none';
+function ocultarModalError() {
+    document.getElementById('modal-error').style.display = 'none';
 }
 
-function mostrarMensajeAyuda(reenvios) {
-    const idx = Math.min(reenvios - 1, MENSAJES_AYUDA.length - 1);
-    if (idx >= 0) {
-        const el = document.getElementById('mensaje-ayuda');
-        document.getElementById('texto-ayuda').textContent = MENSAJES_AYUDA[idx];
-        el.style.display = 'flex';
+function setLoadingBtn(btn, loading, texto = '') {
+    if (loading) {
+        btn.dataset.original = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner"></span>${texto}`;
     }
 }
 
-function marcarInputsIncorrecto() {
-    document.querySelectorAll('.codigo-input').forEach(i => {
-        i.classList.add('incorrecto');
-        setTimeout(() => i.classList.remove('incorrecto'), 500);
-    });
+function restaurarBtn(btn) {
+    btn.disabled = false;
+    if (btn.dataset.original) btn.innerHTML = btn.dataset.original;
 }
 
-function limpiarInputs() {
-    document.querySelectorAll('.codigo-input').forEach(i => i.value = '');
-    document.querySelectorAll('.codigo-input')[0].focus();
-}
-
-// Verificar código
-function verificarCodigo() {
-    const codigo = getCodigo();
-    if (codigo.length !== 6) {
-        mostrarError('Ingresa los 6 dígitos del código.');
-        return;
-    }
-
-    ocultarError();
-    const loader = document.getElementById('loader');
-    if (loader) loader.classList.add('show');
-
-    const formData = new FormData();
-    formData.append('codigo', codigo);
-
-    fetch('/verificar-codigo', { method: 'POST', body: formData })
-        .then(r => r.json())
-        .then(data => {
-            if (loader) loader.classList.remove('show');
-            if (data.resultado === 'OK') {
-                document.querySelectorAll('.codigo-input').forEach(i => i.classList.add('correcto'));
-                setTimeout(() => { window.location.href = '/login?verificacionExitosa'; }, 800);
-            } else if (data.resultado === 'EXPIRADO') {
-                mostrarError('El código ha expirado. Por favor reenvía el código.');
-                document.getElementById('btn-verificar').disabled = true;
-            } else if (data.resultado === 'BLOQUEADO') {
-                mostrarError('Has agotado todos los intentos. Por favor reenvía el código.');
-                document.getElementById('btn-verificar').disabled = true;
-                actualizarIntentosDots(MAX_INTENTOS);
-            } else if (data.resultado && data.resultado.startsWith('INCORRECTO:')) {
-                const restantes = parseInt(data.resultado.split(':')[1]);
-                intentosUsados = MAX_INTENTOS - restantes;
-                marcarInputsIncorrecto();
-                limpiarInputs();
-                actualizarIntentosDots(intentosUsados);
-                mostrarError('Código incorrecto. Te quedan ' + restantes + ' intento' + (restantes === 1 ? '' : 's') + '.');
-            }
-        })
-        .catch(() => {
-            if (loader) loader.classList.remove('show');
-            mostrarError('Error al verificar. Intenta de nuevo.');
-        });
-}
-
-// Reenviar código
-function reenviarCodigo() {
-    const btn = document.getElementById('btn-reenviar');
+function iniciarCooldown(btn, segundos) {
     btn.disabled = true;
-
-    fetch('/reenviar-codigo', { method: 'POST' })
-        .then(r => r.json())
-        .then(data => {
-            if (data.resultado && data.resultado.startsWith('REENVIADO:')) {
-                reenviosHechos = parseInt(data.resultado.split(':')[1]);
-                tiempoRestante = 300;
-                document.getElementById('temporizador').classList.remove('expirando');
-                document.getElementById('btn-verificar').disabled = false;
-                iniciarTemporizador();
-                limpiarInputs();
-                ocultarError();
-                intentosUsados = 0;
-                actualizarIntentosDots(0);
-                mostrarMensajeAyuda(reenviosHechos);
-
-                setTimeout(() => { btn.disabled = false; }, 30000);
-            }
-        })
-        .catch(() => { btn.disabled = false; });
+    let seg = segundos;
+    btn.textContent = `Reenviar en ${seg}s`;
+    const id = setInterval(() => {
+        seg--;
+        btn.textContent = `Reenviar en ${seg}s`;
+        if (seg <= 0) {
+            clearInterval(id);
+            btn.disabled = false;
+            btn.innerHTML = btn.dataset.original ||
+                'Reenviar enlace de verificación';
+        }
+    }, 1000);
 }
 
-// Cambiar correo
-function mostrarCambiarCorreo() {
-    document.getElementById('modal-cambiar-correo').style.display = 'flex';
-    document.getElementById('nuevo-email').focus();
-}
-
-function cerrarCambiarCorreo() {
-    document.getElementById('modal-cambiar-correo').style.display = 'none';
-    document.getElementById('nuevo-email').value = '';
-    document.getElementById('error-cambiar').style.display = 'none';
-}
-
-function cambiarCorreo() {
-    const nuevoEmail = document.getElementById('nuevo-email').value.trim();
-    const errorEl = document.getElementById('error-cambiar');
-
-    if (!nuevoEmail) {
-        errorEl.textContent = 'Ingresa un correo válido.';
-        errorEl.style.display = 'block';
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('nuevoEmail', nuevoEmail);
-
-    fetch('/cambiar-correo-verificacion', { method: 'POST', body: formData })
-        .then(r => r.json())
-        .then(data => {
-            if (data.resultado === 'OK') {
-                document.querySelector('.email-destino-valor').textContent = data.emailOculto;
-                cerrarCambiarCorreo();
-                tiempoRestante = 300;
-                reenviosHechos = 0;
-                document.getElementById('temporizador').classList.remove('expirando');
-                document.getElementById('btn-verificar').disabled = false;
-                document.getElementById('mensaje-ayuda').style.display = 'none';
-                iniciarTemporizador();
-                limpiarInputs();
-                ocultarError();
-            } else if (data.resultado === 'YA_EXISTE') {
-                errorEl.textContent = 'Este correo ya está registrado.';
-                errorEl.style.display = 'block';
-            } else {
-                errorEl.textContent = 'Error al cambiar el correo. Intenta de nuevo.';
-                errorEl.style.display = 'block';
-            }
-        })
-        .catch(() => {
-            errorEl.textContent = 'Error al cambiar el correo. Intenta de nuevo.';
-            errorEl.style.display = 'block';
-        });
-}
+// Escape cierra modales
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { cerrarModalCorreo(); cerrarModalSalir(); }
+});
