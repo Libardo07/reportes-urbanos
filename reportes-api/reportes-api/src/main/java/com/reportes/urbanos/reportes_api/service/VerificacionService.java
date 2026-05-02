@@ -65,6 +65,7 @@ public class VerificacionService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(destinatario);
+            helper.setFrom("serviciodereporte@gmail.com", "Reportes Urbanos");
             helper.setSubject("Verifica tu correo electrónico — Reportes Urbanos");
             helper.setText(buildEmailHtml(enlace), true);
             mailSender.send(message);

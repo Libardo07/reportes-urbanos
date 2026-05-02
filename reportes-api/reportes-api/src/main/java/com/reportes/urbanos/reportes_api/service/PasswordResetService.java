@@ -66,6 +66,7 @@ public class PasswordResetService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(destinatario);
+            helper.setFrom("serviciodereporte@gmail.com", "Reportes Urbanos");
             helper.setSubject("Recupera tu contraseña — Reportes Urbanos");
             helper.setText(buildEmailHtml(nombre, enlace), true);
             mailSender.send(message);
