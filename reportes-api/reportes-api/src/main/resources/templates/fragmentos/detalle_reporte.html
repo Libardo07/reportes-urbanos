@@ -14,10 +14,10 @@
         <div class="det-col-info">
             <div class="det-badges">
                 <span class="badge"
-                      th:classappend="'badge-' + ${#strings.toLowerCase(reporte.estado.name())}"
-                      th:text="${#strings.replace(reporte.estado.name(), '_', ' ')}"></span>
+                    th:classappend="'badge-' + ${#strings.toLowerCase(#strings.replace(estadosMap[reporte.estadoReporteId], '_', ''))}"
+                    th:text="${#strings.replace(estadosMap[reporte.estadoReporteId], '_', ' ')}"></span>
                 <span class="det-tipo"
-                      th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(reporte.tipo.name(), '_', ' ')))}"></span>
+                    th:text="${#strings.replace(tiposMap[reporte.tipoReporteId], '_', ' ')}"></span>
             </div>
             <h2 class="det-titulo" th:text="${reporte.titulo}"></h2>
             <div class="det-meta">
@@ -26,7 +26,7 @@
                         <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
                         <circle cx="12" cy="10" r="3"/>
                     </svg>
-                    <span th:text="${reporte.barrio.nombre}"></span>
+                    <span th:text="${barriosMap[reporte.barrioId]}"></span>
                 </span>
                 <span class="det-meta-item">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2" stroke-linecap="round">
@@ -206,7 +206,7 @@
                                     </button>
                                 </div>
                                 <!-- th:utext para renderizar el <span class="det-mention"> del @nombre -->
-                                <p class="det-comentario-texto" th:utext="${r.texto}"></p>
+                                <p class="det-comentario-texto det-reply-texto" th:text="${r.texto}"></p>
                                 <button th:if="${usuario != null}"
                                         class="det-btn-responder"
                                         th:attr="data-nombre=${r.usuario.nombre},

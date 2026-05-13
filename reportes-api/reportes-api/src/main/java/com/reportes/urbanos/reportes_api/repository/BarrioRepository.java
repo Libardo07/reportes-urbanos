@@ -1,9 +1,9 @@
 package com.reportes.urbanos.reportes_api.repository;
 
 import com.reportes.urbanos.reportes_api.entity.Barrio;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
-@Repository
-public interface BarrioRepository extends MongoRepository<Barrio, String> {
+public interface BarrioRepository extends JpaRepository<Barrio, Long> {
+    Optional<Barrio> findByNombre(String nombre);
 }

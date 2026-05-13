@@ -6,6 +6,7 @@ import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
+import com.reportes.urbanos.reportes_api.service.CatalogoService;
 import com.reportes.urbanos.reportes_api.service.ComentarioService;
 import com.reportes.urbanos.reportes_api.service.ReporteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +16,28 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 import java.util.Map;
 
 @Controller
 public class ComentarioController {
 
-    @Autowired private ComentarioService  comentarioService;
-    @Autowired private ReporteRepository  reporteRepository;
-    @Autowired private ReporteService     reporteService;
-    @Autowired private UsuarioRepository  usuarioRepository;
+    @Autowired 
+    private ComentarioService comentarioService;
+
+    @Autowired 
+    private ReporteRepository reporteRepository;
+
+    @Autowired 
+    private ReporteService reporteService;
+
+    @Autowired 
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private CatalogoService catalogoService;
+
 
     private static final int PAGE_SIZE = 10;
 
@@ -36,6 +49,13 @@ public class ComentarioController {
             return usuarioRepository.findByEmail(email);
         } catch (Exception e) { return null; }
     }
+
+        private void addCatalogMaps(Model model) {
+            model.addAttribute("estadosMap", catalogoService.getEstadosMap());
+            model.addAttribute("tiposMap",   catalogoService.getTiposMap());
+            model.addAttribute("barriosMap", catalogoService.getBarriosMap());
+}
+
 
     // ── Fragmento: lista explorar reportes ──────────────────────────────────
     @GetMapping(value = "/reportes/fragmento/explorar", produces = "text/html")
@@ -71,6 +91,7 @@ public class ComentarioController {
         model.addAttribute("hayMas",      hasta < total);
         model.addAttribute("nextPage",    page + 1);
         model.addAttribute("total",       total);
+        addCatalogMaps(model);
         return "fragmentos/explorar_reportes :: explorar-reportes";
     }
 
@@ -89,22 +110,13 @@ public class ComentarioController {
             
         );
 
-        // Procesar menciones @nombre en respuestas
-        respuestas.forEach((key, lista) -> lista.forEach(r -> {
-            if (r.getTexto() != null) {
-                String textoFormateado = r.getTexto()
-                .replaceAll("@([\\w]+(?:\\s[\\w]+)?)", 
-                    "<span class=\"det-mention\">@$1</span>");
-                r.setTexto(textoFormateado);
-            }
-        }));
-
         model.addAttribute("reporte",     reporte);
         model.addAttribute("comentarios", comentarios !=null ? comentarios : List.of());
         model.addAttribute("respuestas", respuestas);
         model.addAttribute("usuario",     usuario);
         model.addAttribute("esAdmin",     usuario != null && usuario.getRol() == Rol.ADMIN);
         model.addAttribute("total",       comentarioService.contarComentarios(id));
+        addCatalogMaps(model);
         return "fragmentos/detalle_reporte :: detalle-reporte";
     }
 

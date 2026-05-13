@@ -15,18 +15,19 @@
         <tbody>
             <tr th:each="r : ${reportes}">
                 <td th:text="${r.titulo}"></td>
-                <td th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.tipo.name(), '_', ' ')))}"></td>
-                <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado)}" th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span></td>
+                <td th:text="${#strings.replace(tiposMap[r.tipoReporteId], '_', ' ')}"></td>
+                <td><span class="badge"
+                        th:classappend="'badge-' + ${#strings.toLowerCase(#strings.replace(estadosMap[r.estadoReporteId], '_', ''))}"
+                        th:text="${#strings.replace(estadosMap[r.estadoReporteId], '_', ' ')}"></span></td>
                 <td th:text="${r.fechaModificacion != null ? #temporals.format(r.fechaModificacion, 'dd/MM/yyyy HH:mm') : 'Sin modificar'}"></td>
                 <td class="actions">
-                    <!-- Botón ver detalles -->
                     <button class="action-btn ver-detalles-btn"
                             th:attr="data-modal-id='modal-u-' + ${r.id}"
                             title="Ver detalles">
                         Ver
                     </button>
-                    
-                    <span th:if="${#strings.equalsIgnoreCase(r.estado, 'PENDIENTE')}">
+
+                    <span th:if="${estadosMap[r.estadoReporteId] == 'Pendiente'}">
                         <button class="action-btn edit-reporte"
                                 th:attr="data-id=${r.id}, data-url=@{'/usuario/editar-reporte/' + ${r.id}}"
                                 title="Editar">
@@ -40,7 +41,7 @@
                             <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
                         </button>
                     </span>
-                    <span th:unless="${#strings.equalsIgnoreCase(r.estado, 'PENDIENTE')}" title="No editable">
+                    <span th:unless="${estadosMap[r.estadoReporteId] == 'Pendiente'}" title="No editable">
                         <button class="action-btn" disabled><img th:src="@{/images/icono-edit.png}" alt="No editable" style="opacity:.4;" loading="lazy"></button>
                         <button class="action-btn" disabled><img th:src="@{/images/icono-trash.png}" alt="No eliminable" style="opacity:.4;" loading="lazy"></button>
                     </span>
@@ -65,16 +66,17 @@
                     <div class="modal-grid">
                         <div class="modal-field">
                             <span class="modal-label">Estado</span>
-                            <span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado)}"
-                                  th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span>
+                            <span class="badge"
+                                  th:classappend="'badge-' + ${#strings.toLowerCase(#strings.replace(estadosMap[r.estadoReporteId], '_', ''))}"
+                                  th:text="${#strings.replace(estadosMap[r.estadoReporteId], '_', ' ')}"></span>
                         </div>
                         <div class="modal-field">
                             <span class="modal-label">Tipo</span>
-                            <span class="modal-value" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.tipo.name(), '_', ' ')))}"></span>
+                            <span class="modal-value" th:text="${#strings.replace(tiposMap[r.tipoReporteId], '_', ' ')}"></span>
                         </div>
                         <div class="modal-field">
                             <span class="modal-label">Barrio</span>
-                            <span class="modal-value" th:text="${r.barrio.nombre}"></span>
+                            <span class="modal-value" th:text="${barriosMap[r.barrioId]}"></span>
                         </div>
                         <div class="modal-field">
                             <span class="modal-label">Fecha</span>

@@ -19,7 +19,7 @@
             <label for="tipo">Tipo de reporte:</label>
             <select name="tipoReporte" class="form-control" required>
                 <option value="" disabled selected>Escoger tipo de reporte</option>
-                <option th:each="t : ${tipos}" th:value="${t.name()}" th:text="${t.name()}"></option>
+                <option th:each="t : ${tipos}" th:value="${t.nombre}" th:text="${t.nombre}"></option>
             </select>
         </div>
 

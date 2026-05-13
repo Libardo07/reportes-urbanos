@@ -1,10 +1,9 @@
 package com.reportes.urbanos.reportes_api.controller;
 
 import com.reportes.urbanos.reportes_api.entity.*;
-import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
-import com.reportes.urbanos.reportes_api.enums.TipoReporte;
 import com.reportes.urbanos.reportes_api.repository.*;
 import com.reportes.urbanos.reportes_api.service.BarrioService;
+import com.reportes.urbanos.reportes_api.service.CatalogoService;
 import com.reportes.urbanos.reportes_api.service.ReporteService;
 import com.reportes.urbanos.reportes_api.service.S3Service;
 
@@ -19,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 
 @Controller
@@ -43,6 +43,15 @@ public class UsuarioController {
     @Autowired
     private S3Service s3Service;
 
+    @Autowired
+    private TipoReporteRepository tipoReporteRepository;
+
+    @Autowired
+    private EstadoReporteRepository estadoReporteRepository; 
+    
+    @Autowired
+    private CatalogoService catalogoService;
+
     // Método utilitario para obtener el usuario logueado desde Spring Security
     private Usuario getUsuarioLogueado() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -51,9 +60,12 @@ public class UsuarioController {
 
     @ModelAttribute
     public void populateModelsWithCommonData(Model model) {
-    model.addAttribute("barrios", barrioService.getBarriosOrdenados());
-    model.addAttribute("tipos", TipoReporte.values());
-}
+        model.addAttribute("barrios",    barrioService.getBarriosOrdenados());
+        model.addAttribute("tipos",      tipoReporteRepository.findAll());
+        model.addAttribute("estadosMap", catalogoService.getEstadosMap());
+        model.addAttribute("tiposMap",   catalogoService.getTiposMap());
+        model.addAttribute("barriosMap", catalogoService.getBarriosMap());
+    }
 
     @GetMapping("/inicio")
     public String inicioCiudadano(Model model) {
@@ -80,10 +92,11 @@ public class UsuarioController {
     public String fragmentoEditarReporte(@PathVariable String id, Model model) {
         Usuario usuario = getUsuarioLogueado();
         Reporte reporte = reporteRepository.findById(id).orElse(null);
+        EstadoReporte pendiente = estadoReporteRepository.findByNombre("Pendiente").orElseThrow();
         if (reporte == null
                 || reporte.getUsuario() == null
                 || !reporte.getUsuario().getId().equals(usuario.getId())
-                || !reporte.getEstado().equals(EstadoReporte.PENDIENTE)) {
+                || !reporte.getEstadoReporteId().equals(pendiente.getId())) {
             return "error :: error-content";
         }
         model.addAttribute("reporte", reporte);
@@ -111,8 +124,10 @@ public class UsuarioController {
         Usuario usuario = getUsuarioLogueado();
 
         try {
-            Barrio barrio = barrioRepository.findById(barrioId).orElse(null);
-            TipoReporte tipo = TipoReporte.valueOf(tipoReporte);
+
+            Barrio barrio = barrioRepository.findById(Long.parseLong(barrioId)).orElse(null);
+            TipoReporte tipo = tipoReporteRepository.findByNombre(tipoReporte).orElseThrow();
+            EstadoReporte pendiente = estadoReporteRepository.findByNombre("Pendiente").orElseThrow();
 
             if (id != null && !id.isBlank()) {
                 Reporte reporteExistente = reporteRepository.findById(id).orElse(null);
@@ -121,16 +136,18 @@ public class UsuarioController {
                     response.put("error", "No se pudo editar: el reporte no existe o no pertenece a este usuario.");
                     return ResponseEntity.badRequest().body(response);
                 }
-                if (!reporteExistente.getEstado().equals(EstadoReporte.PENDIENTE)) {
-                    response.put("error", "El reporte no puede editarse porque su estado es '" +
-                        reporteExistente.getEstado() + "'.");
+                if (!reporteExistente.getEstadoReporteId().equals(pendiente.getId())) {
+                    String nombreEstado = estadoReporteRepository.findById(reporteExistente.getEstadoReporteId())
+                        .map(EstadoReporte::getNombre)
+                        .orElse("desconocido");
+                    response.put("error", "El reporte no puede editarse porque su estado es '" + nombreEstado + "'.");
                     return ResponseEntity.badRequest().body(response);
-                }
+}
                 reporteExistente.setTitulo(titulo);
                 reporteExistente.setDescripcion(descripcion);
                 reporteExistente.setDireccion(direccion);
-                reporteExistente.setBarrio(barrio);
-                reporteExistente.setTipo(tipo);
+                reporteExistente.setBarrioId(barrio.getId());
+                reporteExistente.setTipoReporteId(tipo.getId());        
 
                 if (imagenes != null && !imagenes.isEmpty() && !imagenes.get(0).isEmpty()) {
                     s3Service.eliminarImagenes(reporteExistente.getImagenes());
@@ -146,8 +163,9 @@ public class UsuarioController {
                 reporte.setTitulo(titulo);
                 reporte.setDescripcion(descripcion);
                 reporte.setDireccion(direccion);
-                reporte.setBarrio(barrio);
-                reporte.setTipo(tipo);
+                reporte.setBarrioId(barrio.getId());
+                reporte.setTipoReporteId(tipo.getId());
+                reporte.setEstadoReporteId(pendiente.getId());              
                 reporte.setUsuario(usuario);
 
                 if (imagenes != null && !imagenes.isEmpty() && !imagenes.get(0).isEmpty()) {
@@ -177,8 +195,12 @@ public class UsuarioController {
                 response.put("error", "Reporte no encontrado.");
                 return ResponseEntity.badRequest().body(response);
             }
-            if (!reporte.getEstado().equals(EstadoReporte.PENDIENTE)) {
-                response.put("error", "Este reporte ya está en estado '" + reporte.getEstado() + "' y no puede ser eliminado.");
+            EstadoReporte pendiente = estadoReporteRepository.findByNombre("Pendiente").orElseThrow();
+            if (!reporte.getEstadoReporteId().equals(pendiente.getId())) {
+                String nombreEstado = estadoReporteRepository.findById(reporte.getEstadoReporteId())
+                    .map(EstadoReporte::getNombre)
+                    .orElse("desconocido");
+                response.put("error", "Este reporte ya está en estado '" + nombreEstado + "' y no puede ser eliminado.");
                 return ResponseEntity.badRequest().body(response);
             }
             reporteService.eliminarReporte(reporte);

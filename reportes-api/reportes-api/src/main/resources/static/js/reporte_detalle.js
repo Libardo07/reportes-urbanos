@@ -455,6 +455,14 @@ window.eliminarComentarioDet = function(btn) {
 };
 
 function inicializarComentarios() {
+    document.querySelectorAll('.det-reply-texto').forEach(p => {
+        const texto = p.textContent;
+        p.innerHTML = esc(texto).replace(
+            /^(@[\w\s]+?)(\s)/,
+            '<span class="det-mention">$1</span>$2'
+        );
+    });
+    
     document.querySelectorAll('.det-replies').forEach(repliesDiv => {
         const items = repliesDiv.querySelectorAll('.det-reply-item');
         items.forEach((item, i) => {

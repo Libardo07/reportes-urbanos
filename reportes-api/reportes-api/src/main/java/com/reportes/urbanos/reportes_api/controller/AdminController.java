@@ -1,11 +1,14 @@
 package com.reportes.urbanos.reportes_api.controller;
 
+import com.reportes.urbanos.reportes_api.entity.EstadoReporte;
+import com.reportes.urbanos.reportes_api.repository.TipoReporteRepository;
+import com.reportes.urbanos.reportes_api.repository.EstadoReporteRepository;
 import com.reportes.urbanos.reportes_api.entity.Reporte;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
-import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
+import com.reportes.urbanos.reportes_api.service.CatalogoService;
 import com.reportes.urbanos.reportes_api.service.ReporteService;
 import com.reportes.urbanos.reportes_api.service.UsuarioService;
 
@@ -23,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -43,8 +47,29 @@ public class AdminController {
     @Autowired
     private UsuarioService usuarioService;
 
+
+    @Autowired
+    private TipoReporteRepository tipoReporteRepository;
+
+    @Autowired
+    private EstadoReporteRepository estadoReporteRepository;
+
+    @Autowired
+    private CatalogoService catalogoService;
+
     @Value("${admin.email}")
     private String adminEmail;
+
+    @ModelAttribute
+    public void populateModelsWithCommonData(Model model) {
+        model.addAttribute("barrios", catalogoService.getBarriosMap().entrySet().stream()
+            .sorted(Map.Entry.comparingByValue())
+            .collect(Collectors.toList()));
+        model.addAttribute("tipos",      tipoReporteRepository.findAll());
+        model.addAttribute("estadosMap", catalogoService.getEstadosMap());
+        model.addAttribute("tiposMap",   catalogoService.getTiposMap());
+        model.addAttribute("barriosMap", catalogoService.getBarriosMap());
+    }
 
     // Método utilitario para obtener el usuario logueado desde Spring Security
     private Usuario getUsuarioLogueado() {
@@ -108,18 +133,22 @@ public class AdminController {
                 response.put("error", "Reporte no encontrado.");
                 return ResponseEntity.badRequest().body(response);
             }
-            if (reporte.getEstado() == EstadoReporte.RESUELTO) {
+
+            EstadoReporte resuelto = estadoReporteRepository.findByNombre("Resuelto").orElseThrow();
+            if (reporte.getEstadoReporteId().equals(resuelto.getId())) {
                 response.put("error", "No se puede modificar un reporte ya resuelto.");
                 return ResponseEntity.badRequest().body(response);
             }
-            EstadoReporte estado;
-            try {
-                estado = EstadoReporte.valueOf(nuevoEstado.toUpperCase());
-            } catch (IllegalArgumentException e) {
+
+            EstadoReporte nuevoEstadoObj = estadoReporteRepository
+                    .findByNombre(nuevoEstado)
+                    .orElse(null);
+            if (nuevoEstadoObj == null) {
                 response.put("error", "Estado inválido.");
                 return ResponseEntity.badRequest().body(response);
             }
-            reporte.setEstado(estado);
+
+            reporte.setEstadoReporteId(nuevoEstadoObj.getId());
             reporte.setUsuarioAdmin(admin);
             reporte.preActualizar();
             reporteService.guardarReporte(reporte);
@@ -130,6 +159,7 @@ public class AdminController {
         }
         return ResponseEntity.ok(response);
     }
+    
 
     @PostMapping("/eliminar-reporte/{id}")
     public ResponseEntity<Map<String, String>> eliminarReporte(@PathVariable String id) {

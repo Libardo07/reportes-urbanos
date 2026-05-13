@@ -4,18 +4,13 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
-import com.reportes.urbanos.reportes_api.enums.TipoReporte;
-
-
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
-
 
 @CompoundIndexes({
     @CompoundIndex(name = "idx_usuario_fecha", def = "{'usuario.$id': 1, 'fechaModificacion': -1}"),
@@ -31,23 +26,16 @@ public class Reporte {
     private String id;
 
     private String titulo;
-
     private String descripcion;
-
     private String direccion;
 
-    private EstadoReporte estado;
-
-    private TipoReporte tipo;
+    private Long estadoReporteId;
+    private Long tipoReporteId;
+    private Long barrioId;
 
     private LocalDateTime fechaCreacion;
-
     private LocalDateTime fechaModificacion;
 
-    // Embebido
-    private Barrio barrio;
-
-    // Referencias
     @DBRef
     private Usuario usuario;
 
@@ -59,9 +47,6 @@ public class Reporte {
     public void preGuardar() {
         fechaCreacion = LocalDateTime.now(ZoneId.of("America/Bogota"));
         fechaModificacion = fechaCreacion;
-        if (estado == null) {
-            estado = EstadoReporte.PENDIENTE;
-        }
     }
 
     public void preActualizar() {

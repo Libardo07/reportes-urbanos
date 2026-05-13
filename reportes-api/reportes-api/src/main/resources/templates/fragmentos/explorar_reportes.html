@@ -54,8 +54,8 @@
                 </div>
                 <!-- Badge estado -->
                 <span class="exp-estado-badge"
-                      th:classappend="'exp-badge-' + ${#strings.toLowerCase(r.estado.name())}"
-                      th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span>
+                    th:classappend="'exp-badge-' + ${#strings.toLowerCase(#strings.replace(estadosMap[r.estadoReporteId], '_', ''))}"
+                    th:text="${#strings.replace(estadosMap[r.estadoReporteId], '_', ' ')}"></span>
             </div>
 
             <!-- Info -->
@@ -63,7 +63,7 @@
                 <div class="exp-card-top">
                     <h3 class="exp-card-titulo" th:text="${r.titulo}"></h3>
                     <span class="exp-card-tipo"
-                          th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.tipo.name(), '_', ' ')))}"></span>
+                        th:text="${#strings.replace(tiposMap[r.tipoReporteId], '_', ' ')}"></span>
                 </div>
 
                 <div class="exp-card-meta">
@@ -73,7 +73,7 @@
                             <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
                             <circle cx="12" cy="10" r="3"/>
                         </svg>
-                        <span th:text="${r.barrio.nombre}"></span>
+                        <span th:text="${barriosMap[r.barrioId]}"></span>
                     </span>
                     <span class="exp-meta-item">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
