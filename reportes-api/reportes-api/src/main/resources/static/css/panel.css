@@ -848,7 +848,7 @@ body {
 
 .dashboard-container.usuario .card:hover,
 .dashboard-container.admin .card:hover {
-    transform: translateY(-5px);
+    box-shadow: 0 0 35px rgba(26, 115, 232, 0.7), 0 0 70px rgba(26, 115, 232, 0.5);
 }
 
 @keyframes floatingGlowBlue {

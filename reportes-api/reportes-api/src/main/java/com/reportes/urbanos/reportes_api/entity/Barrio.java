@@ -1,8 +1,10 @@
 package com.reportes.urbanos.reportes_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(name = "barrios")
 @Getter @Setter

@@ -6,8 +6,12 @@ import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
+import com.reportes.urbanos.reportes_api.service.BarrioService;
 import com.reportes.urbanos.reportes_api.service.ComentarioService;
+import com.reportes.urbanos.reportes_api.service.EstadoReporteService;
 import com.reportes.urbanos.reportes_api.service.ReporteService;
+import com.reportes.urbanos.reportes_api.service.TipoReporteService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,9 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import com.reportes.urbanos.reportes_api.entity.Barrio;
 import com.reportes.urbanos.reportes_api.entity.EstadoReporte;
 import com.reportes.urbanos.reportes_api.entity.TipoReporte;
-import com.reportes.urbanos.reportes_api.repository.BarrioRepository;
-import com.reportes.urbanos.reportes_api.repository.EstadoReporteRepository;
-import com.reportes.urbanos.reportes_api.repository.TipoReporteRepository;
 import java.util.stream.Collectors;
 
 
@@ -41,9 +42,14 @@ public class ComentarioController {
     @Autowired 
     private UsuarioRepository usuarioRepository;
 
-    @Autowired private BarrioRepository barrioRepository;
-    @Autowired private EstadoReporteRepository estadoReporteRepository;
-    @Autowired private TipoReporteRepository tipoReporteRepository;
+    @Autowired
+    private BarrioService barrioService;
+
+    @Autowired
+    private TipoReporteService tipoReporteService;
+
+    @Autowired
+    private EstadoReporteService estadoReporteService;
 ;
 
 
@@ -58,17 +64,18 @@ public class ComentarioController {
         } catch (Exception e) { return null; }
     }
 
-        private void addCatalogMaps(Model model) {
-            model.addAttribute("estadosMap",
-                estadoReporteRepository.findAll().stream()
-                    .collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre)));
-            model.addAttribute("tiposMap",
-                tipoReporteRepository.findAll().stream()
-                    .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre)));
-            model.addAttribute("barriosMap",
-                barrioRepository.findAll().stream()
-                    .collect(Collectors.toMap(Barrio::getId, Barrio::getNombre)));
-}
+    private void addCatalogMaps(Model model) {
+        List<Barrio> barrios = barrioService.getBarriosOrdenados();
+        List<TipoReporte> tipos = tipoReporteService.getTipos();
+        List<EstadoReporte> estados = estadoReporteService.getEstados();
+
+        model.addAttribute("estadosMap",
+            estados.stream().collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre)));
+        model.addAttribute("tiposMap",
+            tipos.stream().collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre)));
+        model.addAttribute("barriosMap",
+            barrios.stream().collect(Collectors.toMap(Barrio::getId, Barrio::getNombre)));
+    }
 
 
     // ── Fragmento: lista explorar reportes ──────────────────────────────────

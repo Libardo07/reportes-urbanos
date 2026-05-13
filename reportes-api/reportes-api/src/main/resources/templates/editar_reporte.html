@@ -22,9 +22,9 @@
             <label for="tipo-select">Tipo de reporte:</label>
             <select name="tipoReporte" id="tipo-select" class="form-control" required>
                 <option th:each="t : ${tipos}"
-                        th:value="${t.name()}"
-                        th:text="${t.name()}"
-                        th:selected="${t == reporte.tipo}">
+                        th:value="${t.nombre}"
+                        th:text="${t.nombre}"
+                        th:selected="${t.id == reporte.tipoReporteId}">
                 </option>
             </select>
         </div>
@@ -50,10 +50,10 @@
         <div class="form-group">
             <label for="barrioId">Barrio:</label>
             <input type="hidden" name="barrioId" id="barrioId"
-                    th:value="${reporte.barrio != null ? reporte.barrio.id : ''}" required>
+                    th:value="${reporte.barrioId != null ? reporte.barrioId : ''}" required>
             <div class="custom-select-wrapper">
                 <div class="custom-select-display" id="barrioDisplay"
-                    th:text="${reporte.barrio != null ? reporte.barrio.nombre : 'Seleccione un barrio'}">
+                    th:text="${reporte.barrioId != null ? barriosMap[reporte.barrioId] : 'Seleccione un barrio'}">
                     Seleccione un barrio
                 </div>
                 <div class="custom-select-dropdown" id="barrioDropdown" style="display:none;">
