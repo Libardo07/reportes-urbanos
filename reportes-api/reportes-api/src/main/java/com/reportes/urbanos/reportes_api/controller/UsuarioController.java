@@ -7,6 +7,7 @@ import com.reportes.urbanos.reportes_api.service.EstadoReporteService;
 import com.reportes.urbanos.reportes_api.service.ReporteService;
 import com.reportes.urbanos.reportes_api.service.S3Service;
 import com.reportes.urbanos.reportes_api.service.TipoReporteService;
+import com.reportes.urbanos.reportes_api.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +39,8 @@ public class UsuarioController {
     private BarrioRepository barrioRepository;
 
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    @Autowired 
+    private UsuarioService usuarioService;
 
     @Autowired
     private S3Service s3Service;
@@ -63,7 +64,7 @@ public class UsuarioController {
     // Método utilitario para obtener el usuario logueado desde Spring Security
     private Usuario getUsuarioLogueado() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return usuarioRepository.findByEmail(email);
+        return usuarioService.getUsuarioPorEmail(email);
     }
 
     @ModelAttribute

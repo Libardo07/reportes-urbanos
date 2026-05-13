@@ -176,7 +176,7 @@ function loadView(view) {
     const contentArea = document.getElementById('content-area');
     if (!contentArea) return;
 
-    contentArea.innerHTML = '<div class="card"><p style="text-align:center;">Cargando...</p></div>';
+    contentArea.innerHTML = skeletonLoader();
 
     fetch(view)
         .then(response => {
@@ -259,7 +259,7 @@ function loadEditForm(url) {
     const contentArea = document.getElementById('content-area');
     if (!contentArea) return;
 
-    contentArea.innerHTML = '<div class="card"><p style="text-align:center;">Cargando formulario...</p></div>';
+    contentArea.innerHTML = skeletonLoader();
 
     fetch(url)
         .then(response => response.text())
@@ -502,7 +502,7 @@ function verDetalleReporte(id) {
     const contentArea = document.getElementById('content-area');
     if (!contentArea) return;
 
-    contentArea.innerHTML = '<div class="card"><p style="text-align:center;padding:40px;color:#5c6bc0;">Cargando reporte...</p></div>';
+    contentArea.innerHTML = skeletonLoader();
 
     fetch(`/reportes/fragmento/detalle/${id}`)
         .then(r => r.text())
@@ -552,4 +552,30 @@ function cerrarFotoModal() {
 
 function cerrarFotoConEscape(e) {
     if (e.key === 'Escape') cerrarFotoModal();
+}
+
+function skeletonLoader() {
+    return `<div class="card" style="padding:24px;">
+        <div class="sk" style="height:22px;width:180px;margin-bottom:20px;border-radius:6px;"></div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;gap:12px;align-items:center;">
+                <div class="sk" style="height:14px;flex:1;border-radius:6px;"></div>
+                <div class="sk" style="height:14px;width:80px;border-radius:6px;"></div>
+                <div class="sk" style="height:14px;width:60px;border-radius:6px;"></div>
+                <div class="sk" style="height:28px;width:50px;border-radius:6px;"></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;">
+                <div class="sk" style="height:14px;flex:1;border-radius:6px;"></div>
+                <div class="sk" style="height:14px;width:80px;border-radius:6px;"></div>
+                <div class="sk" style="height:14px;width:60px;border-radius:6px;"></div>
+                <div class="sk" style="height:28px;width:50px;border-radius:6px;"></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;">
+                <div class="sk" style="height:14px;flex:1;border-radius:6px;"></div>
+                <div class="sk" style="height:14px;width:80px;border-radius:6px;"></div>
+                <div class="sk" style="height:14px;width:60px;border-radius:6px;"></div>
+                <div class="sk" style="height:28px;width:50px;border-radius:6px;"></div>
+            </div>
+        </div>
+    </div>`;
 }
