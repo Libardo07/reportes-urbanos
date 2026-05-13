@@ -6,7 +6,6 @@ import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
-import com.reportes.urbanos.reportes_api.service.CatalogoService;
 import com.reportes.urbanos.reportes_api.service.ComentarioService;
 import com.reportes.urbanos.reportes_api.service.ReporteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.reportes.urbanos.reportes_api.entity.Barrio;
+import com.reportes.urbanos.reportes_api.entity.EstadoReporte;
+import com.reportes.urbanos.reportes_api.entity.TipoReporte;
+import com.reportes.urbanos.reportes_api.repository.BarrioRepository;
+import com.reportes.urbanos.reportes_api.repository.EstadoReporteRepository;
+import com.reportes.urbanos.reportes_api.repository.TipoReporteRepository;
+import java.util.stream.Collectors;
 
 
 import java.util.List;
@@ -35,8 +41,10 @@ public class ComentarioController {
     @Autowired 
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private CatalogoService catalogoService;
+    @Autowired private BarrioRepository barrioRepository;
+    @Autowired private EstadoReporteRepository estadoReporteRepository;
+    @Autowired private TipoReporteRepository tipoReporteRepository;
+;
 
 
     private static final int PAGE_SIZE = 10;
@@ -51,9 +59,15 @@ public class ComentarioController {
     }
 
         private void addCatalogMaps(Model model) {
-            model.addAttribute("estadosMap", catalogoService.getEstadosMap());
-            model.addAttribute("tiposMap",   catalogoService.getTiposMap());
-            model.addAttribute("barriosMap", catalogoService.getBarriosMap());
+            model.addAttribute("estadosMap",
+                estadoReporteRepository.findAll().stream()
+                    .collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre)));
+            model.addAttribute("tiposMap",
+                tipoReporteRepository.findAll().stream()
+                    .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre)));
+            model.addAttribute("barriosMap",
+                barrioRepository.findAll().stream()
+                    .collect(Collectors.toMap(Barrio::getId, Barrio::getNombre)));
 }
 
 

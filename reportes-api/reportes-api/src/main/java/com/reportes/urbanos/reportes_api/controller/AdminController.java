@@ -8,7 +8,6 @@ import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
-import com.reportes.urbanos.reportes_api.service.CatalogoService;
 import com.reportes.urbanos.reportes_api.service.ReporteService;
 import com.reportes.urbanos.reportes_api.service.UsuarioService;
 
@@ -22,11 +21,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import com.reportes.urbanos.reportes_api.entity.Barrio;
+import com.reportes.urbanos.reportes_api.entity.TipoReporte;
+import com.reportes.urbanos.reportes_api.repository.BarrioRepository;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 
 @Controller
 @RequestMapping("/admin")
@@ -49,26 +54,30 @@ public class AdminController {
 
 
     @Autowired
+    private BarrioRepository barrioRepository;
+
+    @Autowired
     private TipoReporteRepository tipoReporteRepository;
 
     @Autowired
     private EstadoReporteRepository estadoReporteRepository;
 
-    @Autowired
-    private CatalogoService catalogoService;
+
 
     @Value("${admin.email}")
     private String adminEmail;
 
     @ModelAttribute
-    public void populateModelsWithCommonData(Model model) {
-        model.addAttribute("barrios", catalogoService.getBarriosMap().entrySet().stream()
-            .sorted(Map.Entry.comparingByValue())
-            .collect(Collectors.toList()));
-        model.addAttribute("tipos",      tipoReporteRepository.findAll());
-        model.addAttribute("estadosMap", catalogoService.getEstadosMap());
-        model.addAttribute("tiposMap",   catalogoService.getTiposMap());
-        model.addAttribute("barriosMap", catalogoService.getBarriosMap());
+    public void addCatalogMaps(Model model) {
+        model.addAttribute("estadosMap",
+            estadoReporteRepository.findAll().stream()
+                .collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre)));
+        model.addAttribute("tiposMap",
+            tipoReporteRepository.findAll().stream()
+                .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre)));
+        model.addAttribute("barriosMap",
+            barrioRepository.findAll().stream()
+                .collect(Collectors.toMap(Barrio::getId, Barrio::getNombre)));
     }
 
     // Método utilitario para obtener el usuario logueado desde Spring Security

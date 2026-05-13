@@ -3,7 +3,6 @@ package com.reportes.urbanos.reportes_api.controller;
 import com.reportes.urbanos.reportes_api.entity.*;
 import com.reportes.urbanos.reportes_api.repository.*;
 import com.reportes.urbanos.reportes_api.service.BarrioService;
-import com.reportes.urbanos.reportes_api.service.CatalogoService;
 import com.reportes.urbanos.reportes_api.service.ReporteService;
 import com.reportes.urbanos.reportes_api.service.S3Service;
 
@@ -15,9 +14,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 
@@ -34,8 +36,6 @@ public class UsuarioController {
     @Autowired
     private BarrioRepository barrioRepository;
 
-    @Autowired
-    private BarrioService barrioService;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -49,8 +49,6 @@ public class UsuarioController {
     @Autowired
     private EstadoReporteRepository estadoReporteRepository; 
     
-    @Autowired
-    private CatalogoService catalogoService;
 
     // Método utilitario para obtener el usuario logueado desde Spring Security
     private Usuario getUsuarioLogueado() {
@@ -60,11 +58,18 @@ public class UsuarioController {
 
     @ModelAttribute
     public void populateModelsWithCommonData(Model model) {
-        model.addAttribute("barrios",    barrioService.getBarriosOrdenados());
-        model.addAttribute("tipos",      tipoReporteRepository.findAll());
-        model.addAttribute("estadosMap", catalogoService.getEstadosMap());
-        model.addAttribute("tiposMap",   catalogoService.getTiposMap());
-        model.addAttribute("barriosMap", catalogoService.getBarriosMap());
+        model.addAttribute("barrios", barrioRepository.findAll()
+            .stream().sorted(Comparator.comparing(Barrio::getNombre)).collect(Collectors.toList()));
+        model.addAttribute("tipos", tipoReporteRepository.findAll());
+        model.addAttribute("estadosMap",
+            estadoReporteRepository.findAll().stream()
+                .collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre)));
+        model.addAttribute("tiposMap",
+            tipoReporteRepository.findAll().stream()
+                .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre)));
+        model.addAttribute("barriosMap",
+            barrioRepository.findAll().stream()
+                .collect(Collectors.toMap(Barrio::getId, Barrio::getNombre)));
     }
 
     @GetMapping("/inicio")
