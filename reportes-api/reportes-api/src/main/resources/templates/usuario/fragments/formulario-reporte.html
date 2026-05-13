@@ -3,7 +3,7 @@
         <h1>Realizar su reporte aquí</h1>
     </div>
 
-    <form th:action="@{/usuario/guardar-reporte}" th:object="${reporte}" method="post" data-ajax="true" data-form-type="create">
+    <form th:action="@{/usuario/guardar-reporte}" th:object="${reporte}" method="post" enctype="multipart/form-data" data-ajax="true" data-form-type="create">
 
         <div class="form-group">
             <label for="titulo">Título del reporte:</label>
@@ -58,6 +58,31 @@
             </div>
         </div>
 
+        <!-- Imágenes del reporte (opcional, máx. 3) -->
+        <div class="form-group">
+            <label>Fotos del problema
+                <span class="opcional-label">(opcional, máx. 3)</span>
+            </label>
+            <div class="imagenes-upload-area" id="imagenesArea">
+                <div class="imagenes-placeholder" id="imagenesPlaceholder">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                        stroke="#1a73e8" stroke-width="1.5" stroke-linecap="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <p>Arrastra fotos aquí o
+                        <span class="upload-link">selecciona archivos</span>
+                    </p>
+                    <p class="upload-hint">JPG, PNG o WEBP · Máx. 5MB por imagen</p>
+                </div>
+                <div class="imagenes-preview" id="imagenesPreview" style="display:none;"></div>
+            </div>
+            <input type="file" id="imagenesInput" name="imagenes"
+                accept="image/jpeg,image/png,image/webp"
+                multiple style="display:none;">
+        </div>
+
         <div>
             <button type="submit" class="btn-enviar-animated">
                 <span class="button__icon-wrapper">
@@ -71,6 +96,8 @@
                 Enviar reporte
             </button>
         </div>
+
+        <input type="hidden" name="id" th:value="${reporte.id}">
 
     </form>
 

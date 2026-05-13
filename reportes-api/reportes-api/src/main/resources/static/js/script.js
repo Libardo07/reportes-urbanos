@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Abrir modal
             const verDetallesBtn = event.target.closest('.ver-detalles-btn');
             if (verDetallesBtn) {
                 const modalId = verDetallesBtn.getAttribute('data-modal-id');
@@ -64,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Cerrar con botón Cerrar
             const cerrarBtn = event.target.closest('.cerrar-modal');
             if (cerrarBtn) {
                 const modalId = cerrarBtn.getAttribute('data-modal-id');
@@ -72,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Cerrar clickando el overlay
             if (event.target.classList.contains('modal-overlay')) {
                 const modalId = event.target.getAttribute('data-modal-id');
                 document.getElementById(modalId).style.display = 'none';
@@ -96,9 +93,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 event.preventDefault();
 
                 const formData = new FormData(form);
+                formData.delete('imagenes');
+                if (window.imagenesSeleccionadas && window.imagenesSeleccionadas.length > 0) {
+                    window.imagenesSeleccionadas.forEach(function(file) {
+                        formData.append('imagenes', file, file.name);
+                    });
+                }
+
                 const url = form.getAttribute('action');
                 const method = form.getAttribute('method') || 'POST';
-                const formType = form.getAttribute('data-form-type');
 
                 Swal.fire({
                     title: 'Procesando...',
@@ -125,7 +128,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             const formType = form.getAttribute('data-form-type');
 
                             if (formType === 'create-admin') {
-                                console.log("Creación de admin exitosa. Redirigiendo a la lista de reportes del admin.");
                                 loadView('/admin/fragmento/lista-reportes');
                                 return;
                             }
@@ -136,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 if (barrioIdInput) barrioIdInput.value = '';
                                 loadView('/usuario/fragmento/lista-reportes');
                             } else {
-                                console.log("Editando reporte, volviendo a la lista.");
                                 loadView('/usuario/fragmento/lista-reportes');
                             }
                         } else {
@@ -146,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     .catch(error => {
                         Swal.close();
                         showErrorMessage('Error en la solicitud: ' + error.message);
-                        console.error('Error:', error);
                     });
             }
         });
@@ -161,7 +161,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function setupMenuNavigation() {
     const menuItems = document.querySelectorAll('.menu-item[data-view]');
-
     menuItems.forEach(item => {
         item.addEventListener('click', function() {
             menuItems.forEach(i => i.classList.remove('active'));
@@ -191,37 +190,33 @@ function loadView(view) {
             contentArea.innerHTML = fragment ? fragment.outerHTML : html;
 
             if (view.includes('formulario-reporte') || view.includes('editar-reporte')) {
-            setTimeout(function() {
-                initBarrioFiltro();
-            }, 300);
-        }
+                setTimeout(function() { initBarrioFiltro(); }, 300);
+                var scriptAnterior = document.querySelector('script[src*="formulario-reporte.js"]');
+                if (scriptAnterior) scriptAnterior.remove();
+                var script = document.createElement('script');
+                script.src = '/js/formulario-reporte.js?t=' + Date.now();
+                document.body.appendChild(script);
+            }
 
-        if (view.includes('formulario-reporte') || view.includes('editar-reporte')) {
-            var scriptAnterior = document.querySelector('script[src*="formulario-reporte.js"]');
-            if (scriptAnterior) scriptAnterior.remove();
-            var script = document.createElement('script');
-            script.src = '/js/formulario-reporte.js?t=' + Date.now();
-            document.body.appendChild(script);
-        }
+            setupPasswordToggles();
 
-        // Inicializar ojitos en vistas cargadas dinámicamente
-        setupPasswordToggles();
-        
+            // Si es la vista de detalle, inicializar comentarios
+            if (typeof inicializarComentarios === 'function') {
+                inicializarComentarios();
+            }
         })
         .catch(error => {
             console.error('Error al cargar la vista:', error);
-            contentArea.innerHTML = '<div class="card error-message">Error al cargar el contenido. Por favor, inténtalo de nuevo.</div>';
+            contentArea.innerHTML = '<div class="card error-message">Error al cargar el contenido.</div>';
         });
 }
 
 
 function setupLoginFeatures() {
-    // Ojito para login y registro (páginas completas)
     const passwordToggles = document.querySelectorAll('.password-toggle');
     passwordToggles.forEach(toggle => {
         const passwordInput = toggle.parentElement.querySelector('input[type="password"], input[type="text"]');
         if (!passwordInput) return;
-
         toggle.addEventListener('click', function() {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
@@ -232,25 +227,20 @@ function setupLoginFeatures() {
 
     const loginForm = document.querySelector('form[action="/login"]');
     const loader = document.getElementById('loader');
-
     if (loginForm && loader) {
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
             loader.classList.add('show');
-            setTimeout(() => {
-                loginForm.submit();
-            }, 2000);
+            setTimeout(() => { loginForm.submit(); }, 2000);
         });
     }
 }
 
-// Ojito para formularios cargados dinámicamente en el panel (formulario-admin, etc.)
 function setupPasswordToggles() {
     const toggles = document.querySelectorAll('.password-toggle-panel');
     toggles.forEach(toggle => {
         const passwordInput = toggle.closest('.password-wrapper').querySelector('input');
         if (!passwordInput) return;
-
         toggle.addEventListener('click', function() {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
@@ -278,7 +268,6 @@ function loadEditForm(url) {
             initBarrioFiltro();
             setupPasswordToggles();
 
-            // Cargar mapa en editar reporte
             var scriptAnterior = document.querySelector('script[src*="formulario-reporte.js"]');
             if (scriptAnterior) scriptAnterior.remove();
             var script = document.createElement('script');
@@ -292,7 +281,6 @@ function loadEditForm(url) {
             contentArea.innerHTML = '<div class="card error-message">Error al cargar el formulario.</div>';
         });
 }
-
 
 function confirmDeleteReporte(reporteId, url, reloadViewUrl) {
     showConfirmDialog(
@@ -309,10 +297,7 @@ function confirmDeleteReporte(reporteId, url, reloadViewUrl) {
                         showErrorMessage(data.error || 'Error al eliminar el reporte');
                     }
                 })
-                .catch(error => {
-                    showErrorMessage('Error en la solicitud: ' + error.message);
-                    console.error('Error:', error);
-                });
+                .catch(error => showErrorMessage('Error en la solicitud: ' + error.message));
         }
     );
 }
@@ -336,10 +321,7 @@ function confirmarCambioEstado(reporteId, nuevoEstado) {
                         showErrorMessage(data.error || 'Error al cambiar el estado');
                     }
                 })
-                .catch(error => {
-                    showErrorMessage('Error en la solicitud: ' + error.message);
-                    console.error('Error:', error);
-                });
+                .catch(error => showErrorMessage('Error en la solicitud: ' + error.message));
         }
     );
 }
@@ -354,17 +336,9 @@ function showErrorMessage(message) {
 
 function showConfirmDialog(title, text, onConfirm) {
     Swal.fire({
-        title: title,
-        text: text,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'No'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            onConfirm();
-        }
-    });
+        title: title, text: text, icon: 'warning',
+        showCancelButton: true, confirmButtonText: 'Sí', cancelButtonText: 'No'
+    }).then((result) => { if (result.isConfirmed) onConfirm(); });
 }
 
 function logout() {
@@ -374,13 +348,9 @@ function logout() {
         () => {
             sessionStorage.clear();
             const loader = document.getElementById('loader');
-            if (loader) {
-                loader.classList.add('show');
-            }
+            if (loader) loader.classList.add('show');
             sessionStorage.removeItem('lastView');
-            setTimeout(() => {
-                window.location.href = '/logout';
-            }, 800);
+            setTimeout(() => { window.location.href = '/logout'; }, 800);
         }
     );
 }
@@ -440,10 +410,8 @@ function initBarrioFiltro() {
             li.style.display = coincide ? '' : 'none';
             if (coincide) visibles++;
         });
-
         const sinRes = lista.querySelector('.sin-resultados');
         if (sinRes) sinRes.remove();
-
         if (visibles === 0) {
             const li = document.createElement('li');
             li.className = 'sin-resultados';
@@ -453,14 +421,135 @@ function initBarrioFiltro() {
     }
 }
 
-// Limpia el parámetro ?error de la URL sin recargar la página
 if (window.location.search.includes('error')) {
     window.history.replaceState(null, '', '/login');
 }
 
-// Evita que el usuario pueda volver atrás con el botón del navegador
 history.pushState(null, null, location.href);
-window.onpopstate = function() {
-    history.pushState(null, null, location.href);
-};
+window.onpopstate = function() { history.pushState(null, null, location.href); };
 
+// ── Explorar reportes ───────────────────────────────────────────────────────
+let searchTimeout = null;
+let currentReporteId = null;
+
+document.addEventListener('keydown', function(e) {
+    if (e.target && e.target.id === 'exp-search' && e.key === 'Enter') {
+        e.preventDefault();
+        buscarReportes(e.target.value.trim(), 0);
+    }
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target && (e.target.id === 'exp-search-btn' || e.target.closest('#exp-search-btn'))) {
+        const input = document.getElementById('exp-search');
+        if (input) buscarReportes(input.value.trim(), 0);
+    }
+});
+
+function buscarReportes(q, page) {
+    const url = `/reportes/fragmento/explorar?q=${encodeURIComponent(q)}&page=${page}`;
+    const contentArea = document.getElementById('content-area');
+    if (!contentArea) return;
+    fetch(url)
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('.card');
+            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+        })
+        .catch(console.error);
+}
+
+function limpiarBusqueda() {
+    const input = document.getElementById('exp-search');
+    if (input) { input.value = ''; input.focus(); }
+    const clear = document.getElementById('exp-clear');
+    if (clear) clear.style.display = 'none';
+    buscarReportes('', 0);
+}
+
+function verMasReportes(btn) {
+    const page = parseInt(btn.getAttribute('data-page'));
+    const q    = btn.getAttribute('data-q') || '';
+    const url  = `/reportes/fragmento/explorar?q=${encodeURIComponent(q)}&page=${page}`;
+
+    btn.disabled    = true;
+    btn.textContent = 'Cargando...';
+
+    fetch(url)
+        .then(r => r.text())
+        .then(html => {
+            const parser   = new DOMParser();
+            const doc      = parser.parseFromString(html, 'text/html');
+            const lista    = doc.querySelector('#exp-lista');
+            const verMas   = doc.querySelector('.exp-ver-mas-wrap');
+            const miLista  = document.getElementById('exp-lista');
+            const miVerMas = document.querySelector('.exp-ver-mas-wrap');
+
+            if (lista && miLista) {
+                lista.querySelectorAll('.exp-card').forEach(card => miLista.appendChild(card));
+            }
+            if (miVerMas) miVerMas.remove();
+            if (verMas) document.querySelector('.card').appendChild(verMas);
+        })
+        .catch(console.error);
+}
+
+// ── Ver detalle del reporte ─────────────────────────────────────────────────
+function verDetalleReporte(id) {
+    currentReporteId = id;
+    const contentArea = document.getElementById('content-area');
+    if (!contentArea) return;
+
+    contentArea.innerHTML = '<div class="card"><p style="text-align:center;padding:40px;color:#5c6bc0;">Cargando reporte...</p></div>';
+
+    fetch(`/reportes/fragmento/detalle/${id}`)
+        .then(r => r.text())
+        .then(html => {
+            const parser   = new DOMParser();
+            const doc      = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('.card');
+            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+
+            // Inicializar comentarios después de insertar el HTML
+            if (typeof inicializarComentarios === 'function') {
+                inicializarComentarios();
+            }
+        })
+        .catch(console.error);
+}
+
+function volverAExplorar() {
+    loadView('/reportes/fragmento/explorar');
+}
+
+function volverAExplorar() {
+    loadView('/reportes/fragmento/explorar');
+}
+
+// ── Modal de foto ───────────────────────────────────────────────────────────
+function abrirFotoModal(src) {
+    const overlay = document.createElement('div');
+    overlay.className = 'foto-modal-overlay';
+    overlay.innerHTML = `
+        <div class="foto-modal-inner">
+            <img src="${src}" alt="Foto del reporte">
+            <button class="foto-modal-close" onclick="cerrarFotoModal()">✕</button>
+        </div>`;
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) cerrarFotoModal();
+    });
+    document.body.appendChild(overlay);
+    document.addEventListener('keydown', cerrarFotoConEscape);
+}
+
+function cerrarFotoModal() {
+    const overlay = document.querySelector('.foto-modal-overlay');
+    if (overlay) overlay.remove();
+    document.removeEventListener('keydown', cerrarFotoConEscape);
+}
+
+function cerrarFotoConEscape(e) {
+    if (e.key === 'Escape') cerrarFotoModal();
+}

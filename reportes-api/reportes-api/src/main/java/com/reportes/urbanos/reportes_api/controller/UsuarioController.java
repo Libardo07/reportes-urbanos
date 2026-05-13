@@ -6,6 +6,7 @@ import com.reportes.urbanos.reportes_api.enums.TipoReporte;
 import com.reportes.urbanos.reportes_api.repository.*;
 import com.reportes.urbanos.reportes_api.service.BarrioService;
 import com.reportes.urbanos.reportes_api.service.ReporteService;
+import com.reportes.urbanos.reportes_api.service.S3Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +14,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -27,12 +30,18 @@ public class UsuarioController {
 
     @Autowired
     private ReporteRepository reporteRepository;
+
     @Autowired
     private BarrioRepository barrioRepository;
+
     @Autowired
     private BarrioService barrioService;
+
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private S3Service s3Service;
 
     // Método utilitario para obtener el usuario logueado desde Spring Security
     private Usuario getUsuarioLogueado() {
@@ -82,42 +91,76 @@ public class UsuarioController {
     }
 
     @PostMapping("/guardar-reporte")
-    public ResponseEntity<Map<String, String>> guardarReporte(@ModelAttribute Reporte reporte,
-                                                            @RequestParam String barrioId,
-                                                            @RequestParam String tipoReporte) {
+
+    
+    public ResponseEntity<Map<String, String>> guardarReporte(
+            @RequestParam(required = false) String id,
+            @RequestParam String titulo,
+            @RequestParam String descripcion,
+            @RequestParam String direccion,
+            @RequestParam String barrioId,
+            @RequestParam String tipoReporte,
+            @RequestParam(value = "imagenes", required = false) List<MultipartFile> imagenes) {
+
+                System.out.println("=== IMAGENES RECIBIDAS: " + (imagenes != null ? imagenes.size() : "null"));
+                if (imagenes != null) {
+                    imagenes.forEach(img -> System.out.println("  - " + img.getOriginalFilename() + " | " + img.getSize()));
+                }
+
         Map<String, String> response = new HashMap<>();
         Usuario usuario = getUsuarioLogueado();
+
         try {
             Barrio barrio = barrioRepository.findById(barrioId).orElse(null);
             TipoReporte tipo = TipoReporte.valueOf(tipoReporte);
 
-            if (reporte.getId() != null) {
-                Reporte reporteExistente = reporteRepository.findById(reporte.getId()).orElse(null);
-                if (reporteExistente == null || !reporteExistente.getUsuario().getId().equals(usuario.getId())) {
+            if (id != null && !id.isBlank()) {
+                Reporte reporteExistente = reporteRepository.findById(id).orElse(null);
+                if (reporteExistente == null ||
+                    !reporteExistente.getUsuario().getId().equals(usuario.getId())) {
                     response.put("error", "No se pudo editar: el reporte no existe o no pertenece a este usuario.");
                     return ResponseEntity.badRequest().body(response);
                 }
                 if (!reporteExistente.getEstado().equals(EstadoReporte.PENDIENTE)) {
-                    response.put("error", "El reporte no puede editarse porque su estado es '" + reporteExistente.getEstado() + "'.");
+                    response.put("error", "El reporte no puede editarse porque su estado es '" +
+                        reporteExistente.getEstado() + "'.");
                     return ResponseEntity.badRequest().body(response);
                 }
-                reporteExistente.setTitulo(reporte.getTitulo());
-                reporteExistente.setDescripcion(reporte.getDescripcion());
-                reporteExistente.setDireccion(reporte.getDireccion());
+                reporteExistente.setTitulo(titulo);
+                reporteExistente.setDescripcion(descripcion);
+                reporteExistente.setDireccion(direccion);
                 reporteExistente.setBarrio(barrio);
                 reporteExistente.setTipo(tipo);
+
+                if (imagenes != null && !imagenes.isEmpty() && !imagenes.get(0).isEmpty()) {
+                    s3Service.eliminarImagenes(reporteExistente.getImagenes());
+                    reporteExistente.setImagenes(s3Service.subirImagenes(imagenes));
+                }
+
                 reporteExistente.preActualizar();
                 reporteService.guardarReporte(reporteExistente);
                 response.put("message", "Reporte actualizado correctamente.");
+
             } else {
+                Reporte reporte = new Reporte();
+                reporte.setTitulo(titulo);
+                reporte.setDescripcion(descripcion);
+                reporte.setDireccion(direccion);
                 reporte.setBarrio(barrio);
                 reporte.setTipo(tipo);
                 reporte.setUsuario(usuario);
+
+                if (imagenes != null && !imagenes.isEmpty() && !imagenes.get(0).isEmpty()) {
+                    reporte.setImagenes(s3Service.subirImagenes(imagenes));
+                }
+
                 reporte.preGuardar();
                 reporteService.guardarReporte(reporte);
                 response.put("message", "Reporte creado correctamente.");
             }
+
             response.put("success", "true");
+
         } catch (Exception e) {
             response.put("error", "Error al guardar el reporte: " + e.getMessage());
         }

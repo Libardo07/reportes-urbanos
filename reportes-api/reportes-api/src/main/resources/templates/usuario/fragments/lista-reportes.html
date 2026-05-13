@@ -1,4 +1,3 @@
-
 <div class="card" th:fragment="lista-reportes">
     <div class="content-header">
         <h1>Mis Reportes</h1>
@@ -20,25 +19,103 @@
                 <td><span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado)}" th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span></td>
                 <td th:text="${r.fechaModificacion != null ? #temporals.format(r.fechaModificacion, 'dd/MM/yyyy HH:mm') : 'Sin modificar'}"></td>
                 <td class="actions">
+                    <!-- Botón ver detalles -->
+                    <button class="action-btn ver-detalles-btn"
+                            th:attr="data-modal-id='modal-u-' + ${r.id}"
+                            title="Ver detalles">
+                        Ver
+                    </button>
+                    
                     <span th:if="${#strings.equalsIgnoreCase(r.estado, 'PENDIENTE')}">
-                        <button class="action-btn edit-reporte" th:attr="data-id=${r.id}, data-url=@{'/usuario/editar-reporte/' + ${r.id}}" title="Editar">
+                        <button class="action-btn edit-reporte"
+                                th:attr="data-id=${r.id}, data-url=@{'/usuario/editar-reporte/' + ${r.id}}"
+                                title="Editar">
                             <img th:src="@{/images/icono-edit.png}" alt="Editar" loading="lazy">
                         </button>
-                        <button class="action-btn delete-reporte" 
-                            th:attr="data-id=${r.id}, 
-                                data-url=@{'/usuario/eliminar-reporte/' + ${r.id}},
-                                data-reload-view='/usuario/fragmento/lista-reportes'" 
-                            title="Eliminar">
-                        <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
-                        </button>
+                        <button class="action-btn delete-reporte"
+                                th:attr="data-id=${r.id},
+                                        data-url=@{'/usuario/eliminar-reporte/' + ${r.id}},
+                                        data-reload-view='/usuario/fragmento/lista-reportes'"
+                                title="Eliminar">
+                            <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
                         </button>
                     </span>
                     <span th:unless="${#strings.equalsIgnoreCase(r.estado, 'PENDIENTE')}" title="No editable">
-                        <button class="action-btn" disabled><img th:src="@{/images/icono-edit.png}" alt="No editable" style="opacity: 0.4;" loading="lazy"></button>
-                        <button class="action-btn" disabled><img th:src="@{/images/icono-trash.png}" alt="No eliminable" style="opacity: 0.4;" loading="lazy"></button>
+                        <button class="action-btn" disabled><img th:src="@{/images/icono-edit.png}" alt="No editable" style="opacity:.4;" loading="lazy"></button>
+                        <button class="action-btn" disabled><img th:src="@{/images/icono-trash.png}" alt="No eliminable" style="opacity:.4;" loading="lazy"></button>
                     </span>
                 </td>
             </tr>
         </tbody>
     </table>
+
+    <!-- Modales con imágenes -->
+    <div th:each="r : ${reportes}">
+        <div th:id="'modal-u-' + ${r.id}"
+             class="modal-overlay"
+             th:attr="data-modal-id='modal-u-' + ${r.id}">
+            <div class="modal-contenido">
+                <div class="modal-top">
+                    <div class="modal-title-block">
+                        <h2 th:text="${r.titulo}"></h2>
+                    </div>
+                    <button class="cerrar-modal" th:attr="data-modal-id='modal-u-' + ${r.id}">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-grid">
+                        <div class="modal-field">
+                            <span class="modal-label">Estado</span>
+                            <span class="badge" th:classappend="'badge-' + ${#strings.toLowerCase(r.estado)}"
+                                  th:text="${#strings.replace(r.estado.name(), '_', ' ')}"></span>
+                        </div>
+                        <div class="modal-field">
+                            <span class="modal-label">Tipo</span>
+                            <span class="modal-value" th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(r.tipo.name(), '_', ' ')))}"></span>
+                        </div>
+                        <div class="modal-field">
+                            <span class="modal-label">Barrio</span>
+                            <span class="modal-value" th:text="${r.barrio.nombre}"></span>
+                        </div>
+                        <div class="modal-field">
+                            <span class="modal-label">Fecha</span>
+                            <span class="modal-value" th:text="${r.fechaModificacion != null ? #temporals.format(r.fechaModificacion, 'dd/MM/yyyy HH:mm') : 'Sin modificar'}"></span>
+                        </div>
+                        <div class="modal-field modal-field-full">
+                            <span class="modal-label">Dirección</span>
+                            <span class="modal-value" th:text="${r.direccion}"></span>
+                        </div>
+                        <div class="modal-field modal-field-full">
+                            <span class="modal-label">Descripción</span>
+                            <span class="modal-value" th:text="${r.descripcion}"></span>
+                        </div>
+
+                        <!-- Imágenes -->
+                        <div class="modal-field modal-field-full"
+                             th:if="${r.imagenes != null and !r.imagenes.isEmpty()}">
+                            <span class="modal-label">Fotos del problema</span>
+                            <div class="modal-imagenes">
+                                <a th:each="img : ${r.imagenes}"
+                                   th:href="${img}"
+                                   target="_blank"
+                                   class="modal-imagen-link">
+                                    <img th:src="${img}"
+                                         alt="Foto del reporte"
+                                         class="modal-imagen"
+                                         loading="lazy">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="modal-field modal-field-full"
+                             th:if="${r.imagenes == null or r.imagenes.isEmpty()}">
+                            <span class="modal-label">Fotos del problema</span>
+                            <span class="modal-value" style="color:#9e9e9e;font-style:italic;">
+                                Sin fotos adjuntas
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

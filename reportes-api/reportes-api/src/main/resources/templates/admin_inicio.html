@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Panel del Administrador</title>
     <link rel="stylesheet" th:href="@{/css/panel.css}">
+    <link rel="stylesheet" th:href="@{/css/reporte_detalle.css}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="dashboard-container admin">
@@ -39,6 +40,13 @@
                 <img th:src="@{/images/icono-list.png}" alt="Ver" loading="lazy">
                 <span>Ver reportes</span>
             </div>
+            
+            <div class="menu-item menu-item-animated"
+                th:attr="data-view='/reportes/fragmento/explorar'">
+                <img th:src="@{/images/lupa.png}" alt="Explorar" loading="lazy">
+                <span>Explorar reportes</span>
+            </div>
+
             <div class="menu-item menu-item-animated" th:if="${usuario.email == 'adminMain@gmail.com'}" th:attr="data-view='/admin/fragmento/formulario-admin'">
                 <img th:src="@{/images/icono-registro.png}" alt="Crear" loading="lazy">
                 <span>Crear administrador</span>
@@ -60,5 +68,6 @@
     </main>
 
     <script th:src="@{/js/script.js}"></script>
+    <script th:src="@{/js/reporte_detalle.js}" defer></script>
 </body>
 </html>

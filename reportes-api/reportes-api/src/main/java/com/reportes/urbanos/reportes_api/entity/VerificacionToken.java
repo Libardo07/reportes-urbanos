@@ -15,16 +15,21 @@ public class VerificacionToken {
 
     @Id
     private String id;
+
     private String email;
+
     private String token;
+
     private LocalDateTime expiracion;
+
     private boolean usado = false;
+    
     private int reenvios = 0;
 
     public VerificacionToken(String email, String token) {
         this.email     = email;
         this.token     = token;
-        this.expiracion = LocalDateTime.now(ZoneId.of("America/Bogota")).plusHours(24);
+        this.expiracion = LocalDateTime.now(ZoneId.of("America/Bogota")).plusMinutes(3);
     }
 
     public boolean isExpirado() {

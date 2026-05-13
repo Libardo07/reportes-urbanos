@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.reportes.urbanos.reportes_api.enums.EstadoReporte;
 import com.reportes.urbanos.reportes_api.enums.TipoReporte;
@@ -51,6 +53,8 @@ public class Reporte {
 
     @DBRef
     private Usuario usuarioAdmin;
+
+    private List<String> imagenes = new ArrayList<>();
 
     public void preGuardar() {
         fechaCreacion = LocalDateTime.now(ZoneId.of("America/Bogota"));

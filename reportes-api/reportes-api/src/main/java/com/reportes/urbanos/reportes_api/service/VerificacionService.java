@@ -154,7 +154,7 @@ public class VerificacionService {
                         <hr style="border:none;border-top:1px solid #e8eaed;margin:0 0 24px;">
 
                         <p style="font-size:12px;color:#80868b;line-height:1.6;margin:0;">
-                          🔒 Este enlace expira en <strong>24 horas</strong> y solo puede
+                          🔒 Este enlace expira en <strong>3 minutos</strong> y solo puede
                           usarse una vez. Si no creaste esta cuenta, ignora este correo.
                         </p>
                       </td>

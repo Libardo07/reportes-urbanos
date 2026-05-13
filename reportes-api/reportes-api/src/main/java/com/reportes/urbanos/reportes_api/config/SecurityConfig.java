@@ -44,6 +44,8 @@ public class SecurityConfig {
                     "/verificar-correo/estado","/reenviar-verificacion", 
                     "/reenviar-desde-login","/cambiar-correo-verificacion",
                     "/recuperar-password", "/recuperar-password/**",
+                    "/reporte/**",
+                    "/reportes/**",
                     "/css/**", "/js/**", "/images/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")

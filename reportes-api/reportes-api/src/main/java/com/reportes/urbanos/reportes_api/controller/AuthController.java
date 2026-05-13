@@ -67,7 +67,7 @@ public class AuthController {
 
         Usuario existente = usuarioRepository.findByEmail(usuario.getEmail());
 
-        if (existente != null) {
+        if (existente != null) { 
             if (existente.isVerificado()) {
                 model.addAttribute("error", "Ya existe una cuenta con ese correo electrónico.");
                 return "registro";
@@ -75,8 +75,7 @@ public class AuthController {
 
             // Usuario pendiente de verificación — aplicar cooldown de 60 s
             LocalDateTime ahora     = LocalDateTime.now(ZoneId.of("America/Bogota"));
-            long segundosTranscurridos =
-                ChronoUnit.SECONDS.between(existente.getFechaCreacion(), ahora);
+            long segundosTranscurridos = ChronoUnit.SECONDS.between(existente.getFechaCreacion(), ahora);
 
             if (segundosTranscurridos < 60) {
                 long restantes = 60 - segundosTranscurridos;

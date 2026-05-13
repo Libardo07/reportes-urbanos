@@ -1,7 +1,6 @@
 package com.reportes.urbanos.reportes_api.controller;
 
 import com.reportes.urbanos.reportes_api.entity.Usuario;
-import com.reportes.urbanos.reportes_api.entity.VerificacionToken;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
 import com.reportes.urbanos.reportes_api.repository.VerificacionTokenRepository;
 import com.reportes.urbanos.reportes_api.service.VerificacionService;
