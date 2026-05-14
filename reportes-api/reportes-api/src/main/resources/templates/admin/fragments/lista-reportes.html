@@ -101,31 +101,46 @@
                             th:text="${#strings.replace(estadosMap[r.estadoReporteId], '_', ' ')}">
                         </span>
                     </td>
-                    <td class="actions">
-                        <button class="ver-detalles-btn action-btn"
-                                th:attr="data-modal-id='modal-' + ${r.id}">
-                            Ver
-                        </button>
-                        <div class="custom-select">
-                            <select class="estado-select form-control"
-                                    th:attr="data-id=${r.id}"
-                                    th:disabled="${estadosMap[r.estadoReporteId] == 'Resuelto'}">
-                                <option value="" selected disabled>Estado</option>
-                                <option th:value="'EN_PROCESO'" th:selected="${estadosMap[r.estadoReporteId] == 'En_Proceso'}">En Proceso</option>
-                                <option th:value="'RESUELTO'" th:selected="${estadosMap[r.estadoReporteId] == 'Resuelto'}">Resuelto</option>
-                            </select>
+                    <td>
+                        <div class="actions">
+                            <button class="ver-detalles-btn action-btn"
+                                    th:attr="data-modal-id='modal-' + ${r.id}">
+                                Ver
+                            </button>
+                            <div class="custom-select">
+                                <select class="estado-select form-control"
+                                        th:attr="data-id=${r.id}"
+                                        th:disabled="${estadosMap[r.estadoReporteId] == 'Resuelto'}">
+                                    <option value="" selected disabled>Estado</option>
+                                    <option th:value="'EN_PROCESO'" th:selected="${estadosMap[r.estadoReporteId] == 'En_Proceso'}">En Proceso</option>
+                                    <option th:value="'RESUELTO'" th:selected="${estadosMap[r.estadoReporteId] == 'Resuelto'}">Resuelto</option>
+                                </select>
+                            </div>
+                            <button class="action-btn delete-reporte"
+                                    th:attr="data-id=${r.id},
+                                            data-url=@{'/admin/eliminar-reporte/' + ${r.id}},
+                                            data-reload-view='/admin/fragmento/lista-reportes'"
+                                    title="Eliminar">
+                                <img th:src="@{/images/icono-trash.png}" alt="Eliminar" loading="lazy">
+                            </button>
                         </div>
-                        <button class="action-btn delete-reporte"
-                                th:attr="data-id=${r.id},
-                                        data-url=@{'/admin/eliminar-reporte/' + ${r.id}},
-                                        data-reload-view='/admin/fragmento/lista-reportes'"
-                                title="Eliminar">
-                            <img th:src="@{/images/icono-trash.png}" alt="Eliminar" loading="lazy">
-                        </button>
                     </td>
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <!-- Ver más -->
+    <div class="exp-ver-mas-wrap" th:if="${hayMas}">
+        <button class="exp-btn-ver-mas"
+                th:attr="data-page=${nextPage}"
+                onclick="verMasAdmin(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="6 9 12 15 18 9"/>
+            </svg>
+            Ver más reportes
+        </button>
     </div>
 
     <!-- Modales con imágenes -->

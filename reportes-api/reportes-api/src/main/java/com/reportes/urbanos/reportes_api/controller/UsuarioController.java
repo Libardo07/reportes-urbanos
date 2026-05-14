@@ -10,6 +10,7 @@ import com.reportes.urbanos.reportes_api.service.TipoReporteService;
 import com.reportes.urbanos.reportes_api.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -19,10 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import java.util.HashMap;
 import java.util.List;
-
 
 
 @Controller
@@ -30,7 +29,7 @@ import java.util.List;
 public class UsuarioController {
 
     @Autowired
-    private ReporteService reporteService;  
+    private ReporteService reporteService;
 
     @Autowired
     private ReporteRepository reporteRepository;
@@ -38,8 +37,7 @@ public class UsuarioController {
     @Autowired
     private BarrioRepository barrioRepository;
 
-
-    @Autowired 
+    @Autowired
     private UsuarioService usuarioService;
 
     @Autowired
@@ -49,7 +47,7 @@ public class UsuarioController {
     private TipoReporteRepository tipoReporteRepository;
 
     @Autowired
-    private EstadoReporteRepository estadoReporteRepository; 
+    private EstadoReporteRepository estadoReporteRepository;
 
     @Autowired
     private BarrioService barrioService;
@@ -59,9 +57,7 @@ public class UsuarioController {
 
     @Autowired
     private EstadoReporteService estadoReporteService;
-    
 
-    // Método utilitario para obtener el usuario logueado desde Spring Security
     private Usuario getUsuarioLogueado() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return usuarioService.getUsuarioPorEmail(email);
@@ -83,21 +79,33 @@ public class UsuarioController {
             barrios.stream().collect(Collectors.toMap(Barrio::getId, Barrio::getNombre)));
     }
 
+    // ← CAMBIADO: ahora usa paginación
     @GetMapping("/inicio")
     public String inicioCiudadano(Model model) {
         Usuario usuario = getUsuarioLogueado();
+        Page<Reporte> page = reporteService.getReportesUsuarioPaginado(usuario, 0);
         model.addAttribute("usuario", usuario);
         model.addAttribute("reporte", new Reporte());
+        model.addAttribute("reportes", page.getContent());
+        model.addAttribute("hayMas", page.hasNext());
+        model.addAttribute("nextPage", 1);
         return "usuario_inicio";
     }
 
+    // ← CAMBIADO: ahora recibe ?page= y pagina
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
-    public String fragmentoListaReportes(Model model) {
+    public String fragmentoListaReportes(
+            @RequestParam(defaultValue = "0") int page,
+            Model model) {
         Usuario usuario = getUsuarioLogueado();
-        model.addAttribute("reportes", reporteService.getReportesUsuario(usuario));
+        Page<Reporte> p = reporteService.getReportesUsuarioPaginado(usuario, page);
+        model.addAttribute("reportes", p.getContent());
+        model.addAttribute("hayMas", p.hasNext());
+        model.addAttribute("nextPage", page + 1);
         return "usuario/fragments/lista-reportes :: lista-reportes";
     }
 
+    // sin cambios desde aquí
     @GetMapping(value = "/fragmento/formulario-reporte", produces = "text/html")
     public String fragmentoFormularioReporte(Model model) {
         model.addAttribute("reporte", new Reporte());
@@ -120,8 +128,6 @@ public class UsuarioController {
     }
 
     @PostMapping("/guardar-reporte")
-
-    
     public ResponseEntity<Map<String, String>> guardarReporte(
             @RequestParam(required = false) String id,
             @RequestParam String titulo,
@@ -131,16 +137,10 @@ public class UsuarioController {
             @RequestParam String tipoReporte,
             @RequestParam(value = "imagenes", required = false) List<MultipartFile> imagenes) {
 
-                System.out.println("=== IMAGENES RECIBIDAS: " + (imagenes != null ? imagenes.size() : "null"));
-                if (imagenes != null) {
-                    imagenes.forEach(img -> System.out.println("  - " + img.getOriginalFilename() + " | " + img.getSize()));
-                }
-
         Map<String, String> response = new HashMap<>();
         Usuario usuario = getUsuarioLogueado();
 
         try {
-
             Barrio barrio = barrioRepository.findById(Long.parseLong(barrioId)).orElse(null);
             TipoReporte tipo = tipoReporteRepository.findByNombre(tipoReporte).orElseThrow();
             EstadoReporte pendiente = estadoReporteRepository.findByNombre("Pendiente").orElseThrow();
@@ -158,12 +158,12 @@ public class UsuarioController {
                         .orElse("desconocido");
                     response.put("error", "El reporte no puede editarse porque su estado es '" + nombreEstado + "'.");
                     return ResponseEntity.badRequest().body(response);
-}
+                }
                 reporteExistente.setTitulo(titulo);
                 reporteExistente.setDescripcion(descripcion);
                 reporteExistente.setDireccion(direccion);
                 reporteExistente.setBarrioId(barrio.getId());
-                reporteExistente.setTipoReporteId(tipo.getId());        
+                reporteExistente.setTipoReporteId(tipo.getId());
 
                 if (imagenes != null && !imagenes.isEmpty() && !imagenes.get(0).isEmpty()) {
                     s3Service.eliminarImagenes(reporteExistente.getImagenes());
@@ -181,7 +181,7 @@ public class UsuarioController {
                 reporte.setDireccion(direccion);
                 reporte.setBarrioId(barrio.getId());
                 reporte.setTipoReporteId(tipo.getId());
-                reporte.setEstadoReporteId(pendiente.getId());              
+                reporte.setEstadoReporteId(pendiente.getId());
                 reporte.setUsuario(usuario);
 
                 if (imagenes != null && !imagenes.isEmpty() && !imagenes.get(0).isEmpty()) {

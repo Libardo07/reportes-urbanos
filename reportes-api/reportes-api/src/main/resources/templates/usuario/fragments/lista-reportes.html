@@ -50,6 +50,19 @@
         </tbody>
     </table>
 
+    <!-- Ver más -->
+    <div class="exp-ver-mas-wrap" th:if="${hayMas}">
+        <button class="exp-btn-ver-mas"
+                th:attr="data-page=${nextPage}"
+                onclick="verMasUsuario(this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="6 9 12 15 18 9"/>
+            </svg>
+            Ver más reportes
+        </button>
+    </div>
+
     <!-- Modales con imágenes -->
     <div th:each="r : ${reportes}">
         <div th:id="'modal-u-' + ${r.id}"

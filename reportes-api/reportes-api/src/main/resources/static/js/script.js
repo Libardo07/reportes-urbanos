@@ -759,3 +759,113 @@ function initIniciales() {
         
         el.textContent = iniciales;
     }
+
+// ==================== SKELETON (igualito al primero que te gustó) ====================
+function createSkeletonCargador(colspan) {
+    const skRow = document.createElement('tr');
+    skRow.id = 'sk-row';
+    skRow.innerHTML = `
+        <td colspan="${colspan}" style="padding: 20px 16px;">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+                <!-- Título / Encabezado -->
+                <div class="sk" style="height:22px;width:220px;border-radius:6px;"></div>
+                
+                <!-- Fila 1 -->
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <div class="sk" style="height:16px;flex:1;border-radius:6px;"></div>
+                    <div class="sk" style="height:16px;width:90px;border-radius:6px;"></div>
+                    <div class="sk" style="height:16px;width:70px;border-radius:6px;"></div>
+                    <div class="sk" style="height:30px;width:55px;border-radius:6px;"></div>
+                </div>
+                
+                <!-- Fila 2 -->
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <div class="sk" style="height:16px;flex:1;border-radius:6px;"></div>
+                    <div class="sk" style="height:16px;width:90px;border-radius:6px;"></div>
+                    <div class="sk" style="height:16px;width:70px;border-radius:6px;"></div>
+                    <div class="sk" style="height:30px;width:55px;border-radius:6px;"></div>
+                </div>
+                
+                <!-- Fila 3 -->
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <div class="sk" style="height:16px;flex:1;border-radius:6px;"></div>
+                    <div class="sk" style="height:16px;width:90px;border-radius:6px;"></div>
+                    <div class="sk" style="height:16px;width:70px;border-radius:6px;"></div>
+                    <div class="sk" style="height:30px;width:55px;border-radius:6px;"></div>
+                </div>
+            </div>
+        </td>`;
+    return skRow;
+}
+
+// ==================== VER MÁS ADMIN ====================
+function verMasAdmin(btn) {
+    const page = btn.getAttribute('data-page');
+    const verMasWrap = btn.closest('.exp-ver-mas-wrap');
+    if (verMasWrap) verMasWrap.remove();
+
+    const tbody = document.querySelector('#content-area tbody');
+    if (tbody) {
+        tbody.appendChild(createSkeletonCargador(6));   // 6 columnas para admin
+    }
+
+    fetch(`/admin/fragmento/lista-reportes?page=${page}`)
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Quitar skeleton
+            const sk = document.getElementById('sk-row');
+            if (sk) sk.remove();
+
+            // Agregar las nuevas filas
+            doc.querySelectorAll('tbody tr').forEach(row =>
+                document.querySelector('#content-area tbody').appendChild(row));
+
+            // Agregar modales si existen
+            doc.querySelectorAll('.modal-overlay').forEach(m =>
+                document.getElementById('content-area').appendChild(m));
+
+            // Agregar nuevo botón "Ver Más"
+            const newVerMas = doc.querySelector('.exp-ver-mas-wrap');
+            if (newVerMas) document.querySelector('#content-area .card').appendChild(newVerMas);
+        })
+        .catch(console.error);
+}
+
+// ==================== VER MÁS USUARIO ====================
+function verMasUsuario(btn) {
+    const page = btn.getAttribute('data-page');
+    const verMasWrap = btn.closest('.exp-ver-mas-wrap');
+    if (verMasWrap) verMasWrap.remove();
+
+    const tbody = document.querySelector('#content-area tbody');
+    if (tbody) {
+        tbody.appendChild(createSkeletonCargador(5));   // 5 columnas para usuario
+    }
+
+    fetch(`/usuario/fragmento/lista-reportes?page=${page}`)
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Quitar skeleton
+            const sk = document.getElementById('sk-row');
+            if (sk) sk.remove();
+
+            // Agregar las nuevas filas
+            doc.querySelectorAll('tbody tr').forEach(row =>
+                document.querySelector('#content-area tbody').appendChild(row));
+
+            // Agregar modales si existen
+            doc.querySelectorAll('.modal-overlay').forEach(m =>
+                document.getElementById('content-area').appendChild(m));
+
+            // Agregar nuevo botón "Ver Más"
+            const newVerMas = doc.querySelector('.exp-ver-mas-wrap');
+            if (newVerMas) document.querySelector('#content-area .card').appendChild(newVerMas);
+        })
+        .catch(console.error);
+}

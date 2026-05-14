@@ -267,8 +267,9 @@ body {
 
 .table th, .table td {
     padding: 12px 15px;
-    text-align: left;
+    text-align: center;
     border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
 }
 
 .table th {
@@ -284,6 +285,7 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     flex-wrap: nowrap;
     overflow: visible;
@@ -292,8 +294,9 @@ body {
 .actions span {
     display: contents; 
 }
+
 .dashboard-container.admin .table th:nth-child(1),
-.dashboard-container.admin .table td:nth-child(1) { width: 13%; }
+.dashboard-container.admin .table td:nth-child(1) { width: 10%; }
 
 .dashboard-container.admin .table th:nth-child(2),
 .dashboard-container.admin .table td:nth-child(2) { width: 15%; }
@@ -318,7 +321,7 @@ body {
 .dashboard-container.admin .table th:nth-child(3),
 .dashboard-container.admin .table td:nth-child(3) {
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
     text-overflow: ellipsis;
 }
 
@@ -803,6 +806,8 @@ body {
 .dashboard-container.usuario .table td {
     padding: 8px 12px !important;
     font-size: 14px !important;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .dashboard-container.usuario .table th {
@@ -1578,7 +1583,7 @@ body {
 
 .exp-ver-mas-wrap {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     margin-top: 20px;
 }
 

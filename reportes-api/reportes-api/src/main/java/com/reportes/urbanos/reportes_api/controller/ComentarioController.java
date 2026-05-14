@@ -85,33 +85,22 @@ public class ComentarioController {
             @RequestParam(defaultValue = "0") int page,
             Model model) {
 
-        List<Reporte> todos = reporteService.getReportesAdmin();
+        org.springframework.data.domain.Page<Reporte> pageResult =
+            reporteService.explorarReportesPaginado(q, page);
 
-        // Filtro por palabras clave en título
-        if (q != null && !q.isBlank()) {
-            String filtro = q.toLowerCase().trim();
-            todos = todos.stream()
-                .filter(r -> r.getTitulo().toLowerCase().contains(filtro))
-                .toList();
-        }
+        List<Reporte> reportesPagina = pageResult.getContent();
 
-        int total     = todos.size();
-        int desde     = 0;
-        int hasta     = Math.min(PAGE_SIZE * (page + 1), total);
-        List<Reporte> reportesPagina = todos.subList(desde, hasta);
-
-        // Contador de comentarios por reporte
         Map<String, Long> contadores = new java.util.HashMap<>();
         reportesPagina.forEach(r ->
             contadores.put(r.getId(), comentarioService.contarComentarios(r.getId()))
         );
 
-        model.addAttribute("reportes",    reportesPagina);
-        model.addAttribute("contadores",  contadores);
-        model.addAttribute("q",           q);
-        model.addAttribute("hayMas",      hasta < total);
-        model.addAttribute("nextPage",    page + 1);
-        model.addAttribute("total",       total);
+        model.addAttribute("reportes",   reportesPagina);
+        model.addAttribute("contadores", contadores);
+        model.addAttribute("q",          q);
+        model.addAttribute("hayMas",     pageResult.hasNext());
+        model.addAttribute("nextPage",   page + 1);
+        model.addAttribute("total",      pageResult.getTotalElements());
         addCatalogMaps(model);
         return "fragmentos/explorar_reportes :: explorar-reportes";
     }

@@ -16,6 +16,7 @@ import com.reportes.urbanos.reportes_api.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -71,8 +72,6 @@ public class AdminController {
     @Autowired
     private ReporteRepositoryCustom reporteRepositoryCustom;
 
-
-
     @Value("${admin.email}")
     private String adminEmail;
 
@@ -90,26 +89,36 @@ public class AdminController {
             barrios.stream().collect(Collectors.toMap(Barrio::getId, Barrio::getNombre)));
     }
 
-    // Método utilitario para obtener el usuario logueado desde Spring Security
     private Usuario getUsuarioLogueado() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return usuarioService.getUsuarioPorEmail(email);
     }
 
+    // ← CAMBIADO: ahora usa paginación
     @GetMapping("/inicio")
     public String mostrarPanelAdmin(Model model) {
         Usuario usuario = getUsuarioLogueado();
+        Page<Reporte> page = reporteService.getReportesAdminPaginado(0);
         model.addAttribute("usuario", usuario);
-        model.addAttribute("reportes", reporteService.getReportesAdmin());
+        model.addAttribute("reportes", page.getContent());
+        model.addAttribute("hayMas", page.hasNext());
+        model.addAttribute("nextPage", 1);
         return "admin_inicio";
     }
 
+    // ← CAMBIADO: ahora recibe ?page= y pagina
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
-    public String fragmentoListaReportes(Model model) {
-        model.addAttribute("reportes", reporteService.getReportesAdmin());
+    public String fragmentoListaReportes(
+            @RequestParam(defaultValue = "0") int page,
+            Model model) {
+        Page<Reporte> p = reporteService.getReportesAdminPaginado(page);
+        model.addAttribute("reportes", p.getContent());
+        model.addAttribute("hayMas", p.hasNext());
+        model.addAttribute("nextPage", page + 1);
         return "admin/fragments/lista-reportes :: lista-reportes";
     }
 
+    // sin cambios desde aquí
     @GetMapping(value = "/fragmento/formulario-admin", produces = "text/html")
     public String fragmentoFormularioAdmin(Model model) {
         model.addAttribute("nuevoAdmin", new Usuario());
@@ -179,7 +188,6 @@ public class AdminController {
         }
         return ResponseEntity.ok(response);
     }
-    
 
     @PostMapping("/eliminar-reporte/{id}")
     public ResponseEntity<Map<String, String>> eliminarReporte(@PathVariable String id) {
@@ -248,4 +256,3 @@ public class AdminController {
             .collect(Collectors.toList());
     }
 }
-

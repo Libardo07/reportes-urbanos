@@ -6,6 +6,9 @@ import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +19,8 @@ public class ReporteService {
     @Autowired
     private ReporteRepository reporteRepository;
 
+    private static final int PAGE_SIZE = 10;
+
     @Cacheable(value = "reportes-admin")
     public List<Reporte> getReportesAdmin() {
         return reporteRepository.findAllByOrderByFechaModificacionDesc();
@@ -24,6 +29,24 @@ public class ReporteService {
     @Cacheable(value = "reportes-usuario", key = "#usuario.id")
     public List<Reporte> getReportesUsuario(Usuario usuario) {
         return reporteRepository.findByUsuarioOrderByFechaModificacionDesc(usuario);
+    }
+
+    public Page<Reporte> getReportesAdminPaginado(int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        return reporteRepository.findAllByOrderByFechaModificacionDesc(pageable);
+    }
+
+    public Page<Reporte> getReportesUsuarioPaginado(Usuario usuario, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        return reporteRepository.findByUsuarioOrderByFechaModificacionDesc(usuario, pageable);
+    }
+
+    public Page<Reporte> explorarReportesPaginado(String q, int page) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        if (q != null && !q.isBlank()) {
+            return reporteRepository.findByTituloContainingIgnoreCaseOrderByFechaModificacionDesc(q, pageable);
+        }
+        return reporteRepository.findAllByOrderByFechaModificacionDesc(pageable);
     }
 
     @CacheEvict(value = {"reportes-admin", "reportes-usuario"}, allEntries = true)
