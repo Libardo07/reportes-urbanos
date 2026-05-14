@@ -676,6 +676,20 @@ function limpiarFiltros() {
     document.getElementById('filtroFechaHasta').value = '';
     document.getElementById('filtroHoraHasta').value = '';
     renderFiltroBarrios('');
+
+    // ← recargar tabla sin filtros
+    const contentArea = document.getElementById('content-area');
+    fetch('/admin/fragmento/lista-reportes')
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('.card');
+            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+            const overlay = document.getElementById('filtroOverlay');
+            if (overlay) overlay.classList.remove('activo');
+        })
+        .catch(console.error);
 }
 
 function aplicarFiltros() {
@@ -683,6 +697,7 @@ function aplicarFiltros() {
     const estadoId = document.getElementById('filtroEstadoSelect').value;
     const tipoId = document.getElementById('filtroTipoSelect').value;
     const barrioId = document.getElementById('filtroBarrioId').value;
+    const barrioNombre = document.getElementById('filtroBarrioDisplay').textContent;
     const fechaDesde = document.getElementById('filtroFechaDesde').value;
     const horaDesde = document.getElementById('filtroHoraDesde').value;
     const fechaHasta = document.getElementById('filtroFechaHasta').value;
@@ -706,7 +721,26 @@ function aplicarFiltros() {
             const doc = parser.parseFromString(html, 'text/html');
             const fragment = doc.querySelector('.card');
             if (fragment) contentArea.innerHTML = fragment.outerHTML;
-            toggleFiltroPanel();
+
+
+            // Restaurar valores
+            document.getElementById('filtroEstadoSelect').value = estadoId;
+            document.getElementById('filtroTipoSelect').value = tipoId;
+            document.getElementById('filtroBarrioId').value = barrioId;
+            document.getElementById('filtroFechaDesde').value = fechaDesde;
+            document.getElementById('filtroHoraDesde').value = horaDesde;
+            document.getElementById('filtroFechaHasta').value = fechaHasta;
+            document.getElementById('filtroHoraHasta').value = horaHasta;
+            if (barrioId) {
+                document.getElementById('filtroBarrioDisplay').textContent = barrioNombre;
+            }
+
+            
+            // Limpiar overlay
+            const overlay = document.getElementById('filtroOverlay');
+            if (overlay) overlay.classList.remove('activo');
+
+
         })
         .catch(console.error);
 }
