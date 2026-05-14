@@ -579,3 +579,134 @@ function skeletonLoader() {
         </div>
     </div>`;
 }
+
+// ── Filtro Admin ─────────────────────────────────────────────────────────────
+let filtroBarriosData = [];
+
+function toggleFiltroPanel() {
+    const panel = document.getElementById('filtroPanel');
+    const overlay = document.getElementById('filtroOverlay');
+    if (!panel) return;
+    const abriendo = !panel.classList.contains('abierto');
+    panel.classList.toggle('abierto');
+    if (overlay) {
+        if (abriendo) {
+            overlay.classList.add('activo');
+        } else {
+            overlay.classList.remove('activo');
+        }
+    }
+    if (abriendo && filtroBarriosData.length === 0) {
+        cargarBarriosFiltro();
+    }
+}
+
+function cargarBarriosFiltro() {
+    fetch('/admin/barrios-buscar?q=')
+        .then(r => r.json())
+        .then(data => {
+            filtroBarriosData = data;
+            renderFiltroBarrios('');
+        })
+        .catch(console.error);
+}
+
+function renderFiltroBarrios(texto) {
+    const lista = document.getElementById('filtroBarrioLista');
+    if (!lista) return;
+    lista.innerHTML = '';
+    const filtrados = filtroBarriosData.filter(b =>
+        b.nombre.toLowerCase().includes(texto.toLowerCase()));
+    if (filtrados.length === 0) {
+        const li = document.createElement('li');
+        li.className = 'sin-resultados';
+        li.textContent = 'No se encontró ningún barrio';
+        lista.appendChild(li);
+        return;
+    }
+    filtrados.forEach(b => {
+        const li = document.createElement('li');
+        li.textContent = b.nombre;
+        li.dataset.id = b.id;
+        li.addEventListener('click', function() {
+            document.getElementById('filtroBarrioId').value = b.id;
+            document.getElementById('filtroBarrioDisplay').textContent = b.nombre;
+            document.getElementById('filtroBarrioDropdown').style.display = 'none';
+            document.getElementById('filtroBarrioDisplay').classList.remove('abierto');
+        });
+        lista.appendChild(li);
+    });
+}
+
+document.addEventListener('click', function(e) {
+    const display = document.getElementById('filtroBarrioDisplay');
+    const dropdown = document.getElementById('filtroBarrioDropdown');
+    if (!display || !dropdown) return;
+    if (e.target === display) {
+        const abierto = dropdown.style.display === 'block';
+        dropdown.style.display = abierto ? 'none' : 'block';
+        display.classList.toggle('abierto', !abierto);
+        if (!abierto) {
+            renderFiltroBarrios(document.getElementById('filtroBarrioFiltro').value);
+            document.getElementById('filtroBarrioFiltro').focus();
+        }
+        return;
+    }
+    if (!dropdown.contains(e.target) && e.target !== display) {
+        dropdown.style.display = 'none';
+        display.classList.remove('abierto');
+    }
+});
+
+document.addEventListener('input', function(e) {
+    if (e.target && e.target.id === 'filtroBarrioFiltro') {
+        renderFiltroBarrios(e.target.value);
+    }
+});
+
+function limpiarFiltros() {
+    document.getElementById('filtroEstadoSelect').value = '';
+    document.getElementById('filtroTipoSelect').value = '';
+    document.getElementById('filtroBarrioId').value = '';
+    document.getElementById('filtroBarrioDisplay').textContent = 'Seleccione un barrio';
+    document.getElementById('filtroBarrioFiltro').value = '';
+    document.getElementById('filtroBarrioDropdown').style.display = 'none';
+    document.getElementById('filtroFechaDesde').value = '';
+    document.getElementById('filtroHoraDesde').value = '';
+    document.getElementById('filtroFechaHasta').value = '';
+    document.getElementById('filtroHoraHasta').value = '';
+    renderFiltroBarrios('');
+}
+
+function aplicarFiltros() {
+    const params = new URLSearchParams();
+    const estadoId = document.getElementById('filtroEstadoSelect').value;
+    const tipoId = document.getElementById('filtroTipoSelect').value;
+    const barrioId = document.getElementById('filtroBarrioId').value;
+    const fechaDesde = document.getElementById('filtroFechaDesde').value;
+    const horaDesde = document.getElementById('filtroHoraDesde').value;
+    const fechaHasta = document.getElementById('filtroFechaHasta').value;
+    const horaHasta = document.getElementById('filtroHoraHasta').value;
+
+    if (estadoId) params.append('estadoId', estadoId);
+    if (tipoId) params.append('tipoId', tipoId);
+    if (barrioId) params.append('barrioId', barrioId);
+    if (fechaDesde) params.append('fechaDesde', fechaDesde);
+    if (horaDesde) params.append('horaDesde', horaDesde);
+    if (fechaHasta) params.append('fechaHasta', fechaHasta);
+    if (horaHasta) params.append('horaHasta', horaHasta);
+
+    const contentArea = document.getElementById('content-area');
+    contentArea.innerHTML = skeletonLoader();
+
+    fetch(`/admin/fragmento/filtrar-reportes?${params.toString()}`)
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('.card');
+            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+            toggleFiltroPanel();
+        })
+        .catch(console.error);
+}

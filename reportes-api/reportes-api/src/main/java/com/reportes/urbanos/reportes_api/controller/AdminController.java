@@ -6,6 +6,7 @@ import com.reportes.urbanos.reportes_api.entity.Reporte;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
+import com.reportes.urbanos.reportes_api.repository.ReporteRepositoryCustom;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
 import com.reportes.urbanos.reportes_api.service.BarrioService;
 import com.reportes.urbanos.reportes_api.service.EstadoReporteService;
@@ -30,8 +31,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 
 
@@ -65,6 +67,9 @@ public class AdminController {
 
     @Autowired
     private EstadoReporteService estadoReporteService;
+
+    @Autowired
+    private ReporteRepositoryCustom reporteRepositoryCustom;
 
 
 
@@ -127,6 +132,7 @@ public class AdminController {
             nuevoAdmin.setRol(Rol.ADMIN);
             nuevoAdmin.setFechaCreacion(LocalDateTime.now(ZoneId.of("America/Bogota")));
             nuevoAdmin.setPassword(passwordEncoder.encode(nuevoAdmin.getPassword()));
+            nuevoAdmin.setVerificado(true);
             usuarioRepository.save(nuevoAdmin);
             response.put("success", "true");
             response.put("message", "Administrador registrado correctamente.");
@@ -192,4 +198,54 @@ public class AdminController {
         }
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping(value = "/fragmento/filtrar-reportes", produces = "text/html")
+    public String filtrarReportes(
+            @RequestParam(required = false) Long estadoId,
+            @RequestParam(required = false) Long tipoId,
+            @RequestParam(required = false) Long barrioId,
+            @RequestParam(required = false) String nombreUsuario,
+            @RequestParam(required = false) String fechaDesde,
+            @RequestParam(required = false) String horaDesde,
+            @RequestParam(required = false) String fechaHasta,
+            @RequestParam(required = false) String horaHasta,
+            Model model) {
+
+        LocalDateTime desde = null;
+        LocalDateTime hasta = null;
+
+        try {
+            if (fechaDesde != null && !fechaDesde.isBlank()) {
+                LocalTime hora = (horaDesde != null && !horaDesde.isBlank())
+                    ? LocalTime.parse(horaDesde) : LocalTime.MIN;
+                desde = LocalDate.parse(fechaDesde).atTime(hora);
+            }
+            if (fechaHasta != null && !fechaHasta.isBlank()) {
+                LocalTime hora = (horaHasta != null && !horaHasta.isBlank())
+                    ? LocalTime.parse(horaHasta) : LocalTime.MAX;
+                hasta = LocalDate.parse(fechaHasta).atTime(hora);
+            }
+        } catch (Exception ignored) {}
+
+        List<Reporte> reportes = reporteRepositoryCustom.filtrar(
+            estadoId, tipoId, barrioId, nombreUsuario, desde, hasta);
+
+        model.addAttribute("reportes", reportes);
+        return "admin/fragments/lista-reportes :: lista-reportes";
+    }
+
+    @GetMapping("/barrios-buscar")
+    @ResponseBody
+    public List<Map<String, Object>> buscarBarrios(@RequestParam String q) {
+        return barrioService.getBarriosOrdenados().stream()
+            .filter(b -> b.getNombre().toLowerCase().contains(q.toLowerCase()))
+            .map(b -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", b.getId());
+                map.put("nombre", b.getNombre());
+                return map;
+            })
+            .collect(Collectors.toList());
+    }
 }
+

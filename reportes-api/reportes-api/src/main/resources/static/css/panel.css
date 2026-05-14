@@ -2089,3 +2089,189 @@ body {
     background-size: 600px 100%;
     animation: shimmer 1.4s infinite;
 }
+
+
+/*FILTRO PANEL*/
+.filtro-btn {
+    display: flex;
+    align-items: center;
+    background: var(--admin-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.filtro-btn:hover { background: #0d47a1; }
+
+.filtro-panel {
+    position: fixed;
+    top: 0;
+    right: -360px;
+    width: 340px;
+    height: 100vh;
+    background: var(--card-color);
+    box-shadow: -4px 0 24px rgba(21, 88, 176, 0.15);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+}
+
+.filtro-panel.abierto { right: 0; }
+
+.filtro-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    background: var(--card-color);
+    z-index: 1;
+}
+
+.filtro-panel-titulo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.filtro-cerrar {
+    background: rgba(231,76,60,0.08);
+    color: #e74c3c;
+    border: 1px solid rgba(231,76,60,0.2);
+    border-radius: 8px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+.filtro-cerrar:hover { background: #e74c3c; color: white; }
+
+.filtro-grupo {
+    padding: 16px 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filtro-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #5c6bc0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filtro-input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.filtro-input:focus { border-color: var(--admin-color); }
+
+.filtro-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filtro-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border-color);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-color);
+    background: var(--fondo-color);
+}
+
+.filtro-chip.activo {
+    background: var(--admin-color);
+    color: white;
+    border-color: var(--admin-color);
+}
+
+.filtro-dropdown {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    max-height: 180px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.filtro-dropdown-item {
+    padding: 9px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.filtro-dropdown-item:hover { background: #e8f0fe; color: var(--admin-color); }
+
+.filtro-acciones {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+    position: sticky;
+    bottom: 0;
+    background: var(--card-color);
+}
+
+.filtro-btn-limpiar {
+    flex: 1;
+    padding: 10px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filtro-btn-limpiar:hover { border-color: var(--admin-color); color: var(--admin-color); }
+
+.filtro-btn-aplicar {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: var(--admin-color);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.filtro-btn-aplicar:hover { background: #0d47a1; }
+
+.filtro-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 1999;
+    display: none;
+}
+
+.filtro-overlay.activo { display: block; }

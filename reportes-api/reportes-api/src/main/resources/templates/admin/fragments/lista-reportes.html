@@ -1,6 +1,80 @@
 <div class="card" th:fragment="lista-reportes">
-    <div class="content-header">
+    <div class="content-header" style="display:flex; justify-content:space-between; align-items:center;">
         <h1>Lista de Reportes</h1>
+        <button class="filtro-btn" onclick="toggleFiltroPanel()">
+            <img src="/images/filtro.png" alt="Filtrar" style="width:18px;height:18px;filter:brightness(0) invert(1);margin-right:6px;">
+            Filtrar
+        </button>
+    </div>
+
+    <!-- Panel de filtros -->
+    <div class="filtro-panel" id="filtroPanel">
+        <div class="filtro-panel-header">
+            <span class="filtro-panel-titulo">Filtros</span>
+            <button class="filtro-cerrar" onclick="toggleFiltroPanel()">✕</button>
+        </div>
+
+        <!-- Estado -->
+        <div class="filtro-grupo">
+            <label class="filtro-label">Estado</label>
+            <div class="custom-select">
+                <select class="form-control" id="filtroEstadoSelect">
+                    <option value="">Todos los estados</option>
+                    <option value="1">Pendiente</option>
+                    <option value="2">En Progreso</option>
+                    <option value="3">Resuelto</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Tipo -->
+        <div class="filtro-grupo">
+            <label class="filtro-label">Tipo</label>
+            <div class="custom-select">
+                <select class="form-control" id="filtroTipoSelect">
+                    <option value="">Todos los tipos</option>
+                    <option value="1">Infraestructura</option>
+                    <option value="2">Servicios Publicos</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Barrio -->
+        <div class="filtro-grupo">
+            <label class="filtro-label">Barrio</label>
+            <input type="hidden" id="filtroBarrioId">
+            <div class="custom-select-wrapper">
+                <div class="custom-select-display" id="filtroBarrioDisplay">
+                    Seleccione un barrio
+                </div>
+                <div class="custom-select-dropdown" id="filtroBarrioDropdown" style="display:none;">
+                    <input type="text" id="filtroBarrioFiltro" placeholder="Buscar barrio..." autocomplete="off">
+                    <ul id="filtroBarrioLista"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fecha -->
+        <div class="filtro-grupo">
+            <label class="filtro-label">Desde</label>
+            <div style="display:flex;gap:8px;">
+                <input type="date" class="filtro-input" id="filtroFechaDesde" style="flex:1;">
+                <input type="time" class="filtro-input" id="filtroHoraDesde" style="width:110px;">
+            </div>
+        </div>
+
+        <div class="filtro-grupo">
+            <label class="filtro-label">Hasta</label>
+            <div style="display:flex;gap:8px;">
+                <input type="date" class="filtro-input" id="filtroFechaHasta" style="flex:1;">
+                <input type="time" class="filtro-input" id="filtroHoraHasta" style="width:110px;">
+            </div>
+        </div>
+
+        <div class="filtro-acciones">
+            <button class="filtro-btn-limpiar" onclick="limpiarFiltros()">Limpiar</button>
+            <button class="filtro-btn-aplicar" onclick="aplicarFiltros()">Aplicar</button>
+        </div>
     </div>
 
     <div class="tabla-wrapper">

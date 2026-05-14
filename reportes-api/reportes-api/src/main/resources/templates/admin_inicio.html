@@ -66,7 +66,7 @@
     <main class="content" id="content-area">
         <div th:replace="~{admin/fragments/lista-reportes :: lista-reportes}"></div>
     </main>
-
+    <div class="filtro-overlay" id="filtroOverlay" onclick="toggleFiltroPanel()"></div>
     <script th:src="@{/js/script.js}"></script>
     <script th:src="@{/js/reporte_detalle.js}" defer></script>
 </body>
