@@ -230,7 +230,8 @@
     /* ----------------------------------------------------------
        Evento: abrir / cerrar el mapa
     ---------------------------------------------------------- */
-    document.getElementById('btnMapa').addEventListener('click', function () {
+    var btnMapa = document.getElementById('btnMapa');
+    if (btnMapa) btnMapa.addEventListener('click', function () {
         var container = document.getElementById('mapa-container');
         if (container.style.display === 'none' || container.style.display === '') {
             container.style.display = 'block';
@@ -249,7 +250,8 @@
        Si el mapa no está abierto lo abre, luego busca el barrio
     ---------------------------------------------------------- */
     // DESPUÉS
-document.getElementById('barrioId').addEventListener('change', function () {
+var barrioIdEl = document.getElementById('barrioId');
+if (barrioIdEl) barrioIdEl.addEventListener('change', function () {
     var nombreBarrio = this.dataset.nombre || '';
     if (!nombreBarrio) return;
 

@@ -16,22 +16,13 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="welcome-title-animated">
-                <div class="text"><span>BIENVENIDO</span></div>
-                <div class="text"><span>BIENVENIDO</span></div>
-                <div class="text"><span>BIENVENIDO</span></div>
-                <div class="text"><span>BIENVENIDO</span></div>
-                <div class="text"><span>BIENVENIDO</span></div>
-                <div class="text"><span>BIENVENIDO</span></div>
-                <div class="text"><span>BIENVENIDO</span></div>
-                <div class="text"><span>BIENVENIDO</span></div>
-                <div class="text"><span>BIENVENIDO</span></div>
-                <div class="text"><span>BIENVENIDO</span></div>
+                <span>Bienvenido</span>
             </div>
             <div class="usuario-info">
-                <img th:src="@{/images/icono-login.png}" alt="Usuario" loading="lazy">
+                <div class="usuario-inicial"></div>
                 <div class="details">
-                    <div class="nombre" th:text="${usuario.nombre}">Ana Gómez</div>
-                    <div class="rol" th:text="${usuario.rol}">Admin</div>
+                    <div class="nombre" th:text="${usuario.nombre}"></div>
+                    <div class="rol" th:text="${usuario.rol}"></div>
                 </div>
             </div>
         </div>

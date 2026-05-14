@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupLoginFeatures();
     setupRealtimeValidation();
     initBarrioFiltro();
+    initIniciales();
 });
 
 
@@ -744,3 +745,17 @@ function aplicarFiltros() {
         })
         .catch(console.error);
 }
+
+function initIniciales() {
+        const el = document.querySelector('.usuario-inicial');
+        const nombreEl = document.querySelector('.nombre');
+        if (!el || !nombreEl) return;
+        
+        const nombre = nombreEl.textContent.trim();
+        const partes = nombre.split(' ').filter(p => p.length > 0);
+        const iniciales = partes.length >= 2
+            ? (partes[0][0] + partes[1][0]).toUpperCase()
+            : partes[0][0].toUpperCase();
+        
+        el.textContent = iniciales;
+    }

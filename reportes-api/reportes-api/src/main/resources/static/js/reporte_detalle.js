@@ -17,31 +17,40 @@ function resaltarMencion(texto) {
     );
 }
 
+/** Saca 1 o 2 iniciales de un nombre completo */
+function sacarIniciales(nombre) {
+    const partes = (nombre || '').trim().split(' ').filter(p => p.length > 0);
+    if (partes.length === 0) return '?';
+    return partes.length >= 2
+        ? (partes[0][0] + partes[1][0]).toUpperCase()
+        : partes[0][0].toUpperCase();
+}
+
 /** HTML del avatar-wrap de un comentario raíz (con o sin línea) */
-function avatarWrapComentario(inicial, conLinea) {
+function avatarWrapComentario(nombre, conLinea) {
     return `
         <div class="det-comentario-avatar-wrap">
-            <div class="det-comentario-avatar"><span>${esc(inicial)}</span></div>
+            <div class="det-comentario-avatar">${esc(sacarIniciales(nombre))}</div>
             ${conLinea ? '<div class="det-avatar-line"></div>' : ''}
         </div>`;
 }
 
 /** HTML del avatar-wrap de una respuesta */
-function avatarWrapReply(inicial) {
+function avatarWrapReply(nombre) {
     return `
         <div class="det-reply-avatar-wrap">
-            <div class="det-reply-avatar"><span>${esc(inicial)}</span></div>
+            <div class="det-reply-avatar">${esc(sacarIniciales(nombre))}</div>
             <div class="det-reply-line"></div>
         </div>`;
 }
 
 /** Formulario de respuesta para inyectar en comentarios creados dinámicamente */
-function htmlReplyForm(reporteId, parentId, nombrePadre, miInicial) {
+function htmlReplyForm(reporteId, parentId, nombrePadre, miNombre) {
     return `
         <div class="det-reply-form" style="display:none;"
              data-reporte-id="${reporteId}" data-parent-id="${parentId}">
             <div class="det-reply-input-row">
-                <div class="det-reply-avatar">${esc(miInicial)}</div>
+                <div class="det-reply-avatar">${esc(sacarIniciales(miNombre))}</div>
                 <textarea class="det-reply-textarea" maxlength="500" rows="2"
                           placeholder="Responder a ${esc(nombrePadre)}..."></textarea>
             </div>
@@ -83,7 +92,6 @@ function actualizarVerBtn(body, repliesDiv, forzarAbrir) {
         verBtn = document.createElement('button');
         verBtn.className = 'det-ver-respuestas';
         verBtn.onclick = function() { toggleVerRespuestas(this); };
-        // Insertar antes del div de respuestas
         body.insertBefore(verBtn, repliesDiv);
     }
 
@@ -134,26 +142,22 @@ window.toggleReplyForm = function(btn) {
     const body   = btn.closest('.det-comentario-body');
     const nombre = btn.getAttribute('data-nombre');
 
-    // Crear form si no existe (comentarios creados dinámicamente)
     let form = body.querySelector('.det-reply-form');
     if (!form) {
         const comentarioDiv = btn.closest('.det-comentario');
         const reporteId     = btn.getAttribute('data-reporte-id');
         const parentId      = comentarioDiv.getAttribute('data-id');
-        const miInicial     = btn.getAttribute('data-mi-inicial') || '?';
-        body.insertAdjacentHTML('beforeend', htmlReplyForm(reporteId, parentId, nombre, miInicial));
+        const miNombre      = btn.getAttribute('data-mi-nombre') || btn.getAttribute('data-mi-inicial') || '?';
+        body.insertAdjacentHTML('beforeend', htmlReplyForm(reporteId, parentId, nombre, miNombre));
         form = body.querySelector('.det-reply-form');
     }
 
-    // Checar visibilidad ANTES de cerrar todo
     const estaVisible = form.style.display === 'flex';
 
-    // Cerrar todos los forms
     document.querySelectorAll('.det-reply-form').forEach(f => {
         f.style.display = 'none';
     });
 
-    // Si no estaba visible, abrirlo
     if (!estaVisible) {
         form.style.display = 'flex';
         const ta = form.querySelector('.det-reply-textarea');
@@ -179,13 +183,11 @@ window.responderARespuesta = function(btn) {
     if (!comentarioDiv) return;
 
     const reporteId = document.getElementById('det-btn-enviar')?.getAttribute('data-reporte-id') || '';
-    const miInicial = document.querySelector('.det-avatar span')?.textContent?.trim() || '?';
+    const miNombre  = document.querySelector('.det-avatar')?.getAttribute('data-nombre') || '?';
 
-    // Cerrar y eliminar todos los forms temporales
     document.querySelectorAll('.det-reply-form-temp').forEach(f => f.remove());
     document.querySelectorAll('.det-reply-form').forEach(f => f.style.display = 'none');
 
-    // Crear form temporal debajo de esta respuesta
     const tempForm = document.createElement('div');
     tempForm.className = 'det-reply-form det-reply-form-temp';
     tempForm.setAttribute('data-reporte-id', reporteId);
@@ -193,7 +195,7 @@ window.responderARespuesta = function(btn) {
     tempForm.style.display = 'flex';
     tempForm.innerHTML = `
         <div class="det-reply-input-row">
-            <div class="det-reply-avatar">${esc(miInicial)}</div>
+            <div class="det-reply-avatar">${esc(sacarIniciales(miNombre))}</div>
             <textarea class="det-reply-textarea" maxlength="500" rows="2"
                       placeholder="Responder a ${esc(nombre)}..."></textarea>
         </div>
@@ -212,7 +214,6 @@ window.responderARespuesta = function(btn) {
             </div>
         </div>`;
 
-    // Insertar después del reply-item
     replyItem.insertAdjacentElement('afterend', tempForm);
 
     const ta = tempForm.querySelector('.det-reply-textarea');
@@ -240,7 +241,6 @@ window.enviarComentarioDet = function(btn) {
     const reporteId = btn.getAttribute('data-reporte-id');
     const errDiv    = document.getElementById('det-error');
 
-    // Registrar listener del contador si aún no está
     if (ta && cc && !ta._listenerRegistrado) {
         ta.addEventListener('input', () => cc.textContent = ta.value.length);
         ta._listenerRegistrado = true;
@@ -255,8 +255,7 @@ window.enviarComentarioDet = function(btn) {
     btn.disabled    = true;
     btn.textContent = 'Enviando...';
 
-    // Leer la inicial del usuario desde el avatar existente
-    const miInicial = document.querySelector('.det-avatar span')?.textContent?.trim() || '?';
+    const miNombre = document.querySelector('.det-avatar')?.getAttribute('data-nombre') || '?';
 
     fetch(`/reporte/${reporteId}/comentar`, { method: 'POST', body: new URLSearchParams({ texto }) })
     .then(r => r.json())
@@ -278,7 +277,7 @@ window.enviarComentarioDet = function(btn) {
             const esAdmin = document.querySelector('.det-card')?.getAttribute('data-es-admin') === 'true';
 
             div.innerHTML = `
-                ${avatarWrapComentario(data.inicial, false)}
+                ${avatarWrapComentario(data.nombre, false)}
                 <div class="det-comentario-body">
                     <div class="det-comentario-header">
                         <span class="det-comentario-nombre">${esc(data.nombre)}</span>
@@ -294,7 +293,7 @@ window.enviarComentarioDet = function(btn) {
                     <button class="det-btn-responder"
                             data-nombre="${esc(data.nombre)}"
                             data-reporte-id="${reporteId}"
-                            data-mi-inicial="${esc(miInicial)}"
+                            data-mi-nombre="${esc(miNombre)}"
                             onclick="toggleReplyForm(this)">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -331,8 +330,6 @@ window.enviarRespuestaDet = function(btn) {
     btn.disabled    = true;
     btn.textContent = 'Enviando...';
 
-    const miInicial = document.querySelector('.det-avatar span')?.textContent?.trim() || '?';
-
     fetch(`/reporte/${reporteId}/responder/${parentId}`, { method: 'POST', body: new URLSearchParams({ texto }) })
     .then(r => r.json())
     .then(data => {
@@ -363,7 +360,7 @@ window.enviarRespuestaDet = function(btn) {
             const esAdmin = document.querySelector('.det-card')?.getAttribute('data-es-admin') === 'true';
 
             replyEl.innerHTML = `
-            ${avatarWrapReply(data.inicial)}
+            ${avatarWrapReply(data.nombre)}
             <div class="det-reply-body">
                 <div class="det-comentario-header">
                     <span class="det-comentario-nombre">${esc(data.nombre)}</span>
@@ -390,7 +387,6 @@ window.enviarRespuestaDet = function(btn) {
             </div>`;
             repliesDiv.appendChild(replyEl);
 
-            // Ocultar línea del último reply anterior
             const items = repliesDiv.querySelectorAll('.det-reply-item');
             items.forEach((item, i) => {
                 const linea = item.querySelector('.det-reply-line');
@@ -454,6 +450,20 @@ window.eliminarComentarioDet = function(btn) {
     });
 };
 
+/* ─────────────────────────────────────────────────────────────
+   Iniciales de avatares existentes en el DOM
+   ───────────────────────────────────────────────────────────── */
+function initInicialesComentarios() {
+    document.querySelectorAll('.det-comentario-avatar, .det-reply-avatar, .det-avatar').forEach(function(el) {
+        const nombre = el.getAttribute('data-nombre') || '';
+        if (!nombre) return;
+        el.textContent = sacarIniciales(nombre);
+    });
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Inicializar
+   ───────────────────────────────────────────────────────────── */
 function inicializarComentarios() {
     document.querySelectorAll('.det-reply-texto').forEach(p => {
         const texto = p.textContent;
@@ -462,7 +472,7 @@ function inicializarComentarios() {
             '<span class="det-mention">$1</span>$2'
         );
     });
-    
+
     document.querySelectorAll('.det-replies').forEach(repliesDiv => {
         const items = repliesDiv.querySelectorAll('.det-reply-item');
         items.forEach((item, i) => {
@@ -477,6 +487,8 @@ function inicializarComentarios() {
         ta.addEventListener('input', () => cc.textContent = ta.value.length);
         ta._listenerRegistrado = true;
     }
+
+    setTimeout(initInicialesComentarios, 100);
 }
 
 if (document.readyState === 'loading') {
