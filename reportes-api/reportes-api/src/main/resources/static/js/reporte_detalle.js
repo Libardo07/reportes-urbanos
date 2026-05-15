@@ -12,8 +12,8 @@ function esc(s) {
 /** Resalta @Nombre al inicio del texto con span azul */
 function resaltarMencion(texto) {
     return esc(texto).replace(
-        /^(@[\w\s]+?)(\s)/,
-        '<span class="det-mention">$1</span>$2'
+        /^(@[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s+[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*)\s/,
+        '<span class="det-mention">$1</span> '
     );
 }
 

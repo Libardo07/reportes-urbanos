@@ -49,7 +49,14 @@
                     <span th:text="${#temporals.format(reporte.fechaModificacion, 'dd/MM/yyyy HH:mm')}"></span>
                 </span>
             </div>
+
+            <div class="rd-descripcion" th:if="${reporte.descripcion != null and !#strings.isEmpty(reporte.descripcion)}">
+                <h3 class="rd-seccion-titulo">Descripción</h3>
+                <p class="rd-texto-descripcion" th:text="${reporte.descripcion}"></p>
+            </div>
         </div>
+
+        
 
         <div class="det-col-fotos">
             <div class="det-galeria" th:if="${reporte.imagenes != null and !reporte.imagenes.isEmpty()}">
