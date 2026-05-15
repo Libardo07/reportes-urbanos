@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="card" th:fragment="inicio-usuario">
+    <div class="content-header">
+        <h1>Mi panel</h1>
+    </div>
+    <div class="stats-grid">
+
+        <!-- Total reportes -->
+        <div class="stat-card stat-primary">
+            <span class="stat-label">Mis reportes</span>
+            <span class="stat-valor" th:text="${totalReportes}">0</span>
+            <div class="stat-bar-wrap">
+                <div class="stat-bar-fill" style="width:100%;background:#1a73e8;animation-delay:0.1s"></div>
+            </div>
+            <svg class="stat-icon-bg" style="color:#1a73e8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+        </div>
+
+        <!-- Pendientes -->
+        <div class="stat-card stat-warning">
+            <span class="stat-label">Pendientes</span>
+            <span class="stat-valor" th:text="${totalPendientes}">0</span>
+            <span class="stat-badge" style="background:#fff8e1;color:#7d5a00;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                En espera
+            </span>
+            <svg class="stat-icon-bg" style="color:#EF9F27;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+        </div>
+
+        <!-- En Progreso -->
+        <div class="stat-card stat-info">
+            <span class="stat-label">En Proceso</span>
+            <span class="stat-valor" th:text="${totalEnProgreso}">0</span>
+            <span class="stat-badge" style="background:#e1f5ee;color:#0f6e56;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Activos
+            </span>
+            <svg class="stat-icon-bg" style="color:#1D9E75;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+        </div>
+
+        <!-- Resueltos -->
+        <div class="stat-card stat-success">
+            <span class="stat-label">Resueltos</span>
+            <span class="stat-valor" th:text="${totalResueltos}">0</span>
+            <span class="stat-badge" style="background:#eaf3de;color:#3b6d11;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                Completados
+            </span>
+            <svg class="stat-icon-bg" style="color:#639922;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/>
+            </svg>
+        </div>
+
+        <!-- Infraestructura -->
+        <div class="stat-card stat-secondary">
+            <span class="stat-label">Infraestructura</span>
+            <span class="stat-valor" th:text="${totalInfraestructura}">0</span>
+            <div class="stat-bar-wrap">
+                <div class="stat-bar-fill" style="width:100%;background:#7F77DD;animation-delay:0.3s"></div>
+            </div>
+            <svg class="stat-icon-bg" style="color:#7F77DD;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+            </svg>
+        </div>
+
+        <!-- Servicios Públicos -->
+        <div class="stat-card stat-secondary">
+            <span class="stat-label">Servicios Públicos</span>
+            <span class="stat-valor" th:text="${totalServicios}">0</span>
+            <div class="stat-bar-wrap">
+                <div class="stat-bar-fill" style="width:100%;background:#D4537E;animation-delay:0.4s"></div>
+            </div>
+            <svg class="stat-icon-bg" style="color:#D4537E;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+        </div>
+
+        <!-- Último reporte -->
+        <div class="stat-card stat-primary" style="grid-column: 1 / -1; flex-direction:row; align-items:center; justify-content:space-between; padding:18px 24px; border-left: 3px solid #1a73e8;">
+            <div>
+                <span class="stat-label">Fecha último reporte</span>
+                <div class="stat-valor-texto" th:text="${ultimoReporte}" style="font-size:20px; margin-top:6px;">-</div>
+            </div>
+            <span class="stat-badge" style="background:#e8f0fe;color:#1a237e;padding:6px 14px;font-size:13px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Más reciente
+            </span>
+            <svg class="stat-icon-bg" style="color:#1a73e8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+        </div>
+
+    </div>
+</div>
+</html>

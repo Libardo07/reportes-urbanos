@@ -37,6 +37,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const contentArea = document.getElementById('content-area');
     if (contentArea) {
+        if (contentArea.innerHTML.trim() === '') {
+            const activeItem = document.querySelector('.menu-item.active');
+            if (activeItem) loadView(activeItem.getAttribute('data-view'));
+        }
         contentArea.addEventListener('click', function(event) {
             const deleteBtn = event.target.closest('.delete-reporte');
             if (deleteBtn) {
@@ -151,7 +155,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
     setupMenuNavigation();
     setupLoginFeatures();
     setupRealtimeValidation();
@@ -760,33 +763,26 @@ function initIniciales() {
         el.textContent = iniciales;
     }
 
-// ==================== SKELETON (igualito al primero que te gustó) ====================
+// ==================== SKELETON ====================
 function createSkeletonCargador(colspan) {
     const skRow = document.createElement('tr');
     skRow.id = 'sk-row';
     skRow.innerHTML = `
         <td colspan="${colspan}" style="padding: 20px 16px;">
             <div style="display:flex;flex-direction:column;gap:14px;">
-                <!-- Título / Encabezado -->
                 <div class="sk" style="height:22px;width:220px;border-radius:6px;"></div>
-                
-                <!-- Fila 1 -->
                 <div style="display:flex;gap:12px;align-items:center;">
                     <div class="sk" style="height:16px;flex:1;border-radius:6px;"></div>
                     <div class="sk" style="height:16px;width:90px;border-radius:6px;"></div>
                     <div class="sk" style="height:16px;width:70px;border-radius:6px;"></div>
                     <div class="sk" style="height:30px;width:55px;border-radius:6px;"></div>
                 </div>
-                
-                <!-- Fila 2 -->
                 <div style="display:flex;gap:12px;align-items:center;">
                     <div class="sk" style="height:16px;flex:1;border-radius:6px;"></div>
                     <div class="sk" style="height:16px;width:90px;border-radius:6px;"></div>
                     <div class="sk" style="height:16px;width:70px;border-radius:6px;"></div>
                     <div class="sk" style="height:30px;width:55px;border-radius:6px;"></div>
                 </div>
-                
-                <!-- Fila 3 -->
                 <div style="display:flex;gap:12px;align-items:center;">
                     <div class="sk" style="height:16px;flex:1;border-radius:6px;"></div>
                     <div class="sk" style="height:16px;width:90px;border-radius:6px;"></div>
@@ -798,74 +794,53 @@ function createSkeletonCargador(colspan) {
     return skRow;
 }
 
-// ==================== VER MÁS ADMIN ====================
-function verMasAdmin(btn) {
+// ==================== PAGINACIÓN ADMIN ====================
+function cambiarPaginaAdmin(btn) {
     const page = btn.getAttribute('data-page');
-    const verMasWrap = btn.closest('.exp-ver-mas-wrap');
-    if (verMasWrap) verMasWrap.remove();
-
-    const tbody = document.querySelector('#content-area tbody');
-    if (tbody) {
-        tbody.appendChild(createSkeletonCargador(6));   // 6 columnas para admin
-    }
+    const contentArea = document.getElementById('content-area');
+    contentArea.innerHTML = skeletonLoader();
 
     fetch(`/admin/fragmento/lista-reportes?page=${page}`)
         .then(r => r.text())
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-
-            // Quitar skeleton
-            const sk = document.getElementById('sk-row');
-            if (sk) sk.remove();
-
-            // Agregar las nuevas filas
-            doc.querySelectorAll('tbody tr').forEach(row =>
-                document.querySelector('#content-area tbody').appendChild(row));
-
-            // Agregar modales si existen
-            doc.querySelectorAll('.modal-overlay').forEach(m =>
-                document.getElementById('content-area').appendChild(m));
-
-            // Agregar nuevo botón "Ver Más"
-            const newVerMas = doc.querySelector('.exp-ver-mas-wrap');
-            if (newVerMas) document.querySelector('#content-area .card').appendChild(newVerMas);
+            const fragment = doc.querySelector('.card');
+            if (fragment) contentArea.innerHTML = fragment.outerHTML;
         })
         .catch(console.error);
 }
 
-// ==================== VER MÁS USUARIO ====================
-function verMasUsuario(btn) {
+// ==================== PAGINACIÓN USUARIO ====================
+function cambiarPaginaUsuario(btn) {
     const page = btn.getAttribute('data-page');
-    const verMasWrap = btn.closest('.exp-ver-mas-wrap');
-    if (verMasWrap) verMasWrap.remove();
-
-    const tbody = document.querySelector('#content-area tbody');
-    if (tbody) {
-        tbody.appendChild(createSkeletonCargador(5));   // 5 columnas para usuario
-    }
+    const contentArea = document.getElementById('content-area');
+    contentArea.innerHTML = skeletonLoader();
 
     fetch(`/usuario/fragmento/lista-reportes?page=${page}`)
         .then(r => r.text())
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('.card');
+            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+        })
+        .catch(console.error);
+}
 
-            // Quitar skeleton
-            const sk = document.getElementById('sk-row');
-            if (sk) sk.remove();
+function cambiarPaginaExplorar(btn) {
+    const page = btn.getAttribute('data-page');
+    const q = btn.getAttribute('data-q') || '';
+    const contentArea = document.getElementById('content-area');
+    contentArea.innerHTML = skeletonLoader();
 
-            // Agregar las nuevas filas
-            doc.querySelectorAll('tbody tr').forEach(row =>
-                document.querySelector('#content-area tbody').appendChild(row));
-
-            // Agregar modales si existen
-            doc.querySelectorAll('.modal-overlay').forEach(m =>
-                document.getElementById('content-area').appendChild(m));
-
-            // Agregar nuevo botón "Ver Más"
-            const newVerMas = doc.querySelector('.exp-ver-mas-wrap');
-            if (newVerMas) document.querySelector('#content-area .card').appendChild(newVerMas);
+    fetch(`/reportes/fragmento/explorar?page=${page}&q=${encodeURIComponent(q)}`)
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('.card');
+            if (fragment) contentArea.innerHTML = fragment.outerHTML;
         })
         .catch(console.error);
 }

@@ -53,7 +53,6 @@ public class ComentarioController {
 ;
 
 
-    private static final int PAGE_SIZE = 10;
 
     private Usuario getUsuarioLogueado() {
         try {
@@ -101,6 +100,10 @@ public class ComentarioController {
         model.addAttribute("hayMas",     pageResult.hasNext());
         model.addAttribute("nextPage",   page + 1);
         model.addAttribute("total",      pageResult.getTotalElements());
+        model.addAttribute("paginaActual", page);
+        model.addAttribute("totalPaginas", pageResult.getTotalPages());
+        model.addAttribute("hayAnterior", pageResult.hasPrevious());
+        model.addAttribute("haySiguiente", pageResult.hasNext());
         addCatalogMaps(model);
         return "fragmentos/explorar_reportes :: explorar-reportes";
     }

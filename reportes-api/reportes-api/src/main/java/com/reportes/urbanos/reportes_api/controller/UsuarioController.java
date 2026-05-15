@@ -83,12 +83,14 @@ public class UsuarioController {
     @GetMapping("/inicio")
     public String inicioCiudadano(Model model) {
         Usuario usuario = getUsuarioLogueado();
-        Page<Reporte> page = reporteService.getReportesUsuarioPaginado(usuario, 0);
+        var pagina = reporteService.getReportesUsuarioPaginado(usuario, 0);
         model.addAttribute("usuario", usuario);
         model.addAttribute("reporte", new Reporte());
-        model.addAttribute("reportes", page.getContent());
-        model.addAttribute("hayMas", page.hasNext());
-        model.addAttribute("nextPage", 1);
+        model.addAttribute("reportes", pagina.getContent());
+        model.addAttribute("paginaActual", 0);
+        model.addAttribute("totalPaginas", pagina.getTotalPages());
+        model.addAttribute("hayAnterior", pagina.hasPrevious());
+        model.addAttribute("haySiguiente", pagina.hasNext());
         return "usuario_inicio";
     }
 
@@ -98,10 +100,12 @@ public class UsuarioController {
             @RequestParam(defaultValue = "0") int page,
             Model model) {
         Usuario usuario = getUsuarioLogueado();
-        Page<Reporte> p = reporteService.getReportesUsuarioPaginado(usuario, page);
-        model.addAttribute("reportes", p.getContent());
-        model.addAttribute("hayMas", p.hasNext());
-        model.addAttribute("nextPage", page + 1);
+        var pagina = reporteService.getReportesUsuarioPaginado(usuario, page);
+        model.addAttribute("reportes", pagina.getContent());
+        model.addAttribute("paginaActual", page);
+        model.addAttribute("totalPaginas", pagina.getTotalPages());
+        model.addAttribute("hayAnterior", pagina.hasPrevious());
+        model.addAttribute("haySiguiente", pagina.hasNext());
         return "usuario/fragments/lista-reportes :: lista-reportes";
     }
 
@@ -226,5 +230,41 @@ public class UsuarioController {
             response.put("error", "Error al eliminar el reporte: " + e.getMessage());
         }
         return ResponseEntity.ok(response);
+    }
+    
+
+    @GetMapping(value = "/fragmento/inicio", produces = "text/html")
+    public String fragmentoInicio(Model model) {
+        Usuario usuario = getUsuarioLogueado();
+        List<Reporte> todos = reporteService.getReportesUsuario(usuario);
+
+        Map<Long, String> estados = estadoReporteService.getEstados().stream()
+            .collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre));
+        Map<Long, String> tipos = tipoReporteService.getTipos().stream()
+            .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre));
+
+        long totalReportes      = todos.size();
+        long totalPendientes    = todos.stream().filter(r -> "Pendiente".equals(estados.get(r.getEstadoReporteId()))).count();
+        long totalEnProgreso    = todos.stream().filter(r -> "En_Proceso".equals(estados.get(r.getEstadoReporteId()))).count();
+        long totalResueltos     = todos.stream().filter(r -> "Resuelto".equals(estados.get(r.getEstadoReporteId()))).count();
+        long totalInfraestructura = todos.stream().filter(r -> "Infraestructura".equals(tipos.get(r.getTipoReporteId()))).count();
+        long totalServicios     = todos.stream().filter(r -> "Servicios Publicos".equals(tipos.get(r.getTipoReporteId()))).count();
+
+        String ultimoReporte = todos.stream()
+            .filter(r -> r.getFechaModificacion() != null)
+            .map(r -> r.getFechaModificacion())
+            .max(java.time.LocalDateTime::compareTo)
+            .map(f -> java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").format(f))
+            .orElse("Sin reportes");
+
+        model.addAttribute("totalReportes", totalReportes);
+        model.addAttribute("totalPendientes", totalPendientes);
+        model.addAttribute("totalEnProgreso", totalEnProgreso);
+        model.addAttribute("totalResueltos", totalResueltos);
+        model.addAttribute("totalInfraestructura", totalInfraestructura);
+        model.addAttribute("totalServicios", totalServicios);
+        model.addAttribute("ultimoReporte", ultimoReporte);
+
+        return "usuario/fragments/inicio-usuario :: inicio-usuario";
     }
 }

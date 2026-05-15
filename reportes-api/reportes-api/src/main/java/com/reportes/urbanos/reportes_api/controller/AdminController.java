@@ -16,7 +16,6 @@ import com.reportes.urbanos.reportes_api.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -98,11 +97,7 @@ public class AdminController {
     @GetMapping("/inicio")
     public String mostrarPanelAdmin(Model model) {
         Usuario usuario = getUsuarioLogueado();
-        Page<Reporte> page = reporteService.getReportesAdminPaginado(0);
         model.addAttribute("usuario", usuario);
-        model.addAttribute("reportes", page.getContent());
-        model.addAttribute("hayMas", page.hasNext());
-        model.addAttribute("nextPage", 1);
         return "admin_inicio";
     }
 
@@ -111,10 +106,12 @@ public class AdminController {
     public String fragmentoListaReportes(
             @RequestParam(defaultValue = "0") int page,
             Model model) {
-        Page<Reporte> p = reporteService.getReportesAdminPaginado(page);
-        model.addAttribute("reportes", p.getContent());
-        model.addAttribute("hayMas", p.hasNext());
-        model.addAttribute("nextPage", page + 1);
+        var pagina = reporteService.getReportesAdminPaginado(page);
+        model.addAttribute("reportes", pagina.getContent());
+        model.addAttribute("paginaActual", page);
+        model.addAttribute("totalPaginas", pagina.getTotalPages());
+        model.addAttribute("hayAnterior", pagina.hasPrevious());
+        model.addAttribute("haySiguiente", pagina.hasNext());
         return "admin/fragments/lista-reportes :: lista-reportes";
     }
 
@@ -254,5 +251,58 @@ public class AdminController {
                 return map;
             })
             .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/fragmento/inicio", produces = "text/html")
+    public String fragmentoInicio(Model model) {
+        List<Reporte> todos = reporteService.getReportesAdmin();
+
+        // Calcular estadísticas
+        Map<Long, String> estados = estadoReporteService.getEstados().stream()
+            .collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre));
+        Map<Long, String> tipos = tipoReporteService.getTipos().stream()
+            .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre));
+        Map<Long, String> barrios = barrioService.getBarriosOrdenados().stream()
+            .collect(Collectors.toMap(Barrio::getId, Barrio::getNombre));
+
+        long totalReportes = todos.size();
+        long totalPendientes = todos.stream()
+            .filter(r -> "Pendiente".equals(estados.get(r.getEstadoReporteId()))).count();
+        long totalEnProgreso = todos.stream()
+            .filter(r -> "En_Proceso".equals(estados.get(r.getEstadoReporteId()))).count();
+        long totalResueltos = todos.stream()
+            .filter(r -> "Resuelto".equals(estados.get(r.getEstadoReporteId()))).count();
+        long totalInfraestructura = todos.stream()
+            .filter(r -> "Infraestructura".equals(tipos.get(r.getTipoReporteId()))).count();
+        long totalServicios = todos.stream()
+            .filter(r -> "Servicios Publicos".equals(tipos.get(r.getTipoReporteId()))).count();
+
+        long totalUsuarios = usuarioRepository.count();
+        long totalAdmins = usuarioRepository.findAll().stream()
+            .filter(u -> u.getRol() == Rol.ADMIN).count();
+
+        // Barrio con más reportes
+        Map<Long, Long> conteo = todos.stream()
+            .filter(r -> r.getBarrioId() != null)
+            .collect(Collectors.groupingBy(Reporte::getBarrioId, Collectors.counting()));
+
+        long maxVal = conteo.values().stream().max(Long::compareTo).orElse(0L);
+
+        String barrioMasReportes = conteo.entrySet().stream()
+            .filter(e -> e.getValue() == maxVal)
+            .map(e -> barrios.getOrDefault(e.getKey(), "Desconocido"))
+            .collect(Collectors.joining(", ")) + " - " + maxVal + " reportes";
+
+        model.addAttribute("totalReportes", totalReportes);
+        model.addAttribute("totalPendientes", totalPendientes);
+        model.addAttribute("totalEnProgreso", totalEnProgreso);
+        model.addAttribute("totalResueltos", totalResueltos);
+        model.addAttribute("totalInfraestructura", totalInfraestructura);
+        model.addAttribute("totalServicios", totalServicios);
+        model.addAttribute("totalUsuarios", totalUsuarios);
+        model.addAttribute("totalAdmins", totalAdmins);
+        model.addAttribute("barrioMasReportes", barrioMasReportes);
+
+        return "admin/fragments/inicio-admin :: inicio-admin";
     }
 }

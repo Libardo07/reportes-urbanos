@@ -27,7 +27,11 @@
             </div>
         </div>
         <nav class="sidebar-menu">
-            <div class="menu-item menu-item-animated active" th:attr="data-view='/admin/fragmento/lista-reportes'">
+            <div class="menu-item menu-item-animated active" th:attr="data-view='/admin/fragmento/inicio'">
+                <img th:src="@{/images/icono-list.png}" alt="Inicio" loading="lazy">
+                <span>Inicio</span>
+            </div>
+            <div class="menu-item menu-item-animated" th:attr="data-view='/admin/fragmento/lista-reportes'">
                 <img th:src="@{/images/icono-list.png}" alt="Ver" loading="lazy">
                 <span>Ver reportes</span>
             </div>
@@ -54,9 +58,7 @@
 </div>
     </aside>
 
-    <main class="content" id="content-area">
-        <div th:replace="~{admin/fragments/lista-reportes :: lista-reportes}"></div>
-    </main>
+    <main class="content" id="content-area"> </main>
     <div class="filtro-overlay" id="filtroOverlay" onclick="toggleFiltroPanel()"></div>
     <script th:src="@{/js/script.js}"></script>
     <script th:src="@{/js/reporte_detalle.js}" defer></script>

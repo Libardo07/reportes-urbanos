@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="card" th:fragment="inicio-admin">
+    <div class="content-header">
+        <h1>Panel de control</h1>
+    </div>
+    <div class="stats-grid">
+
+        <!-- Total reportes -->
+        <div class="stat-card stat-primary">
+            <span class="stat-label">Total reportes</span>
+            <span class="stat-valor" th:text="${totalReportes}">0</span>
+            <div class="stat-bar-wrap">
+                <div class="stat-bar-fill" style="width:100%;background:#1a73e8;animation-delay:0.1s"></div>
+            </div>
+            <svg class="stat-icon-bg" style="color:#1a73e8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+        </div>
+
+        <!-- Pendientes -->
+        <div class="stat-card stat-warning">
+            <span class="stat-label">Pendientes</span>
+            <span class="stat-valor" th:text="${totalPendientes}">0</span>
+            <span class="stat-badge" style="background:#fff8e1;color:#7d5a00;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                En espera
+            </span>
+            <svg class="stat-icon-bg" style="color:#EF9F27;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/>
+            </svg>
+        </div>
+
+        <!-- En Progreso -->
+        <div class="stat-card stat-info">
+            <span class="stat-label">En Proceso</span>
+            <span class="stat-valor" th:text="${totalEnProgreso}">0</span>
+            <span class="stat-badge" style="background:#e1f5ee;color:#0f6e56;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Activos
+            </span>
+            <svg class="stat-icon-bg" style="color:#1D9E75;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+        </div>
+
+        <!-- Resueltos -->
+        <div class="stat-card stat-success">
+            <span class="stat-label">Resueltos</span>
+            <span class="stat-valor" th:text="${totalResueltos}">0</span>
+            <span class="stat-badge" style="background:#eaf3de;color:#3b6d11;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                Completados
+            </span>
+            <svg class="stat-icon-bg" style="color:#639922;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/>
+            </svg>
+        </div>
+
+        <!-- Infraestructura -->
+        <div class="stat-card stat-secondary">
+            <span class="stat-label">Infraestructura</span>
+            <span class="stat-valor" th:text="${totalInfraestructura}">0</span>
+            <div class="stat-bar-wrap">
+                <div class="stat-bar-fill" style="width:100%;background:#7F77DD;animation-delay:0.3s"></div>
+            </div>
+            <svg class="stat-icon-bg" style="color:#7F77DD;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+            </svg>
+        </div>
+
+        <!-- Servicios Públicos -->
+        <div class="stat-card stat-secondary">
+            <span class="stat-label">Servicios Públicos</span>
+            <span class="stat-valor" th:text="${totalServicios}">0</span>
+            <div class="stat-bar-wrap">
+                <div class="stat-bar-fill" style="width:100%;background:#D4537E;animation-delay:0.4s"></div>
+            </div>
+            <svg class="stat-icon-bg" style="color:#D4537E;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/>
+            </svg>
+        </div>
+
+        <!-- Total usuarios -->
+        <div class="stat-card stat-primary">
+            <span class="stat-label">Total usuarios</span>
+            <span class="stat-valor" th:text="${totalUsuarios}">0</span>
+            <div class="stat-bar-wrap">
+                <div class="stat-bar-fill" style="width:100%;background:#1a73e8;animation-delay:0.5s"></div>
+            </div>
+            <svg class="stat-icon-bg" style="color:#1a73e8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        </div>
+
+        <!-- Total admins -->
+        <div class="stat-card stat-primary">
+            <span class="stat-label">Total admin</span>
+            <span class="stat-valor" th:text="${totalAdmins}">0</span>
+            <div class="stat-bar-wrap">
+                <div class="stat-bar-fill" style="width:100%;background:#534AB7;animation-delay:0.6s"></div>
+            </div>
+            <svg class="stat-icon-bg" style="color:#534AB7;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+        </div>
+
+        <!-- Barrio con más reportes -->
+        <div class="stat-card stat-barrio">
+            <div>
+                <span class="stat-label">Barrio con más reportes</span>
+                <div class="stat-valor-texto" th:text="${barrioMasReportes}">-</div>
+            </div>
+            <span class="stat-badge" style="background:#eeedfe;color:#3c3489;padding:6px 14px;font-size:13px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+                Top barrio
+            </span>
+            <svg class="stat-icon-bg" style="color:#7F77DD;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                <line x1="9" y1="3" x2="9" y2="18"/>
+                <line x1="15" y1="6" x2="15" y2="21"/>
+            </svg>
+        </div>
+
+    </div>
+</div>
+</html>

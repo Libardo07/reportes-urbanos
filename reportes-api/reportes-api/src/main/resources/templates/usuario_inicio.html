@@ -32,7 +32,11 @@
             </div>
         </div>
         <nav class="sidebar-menu">
-            <div class="menu-item menu-item-animated active" th:attr="data-view='/usuario/fragmento/formulario-reporte'">
+            <div class="menu-item menu-item-animated active" th:attr="data-view='/usuario/fragmento/inicio'">
+                <img th:src="@{/images/icono-list.png}" alt="Inicio" loading="lazy">
+                <span>Inicio</span>
+            </div>
+            <div class="menu-item menu-item-animated" th:attr="data-view='/usuario/fragmento/formulario-reporte'">
                 <img th:src="@{/images/icono-plus.png}" alt="Crear" loading="lazy">
                 <span>Crear reporte</span>
             </div>
@@ -58,12 +62,9 @@
         </div>
     </aside>
 
-    <main class="content" id="content-area">
-        <div th:replace="~{usuario/fragments/formulario-reporte :: formulario-reporte}"></div>
-    </main>
+    <main class="content" id="content-area"></main>
 
-    <script th:src="@{/js/formulario-reporte.js}"></script>
     <script th:src="@{/js/script.js}"></script>
     <script th:src="@{/js/reporte_detalle.js}" defer></script>
-</body>
+    <script th:src="@{/js/formulario-reporte.js}" defer></script>
 </html>
