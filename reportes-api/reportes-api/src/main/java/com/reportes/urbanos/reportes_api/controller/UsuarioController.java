@@ -8,9 +8,7 @@ import com.reportes.urbanos.reportes_api.service.ReporteService;
 import com.reportes.urbanos.reportes_api.service.S3Service;
 import com.reportes.urbanos.reportes_api.service.TipoReporteService;
 import com.reportes.urbanos.reportes_api.service.UsuarioService;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;

@@ -46,7 +46,7 @@ public class SecurityConfig {
                     "/recuperar-password", "/recuperar-password/**",
                     "/reporte/**",
                     "/reportes/**",
-                    "/css/**", "/js/**", "/images/**"
+                    "/css/**", "/js/**", "/images/**","/api/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/usuario/**").hasRole("CIUDADANO")
