@@ -31,6 +31,11 @@
                 <img th:src="@{/images/inicio.png}" alt="Inicio" loading="lazy">
                 <span>Inicio</span>
             </div>
+            <div class="menu-item menu-item-animated" 
+                th:attr="data-view='/admin/dashboard'">
+                <img th:src="@{/images/PowerBi.png}" alt="Dashboard" loading="lazy" style="width: 24px; height: 24px;">
+                <span>Ver Dashboard</span>
+            </div>
             <div class="menu-item menu-item-animated" th:attr="data-view='/admin/fragmento/lista-reportes'">
                 <img th:src="@{/images/icono-list.png}" alt="Ver" loading="lazy">
                 <span>Ver reportes</span>

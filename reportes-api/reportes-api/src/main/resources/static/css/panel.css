@@ -2434,3 +2434,25 @@ body {
     border-left: 3px solid #7F77DD;
 }
 .stat-barrio .stat-icon-bg { font-size: 72px; }
+
+/* TÍTULO CENTRADO + CORTE CON ... */
+
+.table td:nth-child(2) {           /* Columna de Título */
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 380px !important;      /* Ajusta según necesites */
+    text-align: center !important;    /* ← Esto lo centra */
+    vertical-align: middle !important;
+    padding: 12px 10px !important;
+}
+
+/* Para las cards de explorar (si también lo quieres centrado) */
+.exp-card-titulo {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-align: center !important;
+    max-width: 100% !important;
+    display: block !important;
+}

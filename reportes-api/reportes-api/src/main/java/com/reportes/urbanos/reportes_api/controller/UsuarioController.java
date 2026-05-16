@@ -42,12 +42,6 @@ public class UsuarioController {
     private S3Service s3Service;
 
     @Autowired
-    private TipoReporteRepository tipoReporteRepository;
-
-    @Autowired
-    private EstadoReporteRepository estadoReporteRepository;
-
-    @Autowired
     private BarrioService barrioService;
 
     @Autowired
@@ -63,6 +57,7 @@ public class UsuarioController {
 
     @ModelAttribute
     public void populateModelsWithCommonData(Model model) {
+        // ✅ Todos desde caché Redis
         List<Barrio> barrios = barrioService.getBarriosOrdenados();
         List<TipoReporte> tipos = tipoReporteService.getTipos();
         List<EstadoReporte> estados = estadoReporteService.getEstados();
@@ -77,22 +72,14 @@ public class UsuarioController {
             barrios.stream().collect(Collectors.toMap(Barrio::getId, Barrio::getNombre)));
     }
 
-    // ← CAMBIADO: ahora usa paginación
     @GetMapping("/inicio")
     public String inicioCiudadano(Model model) {
         Usuario usuario = getUsuarioLogueado();
-        var pagina = reporteService.getReportesUsuarioPaginado(usuario, 0);
         model.addAttribute("usuario", usuario);
         model.addAttribute("reporte", new Reporte());
-        model.addAttribute("reportes", pagina.getContent());
-        model.addAttribute("paginaActual", 0);
-        model.addAttribute("totalPaginas", pagina.getTotalPages());
-        model.addAttribute("hayAnterior", pagina.hasPrevious());
-        model.addAttribute("haySiguiente", pagina.hasNext());
         return "usuario_inicio";
     }
 
-    // ← CAMBIADO: ahora recibe ?page= y pagina
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(
             @RequestParam(defaultValue = "0") int page,
@@ -107,7 +94,6 @@ public class UsuarioController {
         return "usuario/fragments/lista-reportes :: lista-reportes";
     }
 
-    // sin cambios desde aquí
     @GetMapping(value = "/fragmento/formulario-reporte", produces = "text/html")
     public String fragmentoFormularioReporte(Model model) {
         model.addAttribute("reporte", new Reporte());
@@ -118,7 +104,8 @@ public class UsuarioController {
     public String fragmentoEditarReporte(@PathVariable String id, Model model) {
         Usuario usuario = getUsuarioLogueado();
         Reporte reporte = reporteRepository.findById(id).orElse(null);
-        EstadoReporte pendiente = estadoReporteRepository.findByNombre("Pendiente").orElseThrow();
+        // ✅ Usa caché en lugar del repository directo
+        EstadoReporte pendiente = estadoReporteService.getByNombre("Pendiente");
         if (reporte == null
                 || reporte.getUsuario() == null
                 || !reporte.getUsuario().getId().equals(usuario.getId())
@@ -144,8 +131,13 @@ public class UsuarioController {
 
         try {
             Barrio barrio = barrioRepository.findById(Long.parseLong(barrioId)).orElse(null);
-            TipoReporte tipo = tipoReporteRepository.findByNombre(tipoReporte).orElseThrow();
-            EstadoReporte pendiente = estadoReporteRepository.findByNombre("Pendiente").orElseThrow();
+
+            // ✅ Usa caché en lugar del repository directo
+            TipoReporte tipo = tipoReporteService.getTipos().stream()
+                .filter(t -> t.getNombre().equals(tipoReporte))
+                .findFirst().orElseThrow();
+
+            EstadoReporte pendiente = estadoReporteService.getByNombre("Pendiente");
 
             if (id != null && !id.isBlank()) {
                 Reporte reporteExistente = reporteRepository.findById(id).orElse(null);
@@ -155,9 +147,11 @@ public class UsuarioController {
                     return ResponseEntity.badRequest().body(response);
                 }
                 if (!reporteExistente.getEstadoReporteId().equals(pendiente.getId())) {
-                    String nombreEstado = estadoReporteRepository.findById(reporteExistente.getEstadoReporteId())
+                    // ✅ Busca el nombre del estado desde caché
+                    String nombreEstado = estadoReporteService.getEstados().stream()
+                        .filter(e -> e.getId().equals(reporteExistente.getEstadoReporteId()))
                         .map(EstadoReporte::getNombre)
-                        .orElse("desconocido");
+                        .findFirst().orElse("desconocido");
                     response.put("error", "El reporte no puede editarse porque su estado es '" + nombreEstado + "'.");
                     return ResponseEntity.badRequest().body(response);
                 }
@@ -213,11 +207,13 @@ public class UsuarioController {
                 response.put("error", "Reporte no encontrado.");
                 return ResponseEntity.badRequest().body(response);
             }
-            EstadoReporte pendiente = estadoReporteRepository.findByNombre("Pendiente").orElseThrow();
+            // ✅ Usa caché en lugar del repository directo
+            EstadoReporte pendiente = estadoReporteService.getByNombre("Pendiente");
             if (!reporte.getEstadoReporteId().equals(pendiente.getId())) {
-                String nombreEstado = estadoReporteRepository.findById(reporte.getEstadoReporteId())
+                String nombreEstado = estadoReporteService.getEstados().stream()
+                    .filter(e -> e.getId().equals(reporte.getEstadoReporteId()))
                     .map(EstadoReporte::getNombre)
-                    .orElse("desconocido");
+                    .findFirst().orElse("desconocido");
                 response.put("error", "Este reporte ya está en estado '" + nombreEstado + "' y no puede ser eliminado.");
                 return ResponseEntity.badRequest().body(response);
             }
@@ -229,35 +225,37 @@ public class UsuarioController {
         }
         return ResponseEntity.ok(response);
     }
-    
 
     @GetMapping(value = "/fragmento/inicio", produces = "text/html")
     public String fragmentoInicio(Model model) {
         Usuario usuario = getUsuarioLogueado();
+        // ✅ Desde caché Redis
         List<Reporte> todos = reporteService.getReportesUsuario(usuario);
+        List<EstadoReporte> estados = estadoReporteService.getEstados();
+        List<TipoReporte> tipos = tipoReporteService.getTipos();
 
-        Map<Long, String> estados = estadoReporteService.getEstados().stream()
+        Map<Long, String> estadosMap = estados.stream()
             .collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre));
-        Map<Long, String> tipos = tipoReporteService.getTipos().stream()
+        Map<Long, String> tiposMap = tipos.stream()
             .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre));
 
-        long totalReportes      = todos.size();
-        long totalPendientes    = todos.stream().filter(r -> "Pendiente".equals(estados.get(r.getEstadoReporteId()))).count();
-        long totalEnProgreso    = todos.stream().filter(r -> "En_Proceso".equals(estados.get(r.getEstadoReporteId()))).count();
-        long totalResueltos     = todos.stream().filter(r -> "Resuelto".equals(estados.get(r.getEstadoReporteId()))).count();
-        long totalInfraestructura = todos.stream().filter(r -> "Infraestructura".equals(tipos.get(r.getTipoReporteId()))).count();
-        long totalServicios     = todos.stream().filter(r -> "Servicios Publicos".equals(tipos.get(r.getTipoReporteId()))).count();
+        long totalReportes        = todos.size();
+        long totalPendientes      = todos.stream().filter(r -> "Pendiente".equals(estadosMap.get(r.getEstadoReporteId()))).count();
+        long totalEnProceso      = todos.stream().filter(r -> "En_Proceso".equals(estadosMap.get(r.getEstadoReporteId()))).count();
+        long totalResueltos       = todos.stream().filter(r -> "Resuelto".equals(estadosMap.get(r.getEstadoReporteId()))).count();
+        long totalInfraestructura = todos.stream().filter(r -> "Infraestructura".equals(tiposMap.get(r.getTipoReporteId()))).count();
+        long totalServicios       = todos.stream().filter(r -> "Servicios Publicos".equals(tiposMap.get(r.getTipoReporteId()))).count();
 
         String ultimoReporte = todos.stream()
             .filter(r -> r.getFechaModificacion() != null)
-            .map(r -> r.getFechaModificacion())
+            .map(Reporte::getFechaModificacion)
             .max(java.time.LocalDateTime::compareTo)
             .map(f -> java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").format(f))
             .orElse("Sin reportes");
 
         model.addAttribute("totalReportes", totalReportes);
         model.addAttribute("totalPendientes", totalPendientes);
-        model.addAttribute("totalEnProgreso", totalEnProgreso);
+        model.addAttribute("totalEnproceso", totalEnProceso);
         model.addAttribute("totalResueltos", totalResueltos);
         model.addAttribute("totalInfraestructura", totalInfraestructura);
         model.addAttribute("totalServicios", totalServicios);

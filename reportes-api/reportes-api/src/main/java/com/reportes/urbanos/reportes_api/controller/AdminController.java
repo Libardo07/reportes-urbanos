@@ -76,6 +76,7 @@ public class AdminController {
 
     @ModelAttribute
     public void addCatalogMaps(Model model) {
+        // Todos usan caché — no van a MySQL
         List<Barrio> barrios = barrioService.getBarriosOrdenados();
         List<TipoReporte> tipos = tipoReporteService.getTipos();
         List<EstadoReporte> estados = estadoReporteService.getEstados();
@@ -93,7 +94,6 @@ public class AdminController {
         return usuarioService.getUsuarioPorEmail(email);
     }
 
-    // ← CAMBIADO: ahora usa paginación
     @GetMapping("/inicio")
     public String mostrarPanelAdmin(Model model) {
         Usuario usuario = getUsuarioLogueado();
@@ -101,7 +101,6 @@ public class AdminController {
         return "admin_inicio";
     }
 
-    // ← CAMBIADO: ahora recibe ?page= y pagina
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(
             @RequestParam(defaultValue = "0") int page,
@@ -115,7 +114,6 @@ public class AdminController {
         return "admin/fragments/lista-reportes :: lista-reportes";
     }
 
-    // sin cambios desde aquí
     @GetMapping(value = "/fragmento/formulario-admin", produces = "text/html")
     public String fragmentoFormularioAdmin(Model model) {
         model.addAttribute("nuevoAdmin", new Usuario());
@@ -160,19 +158,15 @@ public class AdminController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            EstadoReporte resuelto = estadoReporteRepository.findByNombre("Resuelto").orElseThrow();
+            // ✅ Usa el service con caché en lugar del repository directo
+            EstadoReporte resuelto = estadoReporteService.getByNombre("Resuelto");
             if (reporte.getEstadoReporteId().equals(resuelto.getId())) {
                 response.put("error", "No se puede modificar un reporte ya resuelto.");
                 return ResponseEntity.badRequest().body(response);
             }
 
-            EstadoReporte nuevoEstadoObj = estadoReporteRepository
-                    .findByNombre(nuevoEstado)
-                    .orElse(null);
-            if (nuevoEstadoObj == null) {
-                response.put("error", "Estado inválido.");
-                return ResponseEntity.badRequest().body(response);
-            }
+            // ✅ Usa el service con caché
+            EstadoReporte nuevoEstadoObj = estadoReporteService.getByNombre(nuevoEstado);
 
             reporte.setEstadoReporteId(nuevoEstadoObj.getId());
             reporte.setUsuarioAdmin(admin);
@@ -242,6 +236,7 @@ public class AdminController {
     @GetMapping("/barrios-buscar")
     @ResponseBody
     public List<Map<String, Object>> buscarBarrios(@RequestParam String q) {
+        // ✅ Usa el caché de barrios en lugar de ir a MySQL
         return barrioService.getBarriosOrdenados().stream()
             .filter(b -> b.getNombre().toLowerCase().contains(q.toLowerCase()))
             .map(b -> {
@@ -255,31 +250,29 @@ public class AdminController {
 
     @GetMapping(value = "/fragmento/inicio", produces = "text/html")
     public String fragmentoInicio(Model model) {
+        // Todos desde caché Redis
         List<Reporte> todos = reporteService.getReportesAdmin();
+        List<EstadoReporte> estados = estadoReporteService.getEstados();
+        List<TipoReporte> tipos = tipoReporteService.getTipos();
+        List<Barrio> barrios = barrioService.getBarriosOrdenados();
 
-        // Calcular estadísticas
-        Map<Long, String> estados = estadoReporteService.getEstados().stream()
+        Map<Long, String> estadosMap = estados.stream()
             .collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre));
-        Map<Long, String> tipos = tipoReporteService.getTipos().stream()
+        Map<Long, String> tiposMap = tipos.stream()
             .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre));
-        Map<Long, String> barrios = barrioService.getBarriosOrdenados().stream()
+        Map<Long, String> barriosMap = barrios.stream()
             .collect(Collectors.toMap(Barrio::getId, Barrio::getNombre));
 
-        long totalReportes = todos.size();
-        long totalPendientes = todos.stream()
-            .filter(r -> "Pendiente".equals(estados.get(r.getEstadoReporteId()))).count();
-        long totalEnProgreso = todos.stream()
-            .filter(r -> "En_Proceso".equals(estados.get(r.getEstadoReporteId()))).count();
-        long totalResueltos = todos.stream()
-            .filter(r -> "Resuelto".equals(estados.get(r.getEstadoReporteId()))).count();
-        long totalInfraestructura = todos.stream()
-            .filter(r -> "Infraestructura".equals(tipos.get(r.getTipoReporteId()))).count();
-        long totalServicios = todos.stream()
-            .filter(r -> "Servicios Publicos".equals(tipos.get(r.getTipoReporteId()))).count();
+        long totalReportes      = todos.size();
+        long totalPendientes    = todos.stream().filter(r -> "Pendiente".equals(estadosMap.get(r.getEstadoReporteId()))).count();
+        long totalEnProceso   = todos.stream().filter(r -> "En_Proceso".equals(estadosMap.get(r.getEstadoReporteId()))).count();
+        long totalResueltos     = todos.stream().filter(r -> "Resuelto".equals(estadosMap.get(r.getEstadoReporteId()))).count();
+        long totalInfraestructura = todos.stream().filter(r -> "Infraestructura".equals(tiposMap.get(r.getTipoReporteId()))).count();
+        long totalServicios     = todos.stream().filter(r -> "Servicios Publicos".equals(tiposMap.get(r.getTipoReporteId()))).count();
 
-        long totalUsuarios = usuarioRepository.count();
-        long totalAdmins = usuarioRepository.findAll().stream()
-            .filter(u -> u.getRol() == Rol.ADMIN).count();
+        // ✅ countBy en lugar de findAll()
+        long totalUsuarios = usuarioRepository.countByRol(Rol.CIUDADANO);
+        long totalAdmins   = usuarioRepository.countByRol(Rol.ADMIN);
 
         // Barrio con más reportes
         Map<Long, Long> conteo = todos.stream()
@@ -288,14 +281,15 @@ public class AdminController {
 
         long maxVal = conteo.values().stream().max(Long::compareTo).orElse(0L);
 
-        String barrioMasReportes = conteo.entrySet().stream()
-            .filter(e -> e.getValue() == maxVal)
-            .map(e -> barrios.getOrDefault(e.getKey(), "Desconocido"))
-            .collect(Collectors.joining(", ")) + " - " + maxVal + " reportes";
+        String barrioMasReportes = maxVal == 0 ? "Sin reportes aún" :
+            conteo.entrySet().stream()
+                .filter(e -> e.getValue() == maxVal)
+                .map(e -> barriosMap.getOrDefault(e.getKey(), "Desconocido"))
+                .collect(Collectors.joining(", ")) + " — " + maxVal + " reportes";
 
         model.addAttribute("totalReportes", totalReportes);
         model.addAttribute("totalPendientes", totalPendientes);
-        model.addAttribute("totalEnProgreso", totalEnProgreso);
+        model.addAttribute("totalEnProgreso", totalEnProceso);
         model.addAttribute("totalResueltos", totalResueltos);
         model.addAttribute("totalInfraestructura", totalInfraestructura);
         model.addAttribute("totalServicios", totalServicios);
@@ -304,5 +298,10 @@ public class AdminController {
         model.addAttribute("barrioMasReportes", barrioMasReportes);
 
         return "admin/fragments/inicio-admin :: inicio-admin";
+    }
+
+    @GetMapping("/dashboard")
+    public String mostrarDashboard(Model model) {
+        return "admin/fragments/dashboard :: dashboard";
     }
 }
