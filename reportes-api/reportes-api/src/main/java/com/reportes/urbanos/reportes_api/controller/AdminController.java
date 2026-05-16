@@ -4,6 +4,7 @@ import com.reportes.urbanos.reportes_api.entity.EstadoReporte;
 import com.reportes.urbanos.reportes_api.entity.Reporte;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
+import com.reportes.urbanos.reportes_api.repository.EstadoReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepositoryCustom;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
@@ -16,6 +17,7 @@ import com.reportes.urbanos.reportes_api.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,6 +69,9 @@ public class AdminController {
 
     @Autowired
     private ReporteRepositoryCustom reporteRepositoryCustom;
+
+    @Autowired
+    private EstadoReporteRepository estadoReporteRepository; 
 
     @Autowired
     private EmailService emailService;
@@ -272,52 +277,60 @@ public class AdminController {
 
     @GetMapping(value = "/fragmento/inicio", produces = "text/html")
     public String fragmentoInicio(Model model) {
-        // Todos desde caché Redis
-        List<Reporte> todos = reporteService.getReportesAdmin();
-        List<EstadoReporte> estados = estadoReporteService.getEstados();
-        List<TipoReporte> tipos = tipoReporteService.getTipos();
-        List<Barrio> barrios = barrioService.getBarriosOrdenados();
 
-        Map<Long, String> estadosMap = estados.stream()
-            .collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre));
-        Map<Long, String> tiposMap = tipos.stream()
-            .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre));
-        Map<Long, String> barriosMap = barrios.stream()
-            .collect(Collectors.toMap(Barrio::getId, Barrio::getNombre));
+        // Conteos directos en MongoDB sin cargar documentos
+        long totalReportes = reporteRepository.count();
 
-        long totalReportes      = todos.size();
-        long totalPendientes    = todos.stream().filter(r -> "Pendiente".equals(estadosMap.get(r.getEstadoReporteId()))).count();
-        long totalEnProceso   = todos.stream().filter(r -> "En_Proceso".equals(estadosMap.get(r.getEstadoReporteId()))).count();
-        long totalResueltos     = todos.stream().filter(r -> "Resuelto".equals(estadosMap.get(r.getEstadoReporteId()))).count();
-        long totalInfraestructura = todos.stream().filter(r -> "Infraestructura".equals(tiposMap.get(r.getTipoReporteId()))).count();
-        long totalServicios     = todos.stream().filter(r -> "Servicios Publicos".equals(tiposMap.get(r.getTipoReporteId()))).count();
+        // IDs de estados desde MySQL
+        EstadoReporte pendiente   = estadoReporteRepository.findByNombre("Pendiente").orElse(null);
+        EstadoReporte enProceso  = estadoReporteRepository.findByNombre("En_Proceso").orElse(null);
+        EstadoReporte resuelto    = estadoReporteRepository.findByNombre("Resuelto").orElse(null);
 
-        // ✅ countBy en lugar de findAll()
+        long totalPendientes  = pendiente  != null ? reporteRepository.countByEstadoReporteId(pendiente.getId())  : 0;
+        long totalEnProgreso  = enProceso != null ? reporteRepository.countByEstadoReporteId(enProceso.getId()) : 0;
+        long totalResueltos   = resuelto   != null ? reporteRepository.countByEstadoReporteId(resuelto.getId())   : 0;
+
+        // IDs de tipos desde MySQL
+        TipoReporte infraestructura = tipoReporteService.getTipos().stream()
+            .filter(t -> t.getNombre().equalsIgnoreCase("Infraestructura")).findFirst().orElse(null);
+        TipoReporte servicios = tipoReporteService.getTipos().stream()
+            .filter(t -> t.getNombre().toLowerCase().contains("servicio")).findFirst().orElse(null);
+
+        long totalInfraestructura = infraestructura != null ? reporteRepository.countByTipoReporteId(infraestructura.getId()) : 0;
+        long totalServicios       = servicios       != null ? reporteRepository.countByTipoReporteId(servicios.getId())       : 0;
+
+        // Usuarios y admins
         long totalUsuarios = usuarioRepository.countByRol(Rol.CIUDADANO);
         long totalAdmins   = usuarioRepository.countByRol(Rol.ADMIN);
 
-        // Barrio con más reportes
-        Map<Long, Long> conteo = todos.stream()
+        // Barrio con más reportes usando aggregation
+        List<Reporte> muestraBarrios = reporteRepository.findAllByOrderByFechaModificacionDesc(
+            PageRequest.of(0, 1000)).getContent();
+        
+        Map<Long, Long> conteoBarrios = muestraBarrios.stream()
             .filter(r -> r.getBarrioId() != null)
             .collect(Collectors.groupingBy(Reporte::getBarrioId, Collectors.counting()));
 
-        long maxVal = conteo.values().stream().max(Long::compareTo).orElse(0L);
+        Map<Long, String> barriosMap = barrioService.getBarriosOrdenados().stream()
+            .collect(Collectors.toMap(Barrio::getId, Barrio::getNombre));
 
-        String barrioMasReportes = maxVal == 0 ? "Sin reportes aún" :
-            conteo.entrySet().stream()
-                .filter(e -> e.getValue() == maxVal)
-                .map(e -> barriosMap.getOrDefault(e.getKey(), "Desconocido"))
-                .collect(Collectors.joining(", ")) + " — " + maxVal + " reportes";
+        String barrioMasReportes = "-";
+        if (!conteoBarrios.isEmpty()) {
+            Long topBarrioId = conteoBarrios.entrySet().stream()
+                .max(Map.Entry.comparingByValue()).get().getKey();
+            barrioMasReportes = barriosMap.getOrDefault(topBarrioId, "Desconocido") 
+                + " - " + conteoBarrios.get(topBarrioId) + " reportes";
+        }
 
-        model.addAttribute("totalReportes", totalReportes);
-        model.addAttribute("totalPendientes", totalPendientes);
-        model.addAttribute("totalEnProgreso", totalEnProceso);
-        model.addAttribute("totalResueltos", totalResueltos);
+        model.addAttribute("totalReportes",      totalReportes);
+        model.addAttribute("totalPendientes",    totalPendientes);
+        model.addAttribute("totalEnProgreso",    totalEnProgreso);
+        model.addAttribute("totalResueltos",     totalResueltos);
         model.addAttribute("totalInfraestructura", totalInfraestructura);
-        model.addAttribute("totalServicios", totalServicios);
-        model.addAttribute("totalUsuarios", totalUsuarios);
-        model.addAttribute("totalAdmins", totalAdmins);
-        model.addAttribute("barrioMasReportes", barrioMasReportes);
+        model.addAttribute("totalServicios",     totalServicios);
+        model.addAttribute("totalUsuarios",      totalUsuarios);
+        model.addAttribute("totalAdmins",        totalAdmins);
+        model.addAttribute("barrioMasReportes",  barrioMasReportes);
 
         return "admin/fragments/inicio-admin :: inicio-admin";
     }
