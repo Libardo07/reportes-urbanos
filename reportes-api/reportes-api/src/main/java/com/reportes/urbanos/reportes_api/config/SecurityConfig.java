@@ -14,11 +14,13 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.core.annotation.Order;
 
 @Configuration
 @EnableWebSecurity
@@ -33,22 +35,39 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // ── Chain 1: /api/** completamente público y stateless ──────────────────
     @Bean
+    @Order(1)
+    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/api/**")
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            );
+        return http.build();
+    }
+
+    // ── Chain 2: resto de la app con autenticación normal ───────────────────
+    @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/", "/login", "/registro",
-                    "/verificar-correo", "/verificar-correo/confirmar", 
-                    "/verificar-correo/estado","/reenviar-verificacion", 
-                    "/reenviar-desde-login","/cambiar-correo-verificacion",
+                    "/verificar-correo", "/verificar-correo/confirmar",
+                    "/verificar-correo/estado", "/reenviar-verificacion",
+                    "/reenviar-desde-login", "/cambiar-correo-verificacion",
                     "/recuperar-password", "/recuperar-password/**",
                     "/reporte/**",
                     "/reportes/**",
                     "/css/**", "/js/**", "/images/**"
                 ).permitAll()
-                .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/confirmacion/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/usuario/**").hasRole("CIUDADANO")
@@ -91,7 +110,6 @@ public class SecurityConfig {
         };
     }
 
-    // ── Captura DisabledException y guarda el email en sesión ────────────────
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler() {
         return (request, response, exception) -> {
