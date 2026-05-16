@@ -28,7 +28,7 @@ public class EmailService {
             MimeMessage mensaje = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
 
-            helper.setFrom(remitente);
+            helper.setFrom("serviciodereporte@gmail.com", "Reportes Urbanos");
             helper.setTo(emailUsuario);
             helper.setSubject("Tu reporte está siendo atendido 🔧");
 
@@ -104,7 +104,7 @@ public class EmailService {
             MimeMessage mensaje = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
 
-            helper.setFrom(remitente);
+            helper.setFrom("serviciodereporte@gmail.com", "Reportes Urbanos");
             helper.setTo(emailUsuario);
             helper.setSubject("Tu reporte fue marcado como resuelto ✅");
 
