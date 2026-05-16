@@ -92,8 +92,9 @@ public class EmailService {
             mailSender.send(mensaje);
 
         } catch (Exception e) {
-            System.err.println("Error enviando correo En Proceso: " + e.getMessage());
-        }
+          e.printStackTrace();
+          System.out.println("ERROR CORREO EN PROCESO: " + e.getClass().getName() + " - " + e.getMessage());
+      }
     }
 
     @Async
@@ -143,10 +144,9 @@ public class EmailService {
                       <!-- Botones -->
                       <div style="text-align:center;margin-bottom:28px;">
                         <a href="%s"
-                          style="display:inline-block;background:linear-gradient(135deg,#1a8a4a,#2ecc71);color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:8px;font-size:15px;font-weight:600;">
+                          style="display:inline-block;background:linear-gradient(135deg,#1a8a4a,#2ecc71);color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:8px;font-size:15px;font-weight:600;margin-right:16px;">
                           ✅ Sí, fue resuelto
                         </a>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
                         <a href="%s"
                           style="display:inline-block;background:linear-gradient(135deg,#c0392b,#e74c3c);color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:8px;font-size:15px;font-weight:600;">
                           ❌ No, persiste
@@ -172,7 +172,8 @@ public class EmailService {
             mailSender.send(mensaje);
 
         } catch (Exception e) {
-            System.err.println("Error enviando correo Resuelto: " + e.getMessage());
-        }
+          e.printStackTrace();
+          System.out.println("ERROR CORREO RESUELTO: " + e.getClass().getName() + " - " + e.getMessage());
+      }
     }
 }
