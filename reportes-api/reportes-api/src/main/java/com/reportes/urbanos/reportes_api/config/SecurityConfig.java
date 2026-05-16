@@ -49,6 +49,7 @@ public class SecurityConfig {
                     "/css/**", "/js/**", "/images/**"
                 ).permitAll()
                 .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/confirmacion/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/usuario/**").hasRole("CIUDADANO")
                 .anyRequest().authenticated()

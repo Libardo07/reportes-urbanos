@@ -1,7 +1,6 @@
 package com.reportes.urbanos.reportes_api.controller;
 
 import com.reportes.urbanos.reportes_api.entity.EstadoReporte;
-import com.reportes.urbanos.reportes_api.repository.EstadoReporteRepository;
 import com.reportes.urbanos.reportes_api.entity.Reporte;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.enums.Rol;
@@ -9,6 +8,7 @@ import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepositoryCustom;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
 import com.reportes.urbanos.reportes_api.service.BarrioService;
+import com.reportes.urbanos.reportes_api.service.EmailService;
 import com.reportes.urbanos.reportes_api.service.EstadoReporteService;
 import com.reportes.urbanos.reportes_api.service.ReporteService;
 import com.reportes.urbanos.reportes_api.service.TipoReporteService;
@@ -57,9 +57,6 @@ public class AdminController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private EstadoReporteRepository estadoReporteRepository;
-
-    @Autowired
     private BarrioService barrioService;
 
     @Autowired
@@ -70,6 +67,9 @@ public class AdminController {
 
     @Autowired
     private ReporteRepositoryCustom reporteRepositoryCustom;
+
+    @Autowired
+    private EmailService emailService;
 
     @Value("${admin.email}")
     private String adminEmail;
@@ -158,20 +158,42 @@ public class AdminController {
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // ✅ Usa el service con caché en lugar del repository directo
-            EstadoReporte resuelto = estadoReporteService.getByNombre("Resuelto");
+            EstadoReporte resuelto   = estadoReporteService.getByNombre("Resuelto");
+
             if (reporte.getEstadoReporteId().equals(resuelto.getId())) {
                 response.put("error", "No se puede modificar un reporte ya resuelto.");
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // ✅ Usa el service con caché
             EstadoReporte nuevoEstadoObj = estadoReporteService.getByNombre(nuevoEstado);
 
             reporte.setEstadoReporteId(nuevoEstadoObj.getId());
             reporte.setUsuarioAdmin(admin);
             reporte.preActualizar();
             reporteService.guardarReporte(reporte);
+
+            // Enviar correo según el nuevo estado
+            Usuario usuarioReporte = reporte.getUsuario();
+            System.out.println("=== NUEVO ESTADO: '" + nuevoEstado + "'");
+            System.out.println("=== USUARIO EMAIL: " + (usuarioReporte != null ? usuarioReporte.getEmail() : "NULL"));
+            if (usuarioReporte != null && usuarioReporte.getEmail() != null) {
+                if ("En_Proceso".equals(nuevoEstado)) {
+                    emailService.enviarCorreoEnProceso(
+                        usuarioReporte.getEmail(),
+                        usuarioReporte.getNombre(),
+                        reporte.getTitulo(),
+                        admin.getNombre()
+                    );
+                } else if ("Resuelto".equals(nuevoEstado)) {
+                    emailService.enviarCorreoResuelto(
+                        usuarioReporte.getEmail(),
+                        usuarioReporte.getNombre(),
+                        reporte.getTitulo(),
+                        reporte.getId()
+                    );
+                }
+            }
+
             response.put("success", "true");
             response.put("message", "Estado del reporte cambiado correctamente.");
         } catch (Exception e) {

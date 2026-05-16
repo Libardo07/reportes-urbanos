@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>¡Gracias por tu confirmación!</title>
+    <link rel="stylesheet" th:href="@{/css/confirmacion.css}">
+</head>
+<body>
+    <div class="card">
+        <div class="header header-si">
+            <div class="icon-circle">
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+                     stroke="white" stroke-width="2.5" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <h1>¡Gracias por confirmarlo!</h1>
+        </div>
+        <div class="body">
+            <div class="badge badge-si">✅ Problema resuelto</div>
+            <p>
+                Nos alegra saber que el problema fue solucionado satisfactoriamente.
+                Tu confirmación nos ayuda a mejorar la gestión urbana de Cartagena.
+            </p>
+            <a href="/usuario/inicio" class="btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="white" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                Ir a la plataforma
+            </a>
+        </div>
+        <div class="footer">Sistema de Reportes Urbanos — Cartagena de Indias</div>
+    </div>
+</body>
+</html>
