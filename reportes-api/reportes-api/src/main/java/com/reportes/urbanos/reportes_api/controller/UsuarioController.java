@@ -57,7 +57,7 @@ public class UsuarioController {
 
     @ModelAttribute
     public void populateModelsWithCommonData(Model model) {
-        // ✅ Todos desde caché Redis
+        //  Todos desde caché Redis
         List<Barrio> barrios = barrioService.getBarriosOrdenados();
         List<TipoReporte> tipos = tipoReporteService.getTipos();
         List<EstadoReporte> estados = estadoReporteService.getEstados();
@@ -104,7 +104,7 @@ public class UsuarioController {
     public String fragmentoEditarReporte(@PathVariable String id, Model model) {
         Usuario usuario = getUsuarioLogueado();
         Reporte reporte = reporteRepository.findById(id).orElse(null);
-        // ✅ Usa caché en lugar del repository directo
+        //  Usa caché en lugar del repository directo
         EstadoReporte pendiente = estadoReporteService.getByNombre("Pendiente");
         if (reporte == null
                 || reporte.getUsuario() == null
@@ -132,7 +132,7 @@ public class UsuarioController {
         try {
             Barrio barrio = barrioRepository.findById(Long.parseLong(barrioId)).orElse(null);
 
-            // ✅ Usa caché en lugar del repository directo
+            //  Usa caché en lugar del repository directo
             TipoReporte tipo = tipoReporteService.getTipos().stream()
                 .filter(t -> t.getNombre().equals(tipoReporte))
                 .findFirst().orElseThrow();
@@ -147,7 +147,7 @@ public class UsuarioController {
                     return ResponseEntity.badRequest().body(response);
                 }
                 if (!reporteExistente.getEstadoReporteId().equals(pendiente.getId())) {
-                    // ✅ Busca el nombre del estado desde caché
+                    //  Busca el nombre del estado desde caché
                     String nombreEstado = estadoReporteService.getEstados().stream()
                         .filter(e -> e.getId().equals(reporteExistente.getEstadoReporteId()))
                         .map(EstadoReporte::getNombre)
@@ -207,7 +207,7 @@ public class UsuarioController {
                 response.put("error", "Reporte no encontrado.");
                 return ResponseEntity.badRequest().body(response);
             }
-            // ✅ Usa caché en lugar del repository directo
+            //  Usa caché en lugar del repository directo
             EstadoReporte pendiente = estadoReporteService.getByNombre("Pendiente");
             if (!reporte.getEstadoReporteId().equals(pendiente.getId())) {
                 String nombreEstado = estadoReporteService.getEstados().stream()
@@ -229,7 +229,7 @@ public class UsuarioController {
     @GetMapping(value = "/fragmento/inicio", produces = "text/html")
     public String fragmentoInicio(Model model) {
         Usuario usuario = getUsuarioLogueado();
-        // ✅ Desde caché Redis
+        //  Desde caché Redis
         List<Reporte> todos = reporteService.getReportesUsuario(usuario);
         List<EstadoReporte> estados = estadoReporteService.getEstados();
         List<TipoReporte> tipos = tipoReporteService.getTipos();
@@ -255,7 +255,7 @@ public class UsuarioController {
 
         model.addAttribute("totalReportes", totalReportes);
         model.addAttribute("totalPendientes", totalPendientes);
-        model.addAttribute("totalEnproceso", totalEnProceso);
+        model.addAttribute("totalEnProceso", totalEnProceso);
         model.addAttribute("totalResueltos", totalResueltos);
         model.addAttribute("totalInfraestructura", totalInfraestructura);
         model.addAttribute("totalServicios", totalServicios);
