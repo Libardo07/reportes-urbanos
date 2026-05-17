@@ -1,6 +1,7 @@
 package com.reportes.urbanos.reportes_api.controller;
 
 import com.reportes.urbanos.reportes_api.entity.*;
+import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
 import com.reportes.urbanos.reportes_api.repository.UsuarioRepository;
 import com.reportes.urbanos.reportes_api.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +15,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/dashboard")
 public class DashboardController {
 
-    @Autowired private ReporteService reporteService;
+    @Autowired private ReporteRepository reporteRepository;
     @Autowired private EstadoReporteService estadoReporteService;
     @Autowired private TipoReporteService tipoReporteService;
     @Autowired private BarrioService barrioService;
 
     @GetMapping("/reportes")
-    public List<Map<String, Object>> getReportes() {
+    public List<Map<String, Object>> getReportes(
+        @RequestParam(defaultValue = "5000") int limit) {
 
         Map<Long, String> estados = estadoReporteService.getEstados().stream()
             .collect(Collectors.toMap(EstadoReporte::getId, EstadoReporte::getNombre));
@@ -31,7 +33,9 @@ public class DashboardController {
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        return reporteService.getReportesAdmin().stream().map(r -> {
+        return reporteRepository.findAllByOrderByFechaModificacionDesc().stream()
+        .limit(limit)
+        .map(r -> {
             Map<String, Object> row = new LinkedHashMap<>();
 
             String estado = estados.getOrDefault(r.getEstadoReporteId(), "Desconocido");
