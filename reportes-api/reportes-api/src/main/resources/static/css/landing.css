@@ -564,3 +564,13 @@ footer span { color: var(--morado-claro); font-weight: 600; }
     flex-shrink: 0;
 }
 
+.role-icon {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, var(--morado), var(--morado-claro));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
