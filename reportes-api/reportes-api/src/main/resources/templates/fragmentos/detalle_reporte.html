@@ -56,8 +56,6 @@
             </div>
         </div>
 
-        
-
         <div class="det-col-fotos">
             <div class="det-galeria" th:if="${reporte.imagenes != null and !reporte.imagenes.isEmpty()}">
                 <div th:each="img : ${reporte.imagenes}" class="det-foto-thumb"
@@ -89,7 +87,6 @@
 
         <!-- Formulario nuevo comentario -->
         <div class="det-nuevo-comentario" th:if="${usuario != null}">
-            <!-- CAMBIO 1: avatar del formulario -->
             <div class="det-avatar" th:attr="data-nombre=${usuario.nombre}"></div>
             <div class="det-form">
                 <textarea id="det-textarea"
@@ -132,15 +129,14 @@
             <div th:each="c : ${comentarios}" class="det-comentario" th:attr="data-id=${c.id}">
 
                 <div class="det-comentario-avatar-wrap">
-                    <!-- CAMBIO 2: avatar de cada comentario -->
-                    <div class="det-comentario-avatar" th:attr="data-nombre=${c.usuario.nombre}"></div>
+                    <div class="det-comentario-avatar" th:attr="data-nombre=${c.usuarioNombre}"></div>
                     <div class="det-avatar-line"
                          th:if="${respuestas[c.id] != null and !#lists.isEmpty(respuestas[c.id])}"></div>
                 </div>
 
                 <div class="det-comentario-body">
                     <div class="det-comentario-header">
-                        <span class="det-comentario-nombre" th:text="${c.usuario.nombre}"></span>
+                        <span class="det-comentario-nombre" th:text="${c.usuarioNombre}"></span>
                         <span class="det-comentario-fecha"
                               th:text="${#temporals.format(c.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></span>
                         <button th:if="${esAdmin}" class="det-btn-eliminar"
@@ -156,7 +152,7 @@
 
                     <button th:if="${usuario != null}"
                             class="det-btn-responder"
-                            th:attr="data-nombre=${c.usuario.nombre},
+                            th:attr="data-nombre=${c.usuarioNombre},
                                      data-reporte-id=${reporte.id},
                                      data-mi-inicial=${#strings.substring(usuario.nombre, 0, 1)}"
                             onclick="toggleReplyForm(this)">
@@ -188,14 +184,13 @@
                              class="det-reply-item" th:attr="data-id=${r.id}">
 
                             <div class="det-reply-avatar-wrap">
-                                <!-- CAMBIO 3: avatar de cada respuesta -->
-                                <div class="det-reply-avatar" th:attr="data-nombre=${r.usuario.nombre}"></div>
+                                <div class="det-reply-avatar" th:attr="data-nombre=${r.usuarioNombre}"></div>
                                 <div class="det-reply-line"></div>
                             </div>
 
                             <div class="det-reply-body">
                                 <div class="det-comentario-header">
-                                    <span class="det-comentario-nombre" th:text="${r.usuario.nombre}"></span>
+                                    <span class="det-comentario-nombre" th:text="${r.usuarioNombre}"></span>
                                     <span class="det-comentario-fecha"
                                           th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></span>
                                     <button th:if="${esAdmin}" class="det-btn-eliminar"
@@ -209,7 +204,7 @@
                                 <p class="det-comentario-texto det-reply-texto" th:text="${r.texto}"></p>
                                 <button th:if="${usuario != null}"
                                         class="det-btn-responder"
-                                        th:attr="data-nombre=${r.usuario.nombre},
+                                        th:attr="data-nombre=${r.usuarioNombre},
                                                  data-comentario-id=${c.id}"
                                         onclick="responderARespuesta(this)">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
@@ -227,12 +222,11 @@
                     <div class="det-reply-form" style="display:none;"
                          th:attr="data-reporte-id=${reporte.id}, data-parent-id=${c.id}">
                         <div class="det-reply-input-row">
-                            <!-- CAMBIO 4: avatar del formulario de respuesta -->
                             <div class="det-reply-avatar"
                                  th:if="${usuario != null}"
                                  th:attr="data-nombre=${usuario.nombre}"></div>
                             <textarea class="det-reply-textarea" maxlength="500" rows="2"
-                                      th:placeholder="'Responder a ' + ${c.usuario.nombre} + '...'"></textarea>
+                                      th:placeholder="'Responder a ' + ${c.usuarioNombre} + '...'"></textarea>
                         </div>
                         <div class="det-reply-footer">
                             <span class="det-reply-char"><span class="det-reply-char-count">0</span>/500</span>

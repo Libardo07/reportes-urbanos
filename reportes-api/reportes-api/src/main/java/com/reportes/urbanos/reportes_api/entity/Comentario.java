@@ -21,15 +21,16 @@ public class Comentario {
 
     private LocalDateTime fechaCreacion;
 
-    @DBRef(lazy = false)
-    private Usuario usuario;
+    private String usuarioId;
+    private String usuarioNombre;
 
     private String reporteId;
     private String parentId;
 
     public Comentario(String texto, Usuario usuario, String reporteId) {
         this.texto = texto;
-        this.usuario = usuario;
+        this.usuarioId = usuario.getId();
+        this.usuarioNombre = usuario.getNombre();
         this.reporteId = reporteId;
         this.fechaCreacion = LocalDateTime.now(ZoneId.of("America/Bogota"));
     }

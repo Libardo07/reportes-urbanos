@@ -203,7 +203,7 @@
         <button class="paginacion-btn"
                 th:disabled="${!hayAnterior}"
                 th:attr="data-page=${paginaActual - 1}"
-                onclick="cambiarPaginaAdmin(this)">
+                onclick="filtroActivo ? cambiarPaginaFiltro(this) : cambiarPaginaAdmin(this)">
             ← Anterior
         </button>
         <span class="paginacion-info">
@@ -212,7 +212,7 @@
         <button class="paginacion-btn"
                 th:disabled="${!haySiguiente}"
                 th:attr="data-page=${paginaActual + 1}"
-                onclick="cambiarPaginaAdmin(this)">
+                onclick="filtroActivo ? cambiarPaginaFiltro(this) : cambiarPaginaAdmin(this)">
             Siguiente →
         </button>
     </div>

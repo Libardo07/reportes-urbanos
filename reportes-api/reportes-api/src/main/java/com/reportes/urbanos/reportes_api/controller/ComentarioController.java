@@ -148,13 +148,13 @@ public class ComentarioController {
         try {
             Comentario c = comentarioService.responderComentario(texto, usuario, id, parentId);
             return ResponseEntity.ok(Map.of(
-                "success", true,
-                "id",      c.getId(),
-                "texto",   c.getTexto(),
-                "nombre",  c.getUsuario().getNombre(),
-                "inicial", c.getUsuario().getNombre().substring(0, 1).toUpperCase(),
-                "fecha",   c.getFechaCreacion().toString()
-            ));
+            "success", true,
+            "id",      c.getId(),
+            "texto",   c.getTexto(),
+            "nombre",  c.getUsuarioNombre(),
+            "inicial", c.getUsuarioNombre().substring(0, 1).toUpperCase(),
+            "fecha",   c.getFechaCreacion().toString()
+        ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -174,13 +174,13 @@ public class ComentarioController {
         try {
             Comentario c = comentarioService.agregarComentario(texto, usuario, id);
             return ResponseEntity.ok(Map.of(
-                "success", true,
-                "id",      c.getId(),
-                "texto",   c.getTexto(),
-                "nombre",  c.getUsuario().getNombre(),
-                "inicial", c.getUsuario().getNombre().substring(0, 1).toUpperCase(),
-                "fecha",   c.getFechaCreacion().toString()
-            ));
+            "success", true,
+            "id",      c.getId(),
+            "texto",   c.getTexto(),
+            "nombre",  c.getUsuarioNombre(),
+            "inicial", c.getUsuarioNombre().substring(0, 1).toUpperCase(),
+            "fecha",   c.getFechaCreacion().toString()
+        ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

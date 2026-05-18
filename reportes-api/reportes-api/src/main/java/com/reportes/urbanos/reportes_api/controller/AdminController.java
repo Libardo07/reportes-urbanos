@@ -235,6 +235,7 @@ public class AdminController {
             @RequestParam(required = false) String horaDesde,
             @RequestParam(required = false) String fechaHasta,
             @RequestParam(required = false) String horaHasta,
+            @RequestParam(defaultValue = "0") int page,
             Model model) {
 
         LocalDateTime desde = null;
@@ -253,17 +254,21 @@ public class AdminController {
             }
         } catch (Exception ignored) {}
 
-        List<Reporte> reportes = reporteRepositoryCustom.filtrar(
-            estadoId, tipoId, barrioId, nombreUsuario, desde, hasta);
+        var pagina = reporteRepositoryCustom.filtrar(
+            estadoId, tipoId, barrioId, nombreUsuario, desde, hasta, page);
 
-        model.addAttribute("reportes", reportes);
+        model.addAttribute("reportes", pagina.getContent());
+        model.addAttribute("paginaActual", page);
+        model.addAttribute("totalPaginas", pagina.getTotalPages());
+        model.addAttribute("hayAnterior", pagina.hasPrevious());
+        model.addAttribute("haySiguiente", pagina.hasNext());
         return "admin/fragments/lista-reportes :: lista-reportes";
     }
 
     @GetMapping("/barrios-buscar")
     @ResponseBody
     public List<Map<String, Object>> buscarBarrios(@RequestParam String q) {
-        // ✅ Usa el caché de barrios en lugar de ir a MySQL
+        //  Usa el caché de barrios en lugar de ir a MySQL
         return barrioService.getBarriosOrdenados().stream()
             .filter(b -> b.getNombre().toLowerCase().contains(q.toLowerCase()))
             .map(b -> {

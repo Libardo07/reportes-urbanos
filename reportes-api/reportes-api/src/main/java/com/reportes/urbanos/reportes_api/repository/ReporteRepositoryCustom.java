@@ -2,6 +2,7 @@ package com.reportes.urbanos.reportes_api.repository;
 
 import com.reportes.urbanos.reportes_api.entity.Reporte;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -17,13 +18,16 @@ public class ReporteRepositoryCustom {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public List<Reporte> filtrar(
+    private static final int PAGE_SIZE = 10;
+
+    public Page<Reporte> filtrar(
             Long estadoReporteId,
             Long tipoReporteId,
             Long barrioId,
             String nombreUsuario,
             LocalDateTime fechaDesde,
-            LocalDateTime fechaHasta) {
+            LocalDateTime fechaHasta,
+            int page) {
 
         List<Criteria> criterias = new ArrayList<>();
 
@@ -58,9 +62,13 @@ public class ReporteRepositoryCustom {
         if (!criterias.isEmpty())
             query.addCriteria(new Criteria().andOperator(criterias.toArray(new Criteria[0])));
 
-        query.with(org.springframework.data.domain.Sort.by(
-            org.springframework.data.domain.Sort.Direction.DESC, "fechaModificacion"));
+        query.with(Sort.by(Sort.Direction.DESC, "fechaModificacion"));
 
-        return mongoTemplate.find(query, Reporte.class);
+        long total = mongoTemplate.count(query, Reporte.class);
+
+        query.with(PageRequest.of(page, PAGE_SIZE));
+        List<Reporte> reportes = mongoTemplate.find(query, Reporte.class);
+
+        return new PageImpl<>(reportes, PageRequest.of(page, PAGE_SIZE), total);
     }
 }

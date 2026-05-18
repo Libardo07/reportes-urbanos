@@ -321,7 +321,7 @@ body {
 .dashboard-container.admin .table th:nth-child(3),
 .dashboard-container.admin .table td:nth-child(3) {
     white-space: nowrap;
-    overflow: visible;
+    overflow: hidden;
     text-overflow: ellipsis;
 }
 

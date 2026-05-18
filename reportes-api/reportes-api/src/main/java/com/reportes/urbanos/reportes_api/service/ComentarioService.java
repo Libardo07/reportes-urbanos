@@ -30,7 +30,10 @@ public class ComentarioService {
             throw new IllegalArgumentException("El comentario no puede estar vacío.");
         if (texto.trim().length() > 500)
             throw new IllegalArgumentException("Máximo 500 caracteres.");
-        return comentarioRepository.save(new Comentario(texto.trim(), usuario, reporteId));
+        Comentario c = new Comentario(texto.trim(), usuario, reporteId);
+        c.setUsuarioId(usuario.getId());
+        c.setUsuarioNombre(usuario.getNombre());
+        return comentarioRepository.save(c);
     }
 
     public Comentario responderComentario(String texto, Usuario usuario, String reporteId, String parentId) {

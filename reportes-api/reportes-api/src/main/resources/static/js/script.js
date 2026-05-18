@@ -586,6 +586,8 @@ function skeletonLoader() {
 
 // ── Filtro Admin ─────────────────────────────────────────────────────────────
 let filtroBarriosData = [];
+let filtroActivo = false;
+let filtroParams = '';
 
 function toggleFiltroPanel() {
     const panel = document.getElementById('filtroPanel');
@@ -715,8 +717,17 @@ function aplicarFiltros() {
     if (fechaHasta) params.append('fechaHasta', fechaHasta);
     if (horaHasta) params.append('horaHasta', horaHasta);
 
+    // Cerrar panel y quitar overlay ANTES de cargar
+    const panel = document.getElementById('filtroPanel');
+    const overlay = document.getElementById('filtroOverlay');
+    if (panel) panel.classList.remove('abierto');
+    if (overlay) overlay.classList.remove('activo');
+
     const contentArea = document.getElementById('content-area');
     contentArea.innerHTML = skeletonLoader();
+
+    filtroActivo = true;
+    filtroParams = params.toString();  
 
     fetch(`/admin/fragmento/filtrar-reportes?${params.toString()}`)
         .then(r => r.text())
@@ -725,26 +736,6 @@ function aplicarFiltros() {
             const doc = parser.parseFromString(html, 'text/html');
             const fragment = doc.querySelector('.card');
             if (fragment) contentArea.innerHTML = fragment.outerHTML;
-
-
-            // Restaurar valores
-            document.getElementById('filtroEstadoSelect').value = estadoId;
-            document.getElementById('filtroTipoSelect').value = tipoId;
-            document.getElementById('filtroBarrioId').value = barrioId;
-            document.getElementById('filtroFechaDesde').value = fechaDesde;
-            document.getElementById('filtroHoraDesde').value = horaDesde;
-            document.getElementById('filtroFechaHasta').value = fechaHasta;
-            document.getElementById('filtroHoraHasta').value = horaHasta;
-            if (barrioId) {
-                document.getElementById('filtroBarrioDisplay').textContent = barrioNombre;
-            }
-
-            
-            // Limpiar overlay
-            const overlay = document.getElementById('filtroOverlay');
-            if (overlay) overlay.classList.remove('activo');
-
-
         })
         .catch(console.error);
 }
@@ -835,6 +826,22 @@ function cambiarPaginaExplorar(btn) {
     contentArea.innerHTML = skeletonLoader();
 
     fetch(`/reportes/fragmento/explorar?page=${page}&q=${encodeURIComponent(q)}`)
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const fragment = doc.querySelector('.card');
+            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+        })
+        .catch(console.error);
+}
+
+function cambiarPaginaFiltro(btn) {
+    const page = btn.getAttribute('data-page');
+    const contentArea = document.getElementById('content-area');
+    contentArea.innerHTML = skeletonLoader();
+
+    fetch(`/admin/fragmento/filtrar-reportes?${filtroParams}&page=${page}`)
         .then(r => r.text())
         .then(html => {
             const parser = new DOMParser();
