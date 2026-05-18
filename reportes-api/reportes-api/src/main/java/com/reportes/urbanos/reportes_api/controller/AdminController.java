@@ -17,7 +17,9 @@ import com.reportes.urbanos.reportes_api.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +27,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.mongodb.core.aggregation.*;
+import org.bson.Document;
+import org.springframework.data.domain.Sort;
 
 import com.reportes.urbanos.reportes_api.entity.Barrio;
 import com.reportes.urbanos.reportes_api.entity.TipoReporte;
@@ -75,6 +80,9 @@ public class AdminController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Value("${admin.email}")
     private String adminEmail;
@@ -309,22 +317,26 @@ public class AdminController {
         long totalAdmins   = usuarioRepository.countByRol(Rol.ADMIN);
 
         // Barrio con más reportes usando aggregation
-        List<Reporte> muestraBarrios = reporteRepository.findAllByOrderByFechaModificacionDesc(
-            PageRequest.of(0, 1000)).getContent();
-        
-        Map<Long, Long> conteoBarrios = muestraBarrios.stream()
-            .filter(r -> r.getBarrioId() != null)
-            .collect(Collectors.groupingBy(Reporte::getBarrioId, Collectors.counting()));
-
         Map<Long, String> barriosMap = barrioService.getBarriosOrdenados().stream()
             .collect(Collectors.toMap(Barrio::getId, Barrio::getNombre));
 
+        Aggregation agg = Aggregation.newAggregation(
+            Aggregation.match(Criteria.where("barrioId").ne(null)),
+            Aggregation.group("barrioId").count().as("total"),
+            Aggregation.sort(Sort.Direction.DESC, "total"),
+            Aggregation.limit(1)
+        );
+
+        AggregationResults<Document> results = mongoTemplate.aggregate(
+            agg, "reportes", Document.class);
+
         String barrioMasReportes = "-";
-        if (!conteoBarrios.isEmpty()) {
-            Long topBarrioId = conteoBarrios.entrySet().stream()
-                .max(Map.Entry.comparingByValue()).get().getKey();
-            barrioMasReportes = barriosMap.getOrDefault(topBarrioId, "Desconocido") 
-                + " - " + conteoBarrios.get(topBarrioId) + " reportes";
+        Document topDoc = results.getUniqueMappedResult();
+        if (topDoc != null) {
+            Long topBarrioId = ((Number) topDoc.get("_id")).longValue();
+            long count = ((Number) topDoc.get("total")).longValue();
+            String nombre = barriosMap.getOrDefault(topBarrioId, "Desconocido");
+            barrioMasReportes = nombre + " - " + count + " reportes";
         }
 
         model.addAttribute("totalReportes",      totalReportes);
