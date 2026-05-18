@@ -18,7 +18,6 @@ import com.reportes.urbanos.reportes_api.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -321,23 +320,26 @@ public class AdminController {
             .collect(Collectors.toMap(Barrio::getId, Barrio::getNombre));
 
         Aggregation agg = Aggregation.newAggregation(
-            Aggregation.match(Criteria.where("barrioId").ne(null)),
-            Aggregation.group("barrioId").count().as("total"),
-            Aggregation.sort(Sort.Direction.DESC, "total"),
-            Aggregation.limit(1)
-        );
+        Aggregation.match(Criteria.where("barrioId").ne(null)),
+        Aggregation.group("barrioId").count().as("total"),
+        Aggregation.sort(Sort.Direction.DESC, "total"),
+        Aggregation.limit(3)
+    );
 
-        AggregationResults<Document> results = mongoTemplate.aggregate(
-            agg, "reportes", Document.class);
+    AggregationResults<Document> results = mongoTemplate.aggregate(
+        agg, "reportes", Document.class);
 
-        String barrioMasReportes = "-";
-        Document topDoc = results.getUniqueMappedResult();
-        if (topDoc != null) {
-            Long topBarrioId = ((Number) topDoc.get("_id")).longValue();
-            long count = ((Number) topDoc.get("total")).longValue();
-            String nombre = barriosMap.getOrDefault(topBarrioId, "Desconocido");
-            barrioMasReportes = nombre + " - " + count + " reportes";
-        }
+    String barrioMasReportes = "-";
+    List<Document> docs = results.getMappedResults();
+    if (!docs.isEmpty()) {
+        long maxCount = ((Number) docs.get(0).get("total")).longValue();
+        String nombres = docs.stream()
+            .filter(d -> ((Number) d.get("total")).longValue() == maxCount)
+            .map(d -> barriosMap.getOrDefault(
+                ((Number) d.get("_id")).longValue(), "Desconocido"))
+            .collect(Collectors.joining(", "));
+        barrioMasReportes = nombres + " - " + maxCount + " reportes";
+    }
 
         model.addAttribute("totalReportes",      totalReportes);
         model.addAttribute("totalPendientes",    totalPendientes);
