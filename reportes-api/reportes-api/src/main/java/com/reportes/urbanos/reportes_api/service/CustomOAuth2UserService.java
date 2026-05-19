@@ -39,6 +39,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             usuario.setPassword(""); // sin contraseña porque usa Google
             usuario.setRol(Rol.CIUDADANO);
             usuario.setFechaCreacion(LocalDateTime.now(ZoneId.of("America/Bogota")));
+            usuario.setVerificado(true);
             usuarioRepository.save(usuario);
         }
 
