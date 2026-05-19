@@ -91,7 +91,7 @@
             </thead>
             <tbody>
                 <tr th:each="r : ${reportes}">
-                    <td th:text="${r.usuario.nombre}"></td>
+                    <td th:text="${r.usuario != null ? r.usuario.nombre : 'Usuario eliminado'}"></td>
                     <td th:text="${r.titulo}"></td>
                     <td th:text="${#strings.replace(tiposMap[r.tipoReporteId], '_', ' ')}"></td>
                     <td th:text="${r.fechaModificacion != null ? #temporals.format(r.fechaModificacion, 'dd/MM/yyyy HH:mm') : 'Sin modificar'}"></td>
@@ -146,7 +146,7 @@
                     <div class="modal-grid">
                         <div class="modal-field">
                             <span class="modal-label">Usuario</span>
-                            <span class="modal-value" th:text="${r.usuario.nombre}"></span>
+                            <span class="modal-value" th:text="${r.usuario != null ? r.usuario.nombre : 'Usuario eliminado'}"></span>
                         </div>
                         <div class="modal-field">
                             <span class="modal-label">Fecha</span>
