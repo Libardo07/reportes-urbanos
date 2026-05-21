@@ -14,29 +14,26 @@
 
 <div class="page-wrapper">
 
-    <!-- Panel izquierdo -->
     <div class="left-panel">
         <div class="icon">
             <img src="/images/login.png" alt="" loading="lazy">
         </div>
         <h2>Reportes Urbanos</h2>
         <p>Plataforma ciudadana para reportar problemas de infraestructura
-           y servicios públicos en Cartagena de Indias.</p>
+            y servicios públicos en Cartagena de Indias.</p>
         <a th:href="@{/registro}" class="btn-outline">Crear cuenta</a>
     </div>
 
-    <!-- Panel derecho -->
     <div class="right-panel">
         <h2>Bienvenido</h2>
         <p class="subtitle">Ingresa a tu cuenta para continuar</p>
 
-        <!-- ① Correo no verificado -->
         <div th:if="${emailNoVerificado}" class="login-notice login-notice--warn">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                 stroke-linejoin="round" aria-hidden="true">
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4
-                         c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                 <polyline points="22,6 12,13 2,6"/>
             </svg>
             <div>
@@ -50,12 +47,11 @@
             </div>
         </div>
 
-        <!-- ② Error de credenciales -->
         <div th:if="${error != null and emailNoVerificado == null}"
-             class="login-notice login-notice--error">
+            class="login-notice login-notice--error">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                 stroke-linejoin="round" aria-hidden="true">
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <line x1="12" y1="8" x2="12" y2="12"/>
                 <line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -63,27 +59,24 @@
             <span th:text="${error}">Correo o contraseña incorrectos.</span>
         </div>
 
-        <!-- ③ Registro exitoso -->
         <div th:if="${param.registroExitoso}" class="login-notice login-notice--success">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                 stroke-linejoin="round" aria-hidden="true">
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12"/>
             </svg>
             <span>¡Cuenta creada! Revisa tu correo para verificarla.</span>
         </div>
 
-        <!-- ④ Verificación exitosa -->
         <div th:if="${param.verificacionExitosa}" class="login-notice login-notice--success">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                 stroke-linejoin="round" aria-hidden="true">
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12"/>
             </svg>
             <span>¡Correo verificado! Ya puedes iniciar sesión.</span>
         </div>
 
-                <!--  Contraseña restablecida -->
         <div th:if="${param.passwordRestablecida}" class="login-notice login-notice--success">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -93,19 +86,18 @@
             <span>¡Contraseña restablecida! Ya puedes iniciar sesión.</span>
         </div>
 
-        <!-- Formulario -->
         <form th:action="@{/login}" method="post" id="loginForm" novalidate>
             <div class="input-group">
                 <img th:src="@{/images/icono-email.png}" alt="" class="icon" loading="lazy">
                 <input type="email" name="username"
-                       placeholder="Correo electrónico" required autocomplete="email">
+                    placeholder="Correo electrónico" required autocomplete="email">
             </div>
             <div class="input-group">
                 <img th:src="@{/images/icono-password.png}" alt="" class="icon" loading="lazy">
                 <input type="password" id="password" name="password"
-                       placeholder="Contraseña" required autocomplete="current-password">
+                    placeholder="Contraseña" required autocomplete="current-password">
                 <img th:src="@{/images/icono-ojo-visible.png}" alt="Mostrar contraseña"
-                     class="password-toggle" loading="lazy">
+                    class="password-toggle" loading="lazy">
             </div>
             <button type="submit" class="btn">Iniciar sesión</button>
         </form>

@@ -16,6 +16,7 @@ import java.time.Duration;
 @Configuration
 public class CacheConfig {
 
+        // Configuración de Redis Cache Manager con expiración global de 30 minutos
         @Bean
         public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         ObjectMapper objectMapper = new ObjectMapper();

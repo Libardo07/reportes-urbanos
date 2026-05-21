@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+// Servicio encargado de buscar usuarios por correo y mantener actualizada la caché de usuarios
 @Service
 public class UsuarioService {
 
@@ -20,6 +21,5 @@ public class UsuarioService {
 
     @CacheEvict(value = "usuarios", key = "#email")
     public void invalidarCacheUsuario(String email) {
-        // Solo invalida el caché cuando sea necesario
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+// Servicio que obtiene y almacena en caché los tipos de reporte
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Service
 public class TipoReporteService {

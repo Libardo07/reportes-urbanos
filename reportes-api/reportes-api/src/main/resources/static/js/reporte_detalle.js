@@ -1,15 +1,10 @@
 'use strict';
-
-/* ─────────────────────────────────────────────────────────────
-   Helpers globales
-   ───────────────────────────────────────────────────────────── */
 function esc(s) {
     return String(s)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;')
         .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-/** Resalta @Nombre al inicio del texto con span azul */
 function resaltarMencion(texto) {
     return esc(texto).replace(
         /^(@[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s+[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*)\s/,
@@ -17,7 +12,6 @@ function resaltarMencion(texto) {
     );
 }
 
-/** Saca 1 o 2 iniciales de un nombre completo */
 function sacarIniciales(nombre) {
     const partes = (nombre || '').trim().split(' ').filter(p => p.length > 0);
     if (partes.length === 0) return '?';
@@ -26,7 +20,6 @@ function sacarIniciales(nombre) {
         : partes[0][0].toUpperCase();
 }
 
-/** HTML del avatar-wrap de un comentario raíz (con o sin línea) */
 function avatarWrapComentario(nombre, conLinea) {
     return `
         <div class="det-comentario-avatar-wrap">
@@ -35,7 +28,6 @@ function avatarWrapComentario(nombre, conLinea) {
         </div>`;
 }
 
-/** HTML del avatar-wrap de una respuesta */
 function avatarWrapReply(nombre) {
     return `
         <div class="det-reply-avatar-wrap">
@@ -44,15 +36,14 @@ function avatarWrapReply(nombre) {
         </div>`;
 }
 
-/** Formulario de respuesta para inyectar en comentarios creados dinámicamente */
 function htmlReplyForm(reporteId, parentId, nombrePadre, miNombre) {
     return `
         <div class="det-reply-form" style="display:none;"
-             data-reporte-id="${reporteId}" data-parent-id="${parentId}">
+            data-reporte-id="${reporteId}" data-parent-id="${parentId}">
             <div class="det-reply-input-row">
                 <div class="det-reply-avatar">${esc(sacarIniciales(miNombre))}</div>
                 <textarea class="det-reply-textarea" maxlength="500" rows="2"
-                          placeholder="Responder a ${esc(nombrePadre)}..."></textarea>
+                        placeholder="Responder a ${esc(nombrePadre)}..."></textarea>
             </div>
             <div class="det-reply-footer">
                 <span class="det-reply-char"><span class="det-reply-char-count">0</span>/500</span>
@@ -60,7 +51,7 @@ function htmlReplyForm(reporteId, parentId, nombrePadre, miNombre) {
                     <button class="det-reply-cancel-btn" onclick="cerrarReplyForm(this)">Cancelar</button>
                     <button class="det-reply-send-btn" onclick="enviarRespuestaDet(this)">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                             <line x1="22" y1="2" x2="11" y2="13"/>
                             <polygon points="22 2 15 22 11 13 2 9 22 2"/>
                         </svg>
@@ -71,17 +62,11 @@ function htmlReplyForm(reporteId, parentId, nombrePadre, miNombre) {
         </div>`;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   Contador
-   ───────────────────────────────────────────────────────────── */
 function actualizarContadorDet(delta) {
     const el = document.getElementById('det-count');
     if (el) el.textContent = Math.max(0, parseInt(el.textContent || '0') + delta);
 }
 
-/* ─────────────────────────────────────────────────────────────
-   Botón ver/ocultar respuestas
-   ───────────────────────────────────────────────────────────── */
 function actualizarVerBtn(body, repliesDiv, forzarAbrir) {
     const total = repliesDiv.querySelectorAll('.det-reply-item').length;
     let verBtn  = body.querySelector('.det-ver-respuestas');
@@ -98,8 +83,8 @@ function actualizarVerBtn(body, repliesDiv, forzarAbrir) {
     const open = forzarAbrir === true ? true : !repliesDiv.classList.contains('det-replies-ocultas');
     verBtn.innerHTML = `
         <svg class="det-ver-icon" width="12" height="12" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-             style="transform:rotate(${open ? 180 : 0}deg);transition:transform .2s">
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            style="transform:rotate(${open ? 180 : 0}deg);transition:transform .2s">
             <polyline points="6 9 12 15 18 9"/>
         </svg>
         <span class="det-ver-texto">${open
@@ -108,7 +93,6 @@ function actualizarVerBtn(body, repliesDiv, forzarAbrir) {
         }</span>`;
 }
 
-/** Muestra/oculta la línea vertical del avatar principal según haya respuestas */
 function actualizarLineaAvatar(comentarioDiv, repliesDiv) {
     const wrap = comentarioDiv.querySelector('.det-comentario-avatar-wrap');
     if (!wrap) return;
@@ -123,9 +107,6 @@ function actualizarLineaAvatar(comentarioDiv, repliesDiv) {
     }
 }
 
-/* ─────────────────────────────────────────────────────────────
-   Ver / ocultar respuestas
-   ───────────────────────────────────────────────────────────── */
 window.toggleVerRespuestas = function(btn) {
     const body       = btn.closest('.det-comentario-body');
     const repliesDiv = body.querySelector('.det-replies');
@@ -135,9 +116,6 @@ window.toggleVerRespuestas = function(btn) {
     actualizarVerBtn(body, repliesDiv, estaOculto);
 };
 
-/* ─────────────────────────────────────────────────────────────
-   Toggle formulario de respuesta (comentario raíz)
-   ───────────────────────────────────────────────────────────── */
 window.toggleReplyForm = function(btn) {
     const body   = btn.closest('.det-comentario-body');
     const nombre = btn.getAttribute('data-nombre');
@@ -172,9 +150,6 @@ window.toggleReplyForm = function(btn) {
     }
 };
 
-/* ─────────────────────────────────────────────────────────────
-   Responder a una respuesta (abre el form del comentario padre)
-   ───────────────────────────────────────────────────────────── */
 window.responderARespuesta = function(btn) {
     const nombre       = btn.getAttribute('data-nombre');
     const comentarioId = btn.getAttribute('data-comentario-id');
@@ -197,7 +172,7 @@ window.responderARespuesta = function(btn) {
         <div class="det-reply-input-row">
             <div class="det-reply-avatar">${esc(sacarIniciales(miNombre))}</div>
             <textarea class="det-reply-textarea" maxlength="500" rows="2"
-                      placeholder="Responder a ${esc(nombre)}..."></textarea>
+                    placeholder="Responder a ${esc(nombre)}..."></textarea>
         </div>
         <div class="det-reply-footer">
             <span class="det-reply-char"><span class="det-reply-char-count">0</span>/500</span>
@@ -205,7 +180,7 @@ window.responderARespuesta = function(btn) {
                 <button class="det-reply-cancel-btn" onclick="this.closest('.det-reply-form-temp').remove()">Cancelar</button>
                 <button class="det-reply-send-btn" onclick="enviarRespuestaDet(this)">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                         <line x1="22" y1="2" x2="11" y2="13"/>
                         <polygon points="22 2 15 22 11 13 2 9 22 2"/>
                     </svg>
@@ -224,16 +199,10 @@ window.responderARespuesta = function(btn) {
     ta.addEventListener('input', () => cc.textContent = ta.value.length);
 };
 
-/* ─────────────────────────────────────────────────────────────
-   Cerrar formulario de respuesta
-   ───────────────────────────────────────────────────────────── */
 window.cerrarReplyForm = function(btn) {
     btn.closest('.det-reply-form').style.display = 'none';
 };
 
-/* ─────────────────────────────────────────────────────────────
-   Enviar comentario raíz
-   ───────────────────────────────────────────────────────────── */
 window.enviarComentarioDet = function(btn) {
     const ta        = document.getElementById('det-textarea');
     const cc        = document.getElementById('det-char-count');
@@ -316,9 +285,6 @@ window.enviarComentarioDet = function(btn) {
     });
 };
 
-/* ─────────────────────────────────────────────────────────────
-   Enviar respuesta
-   ───────────────────────────────────────────────────────────── */
 window.enviarRespuestaDet = function(btn) {
     const form      = btn.closest('.det-reply-form');
     const ta        = form.querySelector('.det-reply-textarea');
@@ -407,9 +373,6 @@ window.enviarRespuestaDet = function(btn) {
     });
 };
 
-/* ─────────────────────────────────────────────────────────────
-   Eliminar comentario o respuesta (admin)
-   ───────────────────────────────────────────────────────────── */
 window.eliminarComentarioDet = function(btn) {
     const id  = btn.getAttribute('data-id');
     const row = btn.closest('.det-reply-item') || btn.closest('.det-comentario');
@@ -450,9 +413,6 @@ window.eliminarComentarioDet = function(btn) {
     });
 };
 
-/* ─────────────────────────────────────────────────────────────
-   Iniciales de avatares existentes en el DOM
-   ───────────────────────────────────────────────────────────── */
 function initInicialesComentarios() {
     document.querySelectorAll('.det-comentario-avatar, .det-reply-avatar, .det-avatar').forEach(function(el) {
         const nombre = el.getAttribute('data-nombre') || '';
@@ -461,9 +421,6 @@ function initInicialesComentarios() {
     });
 }
 
-/* ─────────────────────────────────────────────────────────────
-   Inicializar
-   ───────────────────────────────────────────────────────────── */
 function inicializarComentarios() {
     document.querySelectorAll('.det-reply-texto').forEach(p => {
         const texto = p.textContent;
@@ -497,7 +454,6 @@ if (document.readyState === 'loading') {
     inicializarComentarios();
 }
 
-// ── Cerrar modal al hacer clic fuera ─────────────
 document.addEventListener('click', function(e) {
     const overlay = document.getElementById('det-modal-eliminar');
     if (overlay && e.target === overlay) cerrarModalEliminar();

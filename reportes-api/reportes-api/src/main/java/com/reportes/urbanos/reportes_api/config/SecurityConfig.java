@@ -26,16 +26,21 @@ import org.springframework.core.annotation.Order;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired private CustomUserDetailsService  userDetailsService;
-    @Autowired private UsuarioRepository         usuarioRepository;
-    @Autowired private CustomOAuth2UserService   customOAuth2UserService;
+    @Autowired 
+    private CustomUserDetailsService userDetailsService;
 
+    @Autowired 
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired 
+    private CustomOAuth2UserService customOAuth2UserService;
+
+    //// Bean para encriptar contraseñas usando BCrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    // ── Chain 1: /api/** completamente público y stateless ──────────────────
+    // Cadena de filtros de seguridad para endpoints de la API/dashboard
     @Bean
     @Order(1)
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
@@ -51,7 +56,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ── Chain 2: resto de la app con autenticación normal ───────────────────
+    // Cadena principal de seguridad para autenticación web, OAuth2 y control de acceso por roles
     @Bean
     @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -97,6 +102,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Maneja el inicio de sesión exitoso y redirige al usuario según su rol
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
@@ -110,6 +116,7 @@ public class SecurityConfig {
         };
     }
 
+    // Maneja errores de inicio de sesión y detecta usuarios no verificados
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler() {
         return (request, response, exception) -> {
@@ -122,6 +129,7 @@ public class SecurityConfig {
         };
     }
 
+    // encargado de la autenticación de usuarios mediante UserDetailsService y PasswordEncoder
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder builder =

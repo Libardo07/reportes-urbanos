@@ -1,13 +1,10 @@
 'use strict';
 
 history.replaceState(null, '', '/login');
-
-// Notifica a TODAS las pestañas abiertas del mismo sitio
 const canal = new BroadcastChannel('password_reset');
 canal.postMessage('restablecida');
 canal.close();
 
-// Si hay opener (caso raro), también lo redirige
 if (window.opener && !window.opener.closed) {
     try { window.opener.location.replace('/login?passwordRestablecida'); } catch (_) {}
 }

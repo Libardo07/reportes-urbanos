@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
+// Servicio de autenticación que carga los datos del usuario para iniciar sesión en Spring Security
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 

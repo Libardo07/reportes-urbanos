@@ -5,7 +5,6 @@ h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
 
 body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
 
-/* ── Header ─────────────────────────────────────────────────── */
 .rd-header {
     background: linear-gradient(135deg, #1a73e8, #1557b0);
     padding: 0 24px;
@@ -49,7 +48,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
 }
 .rd-back:hover { color: white; }
 
-/* ── Main ───────────────────────────────────────────────────── */
 .rd-main {
     max-width: 800px;
     margin: 0 auto;
@@ -59,7 +57,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     gap: 20px;
 }
 
-/* ── Tarjeta del reporte ────────────────────────────────────── */
 .rd-reporte-card {
     background: white;
     border-radius: 16px;
@@ -117,7 +114,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
 }
 .rd-meta-item svg { flex-shrink: 0; color: #1a73e8; }
 
-/* ── Fotos ──────────────────────────────────────────────────── */
 .rd-fotos {
     display: flex;
     gap: 0;
@@ -150,7 +146,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     font-size: 13px;
 }
 
-/* ── Sección comentarios (rd-) ──────────────────────────────── */
 .rd-comentarios-section {
     background: white;
     border-radius: 16px;
@@ -402,16 +397,11 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     word-break: break-word;
 }
 
-/* ════════════════════════════════════════════════════════════════
-   COMENTARIOS ESTILO FACEBOOK (det-*)
-   ════════════════════════════════════════════════════════════════ */
-
 @keyframes fbFadeIn {
     from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Sección raíz ───────────────────────────────────────────── */
 .det-comentarios { padding: 0; }
 
 .det-comentarios-title {
@@ -434,11 +424,9 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     border-radius: 20px;
 }
 
-/* ── Login aviso ────────────────────────────────────────────── */
 .det-login-aviso { padding: 14px 16px; font-size: 14px; color: #65676b; }
 .det-login-aviso a { color: #1877f2; font-weight: 600; text-decoration: none; }
 
-/* ── Formulario nuevo comentario ────────────────────────────── */
 .det-nuevo-comentario {
     display: flex;
     align-items: flex-start;
@@ -519,7 +507,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     font-size: 12px;
 }
 
-/* ── Sin comentarios ────────────────────────────────────────── */
 .det-sin-comentarios {
     display: flex;
     flex-direction: column;
@@ -531,10 +518,8 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     text-align: center;
 }
 
-/* ── Lista ──────────────────────────────────────────────────── */
 .det-lista { display: flex; flex-direction: column; }
 
-/* ── Comentario raíz ────────────────────────────────────────── */
 .det-comentario {
     display: flex;
     gap: 0;
@@ -543,7 +528,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     position: relative;
 }
 
-/* Línea vertical que baja del avatar al área de respuestas */
 .det-comentario-avatar-wrap {
     display: flex;
     flex-direction: column;
@@ -567,7 +551,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     flex-shrink: 0;
 }
 
-/* La línea vertical debajo del avatar principal */
 .det-avatar-line {
     width: 2px;
     background: #ced0d4;
@@ -579,7 +562,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
 
 .det-comentario-body { flex: 1; min-width: 0; padding-bottom: 4px; }
 
-/* ── Burbuja nombre + texto ─────────────────────────────────── */
 .det-comentario-header {
     display: flex;
     align-items: center;
@@ -609,7 +591,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     margin-bottom: 4px;
 }
 
-/* ── Botón Responder ────────────────────────────────────────── */
 .det-btn-responder {
     background: none;
     border: none;
@@ -628,7 +609,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
 }
 .det-btn-responder:hover { color: #1877f2; background: #f0f2f5; }
 
-/* ── Botón eliminar ─────────────────────────────────────────── */
 .det-btn-eliminar {
     background: none;
     border: none;
@@ -643,7 +623,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
 }
 .det-btn-eliminar:hover { background: #fff0f0; color: #e74c3c; }
 
-/* ── Ver/ocultar respuestas ─────────────────────────────────── */
 .det-ver-respuestas {
     background: none;
     border: none;
@@ -662,9 +641,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
 .det-ver-respuestas:hover { color: #0a5fd8; }
 .det-ver-icon { transition: transform .2s ease; flex-shrink: 0; }
 
-/* ════════════════════════════════════════════════════════════════
-   RESPUESTAS ANIDADAS — estilo Facebook con línea vertical
-   ════════════════════════════════════════════════════════════════ */
 .det-replies {
     display: flex;
     flex-direction: column;
@@ -679,7 +655,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     position: relative;
 }
 
-/* Wrap del avatar de respuesta con su línea */
 .det-reply-avatar-wrap {
     display: flex;
     flex-direction: column;
@@ -702,7 +677,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     flex-shrink: 0;
 }
 
-/* Línea debajo del avatar de respuesta */
 .det-reply-line {
     width: 2px;
     background: #ced0d4;
@@ -712,7 +686,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     border-radius: 2px;
 }
 
-/* Ocultar línea en el último reply */
 .det-reply-item:last-child .det-reply-line { display: none; }
 
 .det-reply-body { flex: 1; min-width: 0; padding-bottom: 8px; }
@@ -724,13 +697,11 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     font-size: 13px;
 }
 
-/* Mención @nombre en azul dentro de la burbuja */
 .det-mention {
     color: #1877f2;
     font-weight: 600;
 }
 
-/* ── Formulario respuesta ───────────────────────────────────── */
 .det-reply-form {
     display: flex;
     flex-direction: column;
@@ -819,7 +790,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
 .det-reply-send-btn:hover { background: #166fe5; }
 .det-reply-send-btn:disabled { background: #bcc0c4; cursor: not-allowed; }
 
-/* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 600px) {
     .rd-search-input { width: 120px; }
     .rd-fotos { flex-direction: column; }
@@ -830,11 +800,9 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     .det-reply-footer { padding-left: 28px; }
 }
 
-/* ── Fix flex-direction forzado ─────────────────────────────── */
 .det-replies { flex-direction: column !important; }
 .det-reply-item { flex-direction: row !important; }
 
-/* ── Sistema de clases para mostrar/ocultar replies ─────────── */
 .det-replies {
     display: flex !important;
     flex-direction: column !important;
@@ -848,7 +816,6 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
     flex-direction: row !important;
 }
 
-/* ── Modal eliminar comentario ───────────────────── */
 .det-modal-eliminar-contenido {
     max-width: 360px;
     text-align: center;
@@ -919,10 +886,9 @@ body { background: #f0f4ff; min-height: 100vh; color: #1a237e; }
 }
 .det-modal-no:hover { background: #757575; }
 
-/* ==================== DESCRIPCIÓN ==================== */
 .rd-descripcion {
     margin-top: 20px;
-    padding-top: 6px;   /* pequeño espacio arriba */
+    padding-top: 6px;  
 }
 
 .rd-seccion-titulo {

@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
+// Repositorio de MongoDB para gestionar los tokens de verificación de correo
 public interface VerificacionTokenRepository extends MongoRepository<VerificacionToken, String> {
     Optional<VerificacionToken> findByToken(String token);
     VerificacionToken findByEmail(String email);

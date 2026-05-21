@@ -22,6 +22,7 @@ public class S3Config {
     @Value("${aws.s3.region}")
     private String region;
 
+    // Configuración del cliente S3 con credenciales y región
     @Bean
     public S3Client s3Client() {
         return S3Client.builder()

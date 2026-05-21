@@ -20,7 +20,7 @@ public class EmailService {
     @Value("${app.base-url}")
     private String appUrl;
 
-    // ── Correo: Estado cambiado a En Proceso ─────────────────────────────────
+    // Envía un correo automático cuando un reporte cambia al estado "En Proceso"
     @Async
     public void enviarCorreoEnProceso(String emailUsuario, String nombreUsuario,
                                       String tituloReporte, String nombreAdmin) {
@@ -97,6 +97,7 @@ public class EmailService {
       }
     }
 
+    // Envía un correo al usuario cuando un reporte es marcado como resuelto
     @Async
     public void enviarCorreoResuelto(String emailUsuario, String nombreUsuario,
                                     String tituloReporte, String reporteId) {

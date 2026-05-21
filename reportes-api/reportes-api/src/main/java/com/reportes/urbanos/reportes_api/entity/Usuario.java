@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import com.reportes.urbanos.reportes_api.enums.Rol;
 
+// Documento de MongoDB que representa los usuarios del sistema
 @Document(collection = "usuarios")
 @Getter @Setter
 @NoArgsConstructor

@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-
+// Repositorio de MongoDB para gestionar los reportes del sistema
 @Repository
 public interface ReporteRepository extends MongoRepository<Reporte, String> {
     List<Reporte> findByUsuarioOrderByFechaModificacionDesc(Usuario usuario);
@@ -17,13 +17,8 @@ public interface ReporteRepository extends MongoRepository<Reporte, String> {
     Page<Reporte> findAllByOrderByFechaModificacionDesc(Pageable pageable);
     Page<Reporte> findByUsuarioOrderByFechaModificacionDesc(Usuario usuario, Pageable pageable);
     Page<Reporte> findByTituloContainingIgnoreCaseOrderByFechaModificacionDesc(String titulo, Pageable pageable);  
-        // Contar por estadoReporteId
     long countByEstadoReporteId(Long estadoReporteId);
-
-    // Contar por tipoReporteId
     long countByTipoReporteId(Long tipoReporteId);
-
-    // Contar por barrioId
     long countByBarrioId(Long barrioId);
 }
 

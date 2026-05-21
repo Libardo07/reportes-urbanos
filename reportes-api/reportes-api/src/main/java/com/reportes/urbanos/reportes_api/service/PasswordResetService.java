@@ -16,11 +16,19 @@ import java.util.UUID;
 @Service
 public class PasswordResetService {
 
-    @Autowired private UsuarioRepository            usuarioRepository;
-    @Autowired private PasswordResetTokenRepository tokenRepository;
-    @Autowired private JavaMailSender               mailSender;
-    @Autowired private PasswordEncoder              passwordEncoder;
+    @Autowired 
+    private UsuarioRepository usuarioRepository;
 
+    @Autowired 
+    private PasswordResetTokenRepository tokenRepository;
+    
+    @Autowired 
+    private JavaMailSender mailSender;
+
+    @Autowired 
+    private PasswordEncoder passwordEncoder;
+
+    // Genera y envía un enlace para recuperar la contraseña del usuario
     public String enviarCorreoRecuperacion(String email, String baseUrl) {
         Usuario usuario = usuarioRepository.findByEmail(email);
 
@@ -41,6 +49,7 @@ public class PasswordResetService {
         return "Si el correo está registrado, recibirás un enlace de recuperación.";
     }
 
+    // Verifica el token y actualiza la contraseña del usuario
     public String resetearPassword(String token, String nuevaPassword, String confirmarPassword) {
         if (!nuevaPassword.equals(confirmarPassword))
             return "Las contraseñas no coinciden.";
@@ -60,7 +69,7 @@ public class PasswordResetService {
         return "ok";
     }
 
-    // ── Email HTML profesional ───────────────────────────────────────────────
+    // Envía el correo HTML con el enlace para recuperar la contraseña
     private void enviarEmailHtml(String destinatario, String nombre, String enlace) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -75,6 +84,7 @@ public class PasswordResetService {
         }
     }
 
+    // Construye el diseño HTML del correo para recuperación de contraseña
     private String buildEmailHtml(String nombre, String enlace) {
         return """
             <!DOCTYPE html>
@@ -84,32 +94,32 @@ public class PasswordResetService {
               <meta name="viewport" content="width=device-width,initial-scale=1.0">
             </head>
             <body style="margin:0;padding:0;background:#f4f7fb;
-                         font-family:'Google Sans',Roboto,Arial,sans-serif;">
+                        font-family:'Google Sans',Roboto,Arial,sans-serif;">
               <table width="100%%" cellpadding="0" cellspacing="0"
-                     style="background:#f4f7fb;padding:48px 0;">
+                    style="background:#f4f7fb;padding:48px 0;">
                 <tr><td align="center">
                   <table width="520" cellpadding="0" cellspacing="0"
-                         style="background:#fff;border-radius:16px;
+                        style="background:#fff;border-radius:16px;
                                 box-shadow:0 2px 16px rgba(26,115,232,.10);
                                 overflow:hidden;">
 
                     <!-- CABECERA -->
                     <tr>
                       <td style="background:linear-gradient(135deg,#1a73e8,#1557b0);
-                                 padding:36px 40px;text-align:center;">
+                                padding:36px 40px;text-align:center;">
                         <!-- Ícono con tabla (compatible con todos los clientes de correo) -->
                         <table cellpadding="0" cellspacing="0"
-                               style="margin:0 auto 18px;">
+                              style="margin:0 auto 18px;">
                           <tr><td align="center" valign="middle"
                                   style="width:60px;height:60px;
-                                         background:rgba(255,255,255,.15);
-                                         border-radius:50%%;
-                                         font-size:28px;line-height:60px;">
+                                        background:rgba(255,255,255,.15);
+                                        border-radius:50%%;
+                                        font-size:28px;line-height:60px;">
                             &#128274;
                           </td></tr>
                         </table>
                         <h1 style="color:#fff;font-size:22px;font-weight:700;
-                                   margin:0;letter-spacing:-.3px;">
+                                  margin:0;letter-spacing:-.3px;">
                           Recupera tu contraseña
                         </h1>
                       </td>
@@ -132,7 +142,7 @@ public class PasswordResetService {
                         <table cellpadding="0" cellspacing="0" width="100%%">
                           <tr><td align="center" style="padding-bottom:32px;">
                             <a href="%s"
-                               style="display:inline-block;background:#1a73e8;
+                              style="display:inline-block;background:#1a73e8;
                                       color:#fff;font-size:15px;font-weight:600;
                                       text-decoration:none;padding:15px 40px;
                                       border-radius:8px;letter-spacing:.2px;">
@@ -145,11 +155,11 @@ public class PasswordResetService {
                                   margin:0 0 24px;">
                           Si el botón no funciona, copia y pega este enlace:<br>
                           <a href="%s"
-                             style="color:#1a73e8;word-break:break-all;">%s</a>
+                            style="color:#1a73e8;word-break:break-all;">%s</a>
                         </p>
 
                         <hr style="border:none;border-top:1px solid #e8eaed;
-                                   margin:0 0 24px;">
+                                  margin:0 0 24px;">
 
                         <p style="font-size:12px;color:#80868b;line-height:1.6;
                                   margin:0;">
@@ -163,7 +173,7 @@ public class PasswordResetService {
                     <!-- PIE -->
                     <tr>
                       <td style="background:#f8f9fa;padding:16px 40px;
-                                 text-align:center;border-top:1px solid #e8eaed;">
+                                text-align:center;border-top:1px solid #e8eaed;">
                         <p style="font-size:11px;color:#bdc1c6;margin:0;">
                           &copy; 2025 Reportes Urbanos &middot;
                           Cartagena de Indias, Colombia

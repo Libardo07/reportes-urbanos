@@ -50,10 +50,8 @@ public class ComentarioController {
 
     @Autowired
     private EstadoReporteService estadoReporteService;
-;
 
-
-
+    // Obtener el usuario que tiene la sesión iniciada
     private Usuario getUsuarioLogueado() {
         try {
             String email = SecurityContextHolder.getContext()
@@ -63,6 +61,7 @@ public class ComentarioController {
         } catch (Exception e) { return null; }
     }
 
+    // Carga los mapas de barrios, tipos y estados para usarlos en las vistas
     private void addCatalogMaps(Model model) {
         List<Barrio> barrios = barrioService.getBarriosOrdenados();
         List<TipoReporte> tipos = tipoReporteService.getTipos();
@@ -77,7 +76,7 @@ public class ComentarioController {
     }
 
 
-    // ── Fragmento: lista explorar reportes ──────────────────────────────────
+    // Cargar fragmento con la lista paginada de reportes para explorar
     @GetMapping(value = "/reportes/fragmento/explorar", produces = "text/html")
     public String explorarReportes(
             @RequestParam(required = false) String q,
@@ -108,7 +107,7 @@ public class ComentarioController {
         return "fragmentos/explorar_reportes :: explorar-reportes";
     }
 
-    // ── Fragmento: detalle de un reporte con comentarios ────────────────────
+    // Cargar el detalle de un reporte junto con sus comentarios y respuestas
     @GetMapping(value = "/reportes/fragmento/detalle/{id}", produces = "text/html")
     public String detalleReporte(@PathVariable String id, Model model) {
         Reporte reporte = reporteRepository.findById(id).orElse(null);
@@ -133,7 +132,7 @@ public class ComentarioController {
         return "fragmentos/detalle_reporte :: detalle-reporte";
     }
 
-    
+    // Permitir responder un comentario dentro de un reporte
     @PostMapping("/reporte/{id}/responder/{parentId}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> responder(
@@ -160,7 +159,7 @@ public class ComentarioController {
         }
     }
 
-        // ── Agregar comentario raíz ──────────────────────────────────────────────
+    // Agregar un nuevo comentario a un reporte
     @PostMapping("/reporte/{id}/comentar")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> comentar(
@@ -186,7 +185,7 @@ public class ComentarioController {
         }
     }
 
-    // ── Eliminar comentario (solo admin) ─────────────────────────────────────
+    // Eliminar un comentario del sistema solo para administradores
     @PostMapping("/admin/eliminar-comentario/{comentarioId}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> eliminarComentario(

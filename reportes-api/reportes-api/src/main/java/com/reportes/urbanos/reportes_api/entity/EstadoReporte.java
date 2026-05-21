@@ -3,6 +3,7 @@ package com.reportes.urbanos.reportes_api.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+// Tabla de estados en MySQL
 @Entity
 @Table(name = "estados_reporte")
 @Getter @Setter

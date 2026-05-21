@@ -20,14 +20,24 @@ import java.time.temporal.ChronoUnit;
 @Controller
 public class AuthController {
 
-    @Autowired private UsuarioRepository  usuarioRepository;
-    @Autowired private PasswordEncoder    passwordEncoder;
-    @Autowired private UsuarioService     usuarioService;
-    @Autowired private VerificacionService verificacionService;
+    @Autowired 
+    private UsuarioRepository usuarioRepository;
 
+    @Autowired 
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired 
+    private UsuarioService usuarioService;
+
+    @Autowired 
+    private VerificacionService verificacionService;
+
+    // Muestra la página principal del sistema
     @GetMapping("/")
-    public String index() { return "index"; }
+    public String index() { 
+        return "index"; }
 
+    // Muestra el login y valida redirecciones, errores y estados de sesión
     @GetMapping("/login")
     public String mostrarLogin(
             @RequestParam(required = false) String error,
@@ -55,12 +65,14 @@ public class AuthController {
         return "login";
     }
 
+    // Muestra el formulario para registrar un nuevo usuario
     @GetMapping("/registro")
     public String mostrarFormularioRegistro(Model model) {
         model.addAttribute("usuario", new Usuario());
         return "registro";
     }
 
+    // Registra un nuevo usuario y envía el correo de verificación
     @PostMapping("/registro")
     public String registrarUsuario(
             @ModelAttribute Usuario usuario, Model model, HttpSession session) {
@@ -73,7 +85,7 @@ public class AuthController {
                 return "registro";
             }
 
-            // Usuario pendiente de verificación — aplicar cooldown de 60 s
+            // Calcular cuánto tiempo ha pasado desde el registro anterior
             LocalDateTime ahora     = LocalDateTime.now(ZoneId.of("America/Bogota"));
             long segundosTranscurridos = ChronoUnit.SECONDS.between(existente.getFechaCreacion(), ahora);
 
@@ -86,8 +98,8 @@ public class AuthController {
                     " o verifica el enlace que ya te enviamos.");
                 return "registro";
             }
-
-            // Cooldown superado — limpiar registro anterior
+            
+            //limpiar registro anterior
             verificacionService.limpiarPendiente(existente.getEmail());
             usuarioRepository.delete(existente);
         }

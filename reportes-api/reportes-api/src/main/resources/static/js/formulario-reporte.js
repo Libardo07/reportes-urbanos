@@ -1,36 +1,26 @@
-/* ============================================================
-   formulario-reporte.js
-   Lógica del mapa, geolocalización y autocompletado de dirección
-   ============================================================ */
 
 (function () {
 
     var mapaInicializado = false;
     var mapa;
-    var marcadorUsuario = null;  // marcador azul = posición del usuario
-    var marcadorReporte = null;  // marcador rojo = punto seleccionado
-    var marcadorBarrio  = null;  // marcador naranja = referencia del barrio seleccionado
+    var marcadorUsuario = null; 
+    var marcadorReporte = null;  
+    var marcadorBarrio  = null;  
 
-    /* ----------------------------------------------------------
-       inicializarMapa
-       Crea el mapa centrado en las coordenadas dadas,
-       restringido a los límites geográficos de Cartagena
-    ---------------------------------------------------------- */
     function inicializarMapa(latInicial, lngInicial, zoom) {
         latInicial = latInicial || 10.3910;
         lngInicial = lngInicial || -75.4794;
         zoom       = zoom       || 13;
 
-        // Límites geográficos de Cartagena
         var limites = L.latLngBounds(
-            L.latLng(10.2500, -75.6200),  // esquina suroeste
-            L.latLng(10.5200, -75.3800)   // esquina noreste
+            L.latLng(10.2500, -75.6200),  
+            L.latLng(10.5200, -75.3800)   
         );
 
         mapa = L.map('mapa', {
             maxBounds: limites,
-            maxBoundsViscosity: 1.0,  // impide arrastrar fuera del área
-            minZoom: 12               // no permite alejar demasiado
+            maxBoundsViscosity: 1.0, 
+            minZoom: 12               
         }).setView([latInicial, lngInicial], zoom);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -41,7 +31,6 @@
             var lat = e.latlng.lat;
             var lng = e.latlng.lng;
 
-            // Validar que el clic esté dentro de Cartagena
             if (!limites.contains(e.latlng)) {
                 mostrarBanner('denegado', 'Selecciona un punto dentro de Cartagena.');
                 return;
@@ -56,12 +45,6 @@
         setTimeout(function () { mapa.invalidateSize(); }, 100);
     }
 
-    /* ----------------------------------------------------------
-       obtenerDireccion
-       Hace geocodificación inversa con Nominatim,
-       rellena el campo dirección (sin barrio ni país)
-       y auto-selecciona el barrio en el select
-    ---------------------------------------------------------- */
     function obtenerDireccion(lat, lng) {
         fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&accept-language=es')
             .then(function (res) { return res.json(); })
@@ -69,10 +52,7 @@
                 if (!data || !data.address) return;
                 var a = data.address;
 
-                // Valores que pertenecen al barrio: se excluyen del campo dirección
                 var valoresBarrio = [a.suburb, a.neighbourhood, a.quarter, a.hamlet].filter(Boolean);
-
-                // Dirección en orden: calle, número, distrito, ciudad, departamento, CP
                 var partes = [
                     a.road,
                     a.house_number,
@@ -89,7 +69,6 @@
 
                 document.getElementById('direccion').value = partes.join(', ');
 
-                // Auto-seleccionar barrio en el select si coincide con Nominatim
                 var nombreBarrio = a.suburb || a.neighbourhood || a.quarter || null;
                 if (nombreBarrio) {
                     var selectBarrio = document.getElementById('barrioId');
@@ -103,15 +82,9 @@
                 }
             })
             .catch(function () {
-                // Si falla la petición no pisamos los campos
             });
     }
 
-    /* ----------------------------------------------------------
-       mostrarBanner
-       Actualiza el banner de estado de geolocalización
-       estados: 'localizando' | 'encontrado' | 'denegado'
-    ---------------------------------------------------------- */
     function mostrarBanner(estado, texto) {
         var banner  = document.getElementById('geo-banner');
         var spinner = banner.querySelector('.geo-spinner');
@@ -122,12 +95,6 @@
         spinner.style.display = estado === 'localizando' ? 'block' : 'none';
     }
 
-    /* ----------------------------------------------------------
-       pedirGeolocalizacion
-       Solicita la ubicación del usuario al abrir el mapa.
-       Si se concede, centra el mapa en su posición.
-       Si se deniega o falla, carga centrado en Cartagena.
-    ---------------------------------------------------------- */
     function pedirGeolocalizacion() {
     if (!navigator.geolocation) {
         inicializarMapa();
@@ -138,7 +105,6 @@
     mostrarBanner('localizando', 'Obteniendo tu ubicación actual...');
 
     navigator.geolocation.getCurrentPosition(
-        // Éxito
         function (pos) {
             var lat = pos.coords.latitude;
             var lng = pos.coords.longitude;
@@ -159,7 +125,6 @@
 
             mostrarBanner('encontrado', '✅ Ubicación encontrada. Haz clic en el mapa para marcar el problema.');
         },
-        // Error
         function (err) {
             inicializarMapa();
             var msg = '';
@@ -183,11 +148,7 @@
         { timeout: 8000, maximumAge: 60000 }
     );
 }
-    /* ----------------------------------------------------------
-       buscarBarrioEnMapa
-       Cuando el usuario elige un barrio en el select,
-       busca sus coordenadas en Nominatim y centra el mapa ahí.
-    ---------------------------------------------------------- */
+
     function buscarBarrioEnMapa(nombreBarrio) {
         var query = encodeURIComponent(nombreBarrio + ', Cartagena de Indias, Colombia');
         var url   = 'https://nominatim.openstreetmap.org/search?format=json&q=' + query + '&limit=1&accept-language=es';
@@ -206,8 +167,6 @@
                 var lng = parseFloat(data[0].lon);
 
                 mapa.setView([lat, lng], 15, { animate: true });
-
-                // Marcador naranja de referencia del barrio
                 if (marcadorBarrio) mapa.removeLayer(marcadorBarrio);
                 var iconoBarrio = L.divIcon({
                     className: '',
@@ -227,9 +186,6 @@
             });
     }
 
-    /* ----------------------------------------------------------
-       Evento: abrir / cerrar el mapa
-    ---------------------------------------------------------- */
     var btnMapa = document.getElementById('btnMapa');
     if (btnMapa) btnMapa.addEventListener('click', function () {
         var container = document.getElementById('mapa-container');
@@ -245,11 +201,7 @@
         }
     });
 
-    /* ----------------------------------------------------------
-       Evento: cambio de barrio en el select
-       Si el mapa no está abierto lo abre, luego busca el barrio
-    ---------------------------------------------------------- */
-    // DESPUÉS
+
 var barrioIdEl = document.getElementById('barrioId');
 if (barrioIdEl) barrioIdEl.addEventListener('change', function () {
     var nombreBarrio = this.dataset.nombre || '';
@@ -257,7 +209,6 @@ if (barrioIdEl) barrioIdEl.addEventListener('change', function () {
 
     var container = document.getElementById('mapa-container');
 
-    // Solo busca si el mapa ya está abierto e inicializado
     if (mapaInicializado && container.style.display === 'block') {
         buscarBarrioEnMapa(nombreBarrio);
     }
@@ -265,7 +216,6 @@ if (barrioIdEl) barrioIdEl.addEventListener('change', function () {
 
 
 window.imagenesSeleccionadas = [];
-/* ── Manejo de imágenes ─────────────────────────────────── */
 var archivosSeleccionados = [];
 var MAX_IMAGENES = 3;
 var MAX_SIZE_MB  = 5;

@@ -24,7 +24,7 @@ public class VerificacionService {
     @Value("${app.base-url}")
     private String baseUrl;
 
-    // ── Genera token y envía el enlace ───────────────────────────────────────
+    // Genera un token de verificación y envía el enlace al correo del usuario
     public void enviarEnlaceVerificacion(String email) {
         tokenRepository.deleteByEmail(email);
         String token = UUID.randomUUID().toString();
@@ -32,7 +32,7 @@ public class VerificacionService {
         enviarEmailHtml(email, baseUrl + "/verificar-correo/confirmar?token=" + token);
     }
 
-    // ── Valida el token del enlace ───────────────────────────────────────────
+    // Verifica si el token es válido, no ha expirado y no ha sido usado
     public String confirmarToken(String token) {
         Optional<VerificacionToken> opt = tokenRepository.findByToken(token);
         if (opt.isEmpty())        return "INVALIDO";
@@ -47,7 +47,7 @@ public class VerificacionService {
         return "OK:" + vt.getEmail();
     }
 
-    // ── Reenvía el enlace (máx. 3 reenvíos) ─────────────────────────────────
+    // Reenvía el enlace de verificación al usuario con un límite máximo de 3 intentos
     public String reenviarEnlace(String email) {
         VerificacionToken existing = tokenRepository.findByEmail(email);
         int reenvios = existing != null ? existing.getReenvios() : 0;
@@ -59,7 +59,7 @@ public class VerificacionService {
         return "OK";
     }
 
-    // ── Email HTML profesional ───────────────────────────────────────────────
+    // Envía un correo HTML con el enlace para verificar la cuenta del usuario
     private void enviarEmailHtml(String destinatario, String enlace) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -75,17 +75,18 @@ public class VerificacionService {
         }
     }
 
-    // Limpia token pendiente de un email (usado en cooldown de registro)
+    // Elimina el token de verificación pendiente asociado a un correo si existe
     public void limpiarPendiente(String email) {
         tokenRepository.deleteByEmail(email);
     }
 
-        // Cuando el usuario cambia el correo: borra el token VIEJO, crea el NUEVO
+    // Actualiza el correo de verificación eliminando el token anterior y generando uno nuevo
     public void cambiarCorreoVerificacion(String emailAnterior, String emailNuevo) {
         tokenRepository.deleteByEmail(emailAnterior);
         enviarEnlaceVerificacion(emailNuevo);
     }
 
+    // Construye el contenido HTML del correo de verificación de cuenta
     private String buildEmailHtml(String enlace) {
         return """
             <!DOCTYPE html>

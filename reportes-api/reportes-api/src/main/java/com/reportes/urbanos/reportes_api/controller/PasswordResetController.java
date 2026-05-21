@@ -15,11 +15,13 @@ public class PasswordResetController {
     @Autowired
     private PasswordResetService passwordResetService;
 
+    // Mostrar el formulario para solicitar recuperación de contraseña
     @GetMapping
     public String mostrarFormularioRecuperar() {
         return "recuperar_password";
     }
 
+    // Procesar solicitud de recuperación de contraseña y enviar correo
     @PostMapping
     public String procesarRecuperar(@RequestParam String email,
                                     HttpServletRequest request,
@@ -30,12 +32,14 @@ public class PasswordResetController {
         return "recuperar_password";
     }
 
+    // Mostrar el formulario para restablecer la contraseña usando un token
     @GetMapping("/reset")
     public String mostrarFormularioReset(@RequestParam String token, Model model) {
         model.addAttribute("token", token);
         return "reset_password";
     }
 
+    // Procesar el cambio de contraseña usando el token de recuperación
     @PostMapping("/reset")
     public String procesarReset(@RequestParam String token,
                                 @RequestParam String nuevaPassword,

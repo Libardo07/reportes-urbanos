@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+// Repositorio de MongoDB para gestionar usuarios del sistema
 @Repository
 public interface UsuarioRepository extends MongoRepository<Usuario, String> {
     Usuario findByEmail(String email);

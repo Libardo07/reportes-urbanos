@@ -3,16 +3,12 @@
 let pollingInterval   = null;
 let yaVerificado      = false;
 
-// ── Arranque ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     bloquearNavegacionAtras();
     window.addEventListener('beforeunload', advertenciaAlSalir);
     iniciarPolling();
 });
 
-// ══════════════════════════════════════════════════════════════════════════════
-// POLLING — detecta la verificación automáticamente cada 3 s
-// ══════════════════════════════════════════════════════════════════════════════
 function iniciarPolling() {
     pollingInterval = setInterval(() => {
         fetch('/verificar-correo/estado')
@@ -29,13 +25,10 @@ function iniciarPolling() {
                         window.location.replace('/login?verificacionExitosa'), 2500);
                 }
             })
-            .catch(() => {}); // silencioso — sigue intentando
+            .catch(() => {});
     }, 3000);
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// NAVEGACIÓN — advertencias y bloqueo
-// ══════════════════════════════════════════════════════════════════════════════
 function advertenciaAlSalir(e) {
     e.preventDefault();
     e.returnValue = 'Si sales deberás esperar 1 minuto para registrarte de nuevo.';
@@ -50,7 +43,6 @@ function bloquearNavegacionAtras() {
     });
 }
 
-// ── Modal: confirmar salida ─────────────────────────────────────────────────
 function mostrarModalSalir() {
     document.getElementById('modal-salir').style.display = 'flex';
 }
@@ -66,9 +58,6 @@ function confirmarSalida() {
     window.location.replace('/registro');
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// REENVIAR ENLACE
-// ══════════════════════════════════════════════════════════════════════════════
 function reenviarEnlace() {
     const btn = document.getElementById('btn-reenviar');
     setLoadingBtn(btn, true, 'Enviando...');
@@ -96,9 +85,6 @@ function reenviarEnlace() {
         });
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// CAMBIAR CORREO
-// ══════════════════════════════════════════════════════════════════════════════
 function abrirModalCorreo() {
     document.getElementById('modal-cambiar-correo').style.display = 'flex';
     setTimeout(() => document.getElementById('nuevo-email').focus(), 80);
@@ -149,9 +135,6 @@ function cambiarCorreo() {
         });
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// UTILIDADES
-// ══════════════════════════════════════════════════════════════════════════════
 function mostrarAlerta(tipo, mensaje) {
     const el = document.getElementById('ve-alerta');
     el.className = `ve-alerta ve-alerta--${tipo}`;
@@ -199,7 +182,6 @@ function iniciarCooldown(btn, segundos) {
     }, 1000);
 }
 
-// Escape cierra modales
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { cerrarModalCorreo(); cerrarModalSalir(); }
 });

@@ -203,8 +203,6 @@ function loadView(view) {
             }
 
             setupPasswordToggles();
-
-            // Si es la vista de detalle, inicializar comentarios
             if (typeof inicializarComentarios === 'function') {
                 inicializarComentarios();
             }
@@ -432,7 +430,6 @@ if (window.location.search.includes('error')) {
 history.pushState(null, null, location.href);
 window.onpopstate = function() { history.pushState(null, null, location.href); };
 
-// ── Explorar reportes ───────────────────────────────────────────────────────
 let searchTimeout = null;
 let currentReporteId = null;
 
@@ -500,7 +497,6 @@ function verMasReportes(btn) {
         .catch(console.error);
 }
 
-// ── Ver detalle del reporte ─────────────────────────────────────────────────
 function verDetalleReporte(id) {
     currentReporteId = id;
     const contentArea = document.getElementById('content-area');
@@ -515,8 +511,6 @@ function verDetalleReporte(id) {
             const doc      = parser.parseFromString(html, 'text/html');
             const fragment = doc.querySelector('.card');
             if (fragment) contentArea.innerHTML = fragment.outerHTML;
-
-            // Inicializar comentarios después de insertar el HTML
             if (typeof inicializarComentarios === 'function') {
                 inicializarComentarios();
             }
@@ -528,11 +522,6 @@ function volverAExplorar() {
     loadView('/reportes/fragmento/explorar');
 }
 
-function volverAExplorar() {
-    loadView('/reportes/fragmento/explorar');
-}
-
-// ── Modal de foto ───────────────────────────────────────────────────────────
 function abrirFotoModal(src) {
     const overlay = document.createElement('div');
     overlay.className = 'foto-modal-overlay';
@@ -584,7 +573,6 @@ function skeletonLoader() {
     </div>`;
 }
 
-// ── Filtro Admin ─────────────────────────────────────────────────────────────
 let filtroBarriosData = [];
 let filtroActivo = false;
 let filtroParams = '';
@@ -683,7 +671,6 @@ function limpiarFiltros() {
     document.getElementById('filtroHoraHasta').value = '';
     renderFiltroBarrios('');
 
-    // ← recargar tabla sin filtros
     const contentArea = document.getElementById('content-area');
     fetch('/admin/fragmento/lista-reportes')
         .then(r => r.text())
@@ -717,7 +704,6 @@ function aplicarFiltros() {
     if (fechaHasta) params.append('fechaHasta', fechaHasta);
     if (horaHasta) params.append('horaHasta', horaHasta);
 
-    // Cerrar panel y quitar overlay ANTES de cargar
     const panel = document.getElementById('filtroPanel');
     const overlay = document.getElementById('filtroOverlay');
     if (panel) panel.classList.remove('abierto');
@@ -754,7 +740,6 @@ function initIniciales() {
         el.textContent = iniciales;
     }
 
-// ==================== SKELETON ====================
 function createSkeletonCargador(colspan) {
     const skRow = document.createElement('tr');
     skRow.id = 'sk-row';
@@ -785,7 +770,6 @@ function createSkeletonCargador(colspan) {
     return skRow;
 }
 
-// ==================== PAGINACIÓN ADMIN ====================
 function cambiarPaginaAdmin(btn) {
     const page = btn.getAttribute('data-page');
     const contentArea = document.getElementById('content-area');
@@ -802,7 +786,6 @@ function cambiarPaginaAdmin(btn) {
         .catch(console.error);
 }
 
-// ==================== PAGINACIÓN USUARIO ====================
 function cambiarPaginaUsuario(btn) {
     const page = btn.getAttribute('data-page');
     const contentArea = document.getElementById('content-area');

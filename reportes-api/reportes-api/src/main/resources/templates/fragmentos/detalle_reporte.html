@@ -4,7 +4,7 @@
 
     <button class="det-btn-volver" onclick="volverAExplorar()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <polyline points="15 18 9 12 15 6"/>
         </svg>
         Volver a reportes
@@ -59,7 +59,7 @@
         <div class="det-col-fotos">
             <div class="det-galeria" th:if="${reporte.imagenes != null and !reporte.imagenes.isEmpty()}">
                 <div th:each="img : ${reporte.imagenes}" class="det-foto-thumb"
-                     th:attr="data-src=${img}" onclick="abrirFotoModal(this.getAttribute('data-src'))">
+                    th:attr="data-src=${img}" onclick="abrirFotoModal(this.getAttribute('data-src'))">
                     <img th:src="${img}" alt="Foto" loading="lazy">
                 </div>
             </div>
@@ -85,14 +85,13 @@
             <span class="det-count" id="det-count" th:text="${total}">0</span>
         </div>
 
-        <!-- Formulario nuevo comentario -->
         <div class="det-nuevo-comentario" th:if="${usuario != null}">
             <div class="det-avatar" th:attr="data-nombre=${usuario.nombre}"></div>
             <div class="det-form">
                 <textarea id="det-textarea"
-                          placeholder="Escribe un comentario..."
-                          class="det-textarea" maxlength="500" rows="2"
-                          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarComentarioDet(document.getElementById('det-btn-enviar'))}"></textarea>
+                        placeholder="Escribe un comentario..."
+                        class="det-textarea" maxlength="500" rows="2"
+                        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarComentarioDet(document.getElementById('det-btn-enviar'))}"></textarea>
                 <div class="det-form-footer">
                     <span class="det-char"><span id="det-char-count">0</span>/500</span>
                     <div class="det-form-actions">
@@ -100,7 +99,7 @@
                                 th:attr="data-reporte-id=${reporte.id}"
                                 onclick="enviarComentarioDet(this)">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                                 <line x1="22" y1="2" x2="11" y2="13"/>
                                 <polygon points="22 2 15 22 11 13 2 9 22 2"/>
                             </svg>
@@ -116,7 +115,6 @@
             <a th:href="@{/login}">Inicia sesión</a> para dejar un comentario.
         </div>
 
-        <!-- Lista de comentarios -->
         <div class="det-lista" id="det-lista">
 
             <div class="det-sin-comentarios" th:if="${#lists.isEmpty(comentarios)}">
@@ -131,14 +129,14 @@
                 <div class="det-comentario-avatar-wrap">
                     <div class="det-comentario-avatar" th:attr="data-nombre=${c.usuarioNombre}"></div>
                     <div class="det-avatar-line"
-                         th:if="${respuestas[c.id] != null and !#lists.isEmpty(respuestas[c.id])}"></div>
+                        th:if="${respuestas[c.id] != null and !#lists.isEmpty(respuestas[c.id])}"></div>
                 </div>
 
                 <div class="det-comentario-body">
                     <div class="det-comentario-header">
                         <span class="det-comentario-nombre" th:text="${c.usuarioNombre}"></span>
                         <span class="det-comentario-fecha"
-                              th:text="${#temporals.format(c.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></span>
+                            th:text="${#temporals.format(c.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></span>
                         <button th:if="${esAdmin}" class="det-btn-eliminar"
                                 th:attr="data-id=${c.id}" onclick="eliminarComentarioDet(this)" title="Eliminar">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -153,11 +151,11 @@
                     <button th:if="${usuario != null}"
                             class="det-btn-responder"
                             th:attr="data-nombre=${c.usuarioNombre},
-                                     data-reporte-id=${reporte.id},
-                                     data-mi-inicial=${#strings.substring(usuario.nombre, 0, 1)}"
+                                    data-reporte-id=${reporte.id},
+                                    data-mi-inicial=${#strings.substring(usuario.nombre, 0, 1)}"
                             onclick="toggleReplyForm(this)">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                             <polyline points="9 14 4 9 9 4"/>
                             <path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
                         </svg>
@@ -168,20 +166,20 @@
                             class="det-ver-respuestas"
                             onclick="toggleVerRespuestas(this)">
                         <svg class="det-ver-icon" width="12" height="12" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                             <polyline points="6 9 12 15 18 9"/>
                         </svg>
                         <span class="det-ver-texto">Ver
                             <span class="det-replies-count"
-                                  th:text="${#lists.size(respuestas[c.id])}"></span> respuesta(s)
+                                th:text="${#lists.size(respuestas[c.id])}"></span> respuesta(s)
                         </span>
                     </button>
 
                     <div class="det-replies det-replies-ocultas"
-                         th:if="${respuestas[c.id] != null and !#lists.isEmpty(respuestas[c.id])}">
+                        th:if="${respuestas[c.id] != null and !#lists.isEmpty(respuestas[c.id])}">
 
                         <div th:each="r : ${respuestas[c.id]}"
-                             class="det-reply-item" th:attr="data-id=${r.id}">
+                            class="det-reply-item" th:attr="data-id=${r.id}">
 
                             <div class="det-reply-avatar-wrap">
                                 <div class="det-reply-avatar" th:attr="data-nombre=${r.usuarioNombre}"></div>
@@ -192,7 +190,7 @@
                                 <div class="det-comentario-header">
                                     <span class="det-comentario-nombre" th:text="${r.usuarioNombre}"></span>
                                     <span class="det-comentario-fecha"
-                                          th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></span>
+                                        th:text="${#temporals.format(r.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></span>
                                     <button th:if="${esAdmin}" class="det-btn-eliminar"
                                             th:attr="data-id=${r.id}" onclick="eliminarComentarioDet(this)" title="Eliminar">
                                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -205,10 +203,10 @@
                                 <button th:if="${usuario != null}"
                                         class="det-btn-responder"
                                         th:attr="data-nombre=${r.usuarioNombre},
-                                                 data-comentario-id=${c.id}"
+                                                data-comentario-id=${c.id}"
                                         onclick="responderARespuesta(this)">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                                         <polyline points="9 14 4 9 9 4"/>
                                         <path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
                                     </svg>
@@ -218,15 +216,14 @@
                         </div>
                     </div>
 
-                    <!-- Formulario de respuesta -->
                     <div class="det-reply-form" style="display:none;"
-                         th:attr="data-reporte-id=${reporte.id}, data-parent-id=${c.id}">
+                        th:attr="data-reporte-id=${reporte.id}, data-parent-id=${c.id}">
                         <div class="det-reply-input-row">
                             <div class="det-reply-avatar"
-                                 th:if="${usuario != null}"
-                                 th:attr="data-nombre=${usuario.nombre}"></div>
+                                th:if="${usuario != null}"
+                                th:attr="data-nombre=${usuario.nombre}"></div>
                             <textarea class="det-reply-textarea" maxlength="500" rows="2"
-                                      th:placeholder="'Responder a ' + ${c.usuarioNombre} + '...'"></textarea>
+                                    th:placeholder="'Responder a ' + ${c.usuarioNombre} + '...'"></textarea>
                         </div>
                         <div class="det-reply-footer">
                             <span class="det-reply-char"><span class="det-reply-char-count">0</span>/500</span>
@@ -234,7 +231,7 @@
                                 <button class="det-reply-cancel-btn" onclick="cerrarReplyForm(this)">Cancelar</button>
                                 <button class="det-reply-send-btn" onclick="enviarRespuestaDet(this)">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                                         <line x1="22" y1="2" x2="11" y2="13"/>
                                         <polygon points="22 2 15 22 11 13 2 9 22 2"/>
                                     </svg>

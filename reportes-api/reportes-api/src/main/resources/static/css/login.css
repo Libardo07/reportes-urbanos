@@ -402,7 +402,6 @@ body {
     text-decoration: underline;
 }
 
-/* ── Avisos del login ──────────────────────────────────────── */
 .login-notice {
     display: flex;
     align-items: flex-start;

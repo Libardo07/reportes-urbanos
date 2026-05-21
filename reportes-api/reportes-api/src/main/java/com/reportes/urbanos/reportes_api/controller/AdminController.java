@@ -86,9 +86,9 @@ public class AdminController {
     @Value("${admin.email}")
     private String adminEmail;
 
+    // Carga los barrios, tipos y estados para que estén disponibles en todas las vistas
     @ModelAttribute
     public void addCatalogMaps(Model model) {
-        // Todos usan caché — no van a MySQL
         List<Barrio> barrios = barrioService.getBarriosOrdenados();
         List<TipoReporte> tipos = tipoReporteService.getTipos();
         List<EstadoReporte> estados = estadoReporteService.getEstados();
@@ -101,11 +101,13 @@ public class AdminController {
             barrios.stream().collect(Collectors.toMap(Barrio::getId, Barrio::getNombre)));
     }
 
+    // Obtiene los datos del usuario que inició sesión
     private Usuario getUsuarioLogueado() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return usuarioService.getUsuarioPorEmail(email);
     }
 
+    // Muestra el panel principal del administrador con la información del usuario logueado
     @GetMapping("/inicio")
     public String mostrarPanelAdmin(Model model) {
         Usuario usuario = getUsuarioLogueado();
@@ -126,12 +128,14 @@ public class AdminController {
         return "admin/fragments/lista-reportes :: lista-reportes";
     }
 
+    // Carga el fragmento HTML con la lista paginada de reportes para el panel administrador
     @GetMapping(value = "/fragmento/formulario-admin", produces = "text/html")
     public String fragmentoFormularioAdmin(Model model) {
         model.addAttribute("nuevoAdmin", new Usuario());
         return "admin/fragments/formulario-admin :: formulario-admin";
     }
 
+    // Registra un nuevo administrador validando permisos y correo único
     @PostMapping("/registrar-admin")
     public ResponseEntity<Map<String, String>> registrarAdmin(@ModelAttribute Usuario nuevoAdmin) {
         Map<String, String> response = new HashMap<>();
@@ -158,6 +162,7 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    // Cambia el estado de un reporte y notifica al usuario por correo
     @PostMapping("/cambiar-estado")
     public ResponseEntity<Map<String, String>> cambiarEstado(@RequestParam String reporteId,
                                                             @RequestParam String nuevoEstado) {
@@ -214,6 +219,7 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    // Elimina un reporte del sistema usando su identificador
     @PostMapping("/eliminar-reporte/{id}")
     public ResponseEntity<Map<String, String>> eliminarReporte(@PathVariable String id) {
         Map<String, String> response = new HashMap<>();
@@ -232,6 +238,7 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    // Filtra los reportes por estado, tipo, barrio, usuario y rango de fechas
     @GetMapping(value = "/fragmento/filtrar-reportes", produces = "text/html")
     public String filtrarReportes(
             @RequestParam(required = false) Long estadoId,
@@ -272,6 +279,7 @@ public class AdminController {
         return "admin/fragments/lista-reportes :: lista-reportes";
     }
 
+    // Busca barrios por nombre usando la lista almacenada en caché
     @GetMapping("/barrios-buscar")
     @ResponseBody
     public List<Map<String, Object>> buscarBarrios(@RequestParam String q) {
@@ -287,6 +295,7 @@ public class AdminController {
             .collect(Collectors.toList());
     }
 
+    // Obtiene estadísticas y datos del panel principal del administrador
     @GetMapping(value = "/fragmento/inicio", produces = "text/html")
     public String fragmentoInicio(Model model) {
 
@@ -326,6 +335,7 @@ public class AdminController {
         Aggregation.limit(3)
     );
 
+    // Calcula el barrio con más reportes y envía las estadísticas al panel administrador
     AggregationResults<Document> results = mongoTemplate.aggregate(
         agg, "reportes", Document.class);
 
@@ -354,6 +364,7 @@ public class AdminController {
         return "admin/fragments/inicio-admin :: inicio-admin";
     }
 
+    // Muestra el fragmento del dashboard del administrador
     @GetMapping("/dashboard")
     public String mostrarDashboard(Model model) {
         return "admin/fragments/dashboard :: dashboard";

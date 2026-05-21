@@ -14,11 +14,22 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/dashboard")
 public class DashboardController {
 
-    @Autowired private ReporteService reporteService;
-    @Autowired private EstadoReporteService estadoReporteService;
-    @Autowired private TipoReporteService tipoReporteService;
-    @Autowired private BarrioService barrioService;
+    @Autowired 
+    private ReporteService reporteService;
 
+    @Autowired 
+    private EstadoReporteService estadoReporteService;
+
+    @Autowired 
+    private TipoReporteService tipoReporteService;
+
+    @Autowired 
+    private BarrioService barrioService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    // Obtener reportes procesados para el dashboard
     @GetMapping("/reportes")
     public List<Map<String, Object>> getReportes() {
 
@@ -71,6 +82,7 @@ public class DashboardController {
         }).collect(Collectors.toList());
     }
 
+    // Obtener lista de barrios para el dashboard
     @GetMapping("/barrios")
     public List<Map<String, Object>> getBarrios() {
         return barrioService.getBarriosOrdenados().stream().map(b -> {
@@ -81,6 +93,7 @@ public class DashboardController {
         }).collect(Collectors.toList());
     }
 
+    // Obtener lista de estados de los reportes para el dashboard
     @GetMapping("/estados")
     public List<Map<String, Object>> getEstados() {
         return estadoReporteService.getEstados().stream().map(e -> {
@@ -91,6 +104,7 @@ public class DashboardController {
         }).collect(Collectors.toList());
     }
 
+    // Obtener lista de tipos de reporte para el dashboard
     @GetMapping("/tipos")
     public List<Map<String, Object>> getTipos() {
         return tipoReporteService.getTipos().stream().map(t -> {
@@ -101,9 +115,7 @@ public class DashboardController {
         }).collect(Collectors.toList());
     }
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
+    // Obtener lista de usuarios registrados para el dashboard
     @GetMapping("/usuarios")
     public List<Map<String, Object>> getUsuarios() {
         return usuarioRepository.findAll().stream().map(u -> {

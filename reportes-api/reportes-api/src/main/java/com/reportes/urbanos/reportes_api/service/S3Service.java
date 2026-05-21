@@ -26,36 +26,36 @@ public class S3Service {
     @Value("${aws.s3.region}")
     private String region;
 
-    // Sube una imagen y retorna la URL pública
+    // Sube la imagen a AWS S3 y devuelve la URL pública del archivo
     public String subirImagen(MultipartFile archivo) {
-    try {
-        System.out.println("=== Subiendo imagen a S3 ===");
-        System.out.println("Nombre: " + archivo.getOriginalFilename());
-        System.out.println("Tamaño: " + archivo.getSize());
-        System.out.println("Tipo: " + archivo.getContentType());
-        
-        String extension = obtenerExtension(archivo.getOriginalFilename());
-        String key = "reportes/" + UUID.randomUUID() + "." + extension;
+        try {
+            System.out.println("=== Subiendo imagen a S3 ===");
+            System.out.println("Nombre: " + archivo.getOriginalFilename());
+            System.out.println("Tamaño: " + archivo.getSize());
+            System.out.println("Tipo: " + archivo.getContentType());
+            
+            String extension = obtenerExtension(archivo.getOriginalFilename());
+            String key = "reportes/" + UUID.randomUUID() + "." + extension;
 
-        PutObjectRequest request = PutObjectRequest.builder()
-            .bucket(bucket)
-            .key(key)
-            .contentType(archivo.getContentType())
-            .build();
+            PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentType(archivo.getContentType())
+                .build();
 
-        s3Client.putObject(request, RequestBody.fromBytes(archivo.getBytes()));
+            s3Client.putObject(request, RequestBody.fromBytes(archivo.getBytes()));
 
-        String url = "https://" + bucket + ".s3." + region + ".amazonaws.com/" + key;
-        System.out.println("=== URL generada: " + url);
-        return url;
+            String url = "https://" + bucket + ".s3." + region + ".amazonaws.com/" + key;
+            System.out.println("=== URL generada: " + url);
+            return url;
 
-    } catch (IOException e) {
-        System.err.println("=== ERROR S3: " + e.getMessage());
-        throw new RuntimeException("Error al subir imagen a S3: " + e.getMessage());
-    }
+        } catch (IOException e) {
+            System.err.println("=== ERROR S3: " + e.getMessage());
+            throw new RuntimeException("Error al subir imagen a S3: " + e.getMessage());
+        }
 }
 
-    // Sube hasta 3 imágenes y retorna lista de URLs
+    // Sube un máximo de 3 imágenes y devuelve sus URLs públicas
     public List<String> subirImagenes(List<MultipartFile> archivos) {
         List<String> urls = new ArrayList<>();
         if (archivos == null || archivos.isEmpty()) return urls;
@@ -69,7 +69,7 @@ public class S3Service {
         return urls;
     }
 
-    // Elimina una imagen de S3 por su URL
+    // Elimina la imagen almacenada en AWS S3 usando su URL
     public void eliminarImagen(String url) {
         if (url == null || url.isBlank()) return;
         try {
@@ -83,12 +83,13 @@ public class S3Service {
         }
     }
 
-    // Elimina lista de imágenes
+    // Elimina varias imágenes de AWS S3 usando sus URLs
     public void eliminarImagenes(List<String> urls) {
         if (urls == null || urls.isEmpty()) return;
         urls.forEach(this::eliminarImagen);
     }
 
+    // Obtiene la extensión de un archivo o devuelve jpg por defecto
     private String obtenerExtension(String nombreArchivo) {
         if (nombreArchivo == null || !nombreArchivo.contains(".")) return "jpg";
         return nombreArchivo.substring(nombreArchivo.lastIndexOf('.') + 1).toLowerCase();

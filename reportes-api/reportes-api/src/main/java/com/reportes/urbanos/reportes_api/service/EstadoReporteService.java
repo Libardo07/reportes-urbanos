@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+// Servicio que obtiene y almacena en caché los estados de los reportes
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Service
 public class EstadoReporteService {

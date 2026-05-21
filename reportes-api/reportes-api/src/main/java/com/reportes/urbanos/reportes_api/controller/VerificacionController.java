@@ -25,7 +25,7 @@ public class VerificacionController {
     @Autowired
     private VerificacionTokenRepository tokenRepository;
 
-    // ── Pantalla "Revisa tu bandeja" ─────────────────────────────────────────
+    // Mostrar la pantalla de espera de verificación de correo
     @GetMapping("/verificar-correo")
     public String mostrarEspera(HttpSession session, Model model) {
         String email = (String) session.getAttribute("emailPendiente");
@@ -34,7 +34,7 @@ public class VerificacionController {
         return "verificar_correo";
     }
 
-    // ── Procesa el clic del enlace ───────────────────────────────────────────
+    // Procesar la confirmación del correo desde el enlace de verificación
     @GetMapping("/verificar-correo/confirmar")
     public String confirmarEmail(@RequestParam String token, Model model) {
         String resultado = verificacionService.confirmarToken(token);
@@ -55,7 +55,8 @@ public class VerificacionController {
         return "verificacion_fallida";
     }
 
-    // ── Polling: el frontend consulta si ya fue verificado ───────────────────────
+    // Permite al frontend consultar en tiempo real si el usuario ya confirmó su correo
+    // usando la sesión actual de verificación
     @GetMapping("/verificar-correo/estado")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> estadoVerificacion(HttpSession session) {
@@ -70,7 +71,7 @@ public class VerificacionController {
         return ResponseEntity.ok(Map.of("verificado", verificado, "sinSesion", false));
     }
 
-    // ── Reenviar enlace (desde /verificar-correo) ────────────────────────────
+    // Reenvía el enlace de verificación al correo del usuario si aún tiene una sesión activa
     @PostMapping("/reenviar-verificacion")
     @ResponseBody
     public ResponseEntity<Map<String, String>> reenviarEnlace(HttpSession session) {
@@ -82,7 +83,7 @@ public class VerificacionController {
         return ResponseEntity.ok(Map.of("resultado", resultado));
     }
 
-    // ── Reenviar enlace (desde /login — usuario no verificado) ───────────────
+    // Reenviar el enlace de verificación desde la pantalla de login cuando el usuario aún no ha verificado su correo
     @GetMapping("/reenviar-desde-login")
     public String reenviarDesdeLogin(@RequestParam String email, HttpSession session) {
         Usuario usuario = usuarioRepository.findByEmail(email);
@@ -94,7 +95,7 @@ public class VerificacionController {
         return "redirect:/verificar-correo";
     }
 
-    // ── Cambiar correo antes de verificar ────────────────────────────────────
+    // Permite al usuario cambiar el correo electrónico antes de completar la verificación
     @PostMapping("/cambiar-correo-verificacion")
     @ResponseBody
     public ResponseEntity<Map<String, String>> cambiarCorreo(
@@ -123,7 +124,7 @@ public class VerificacionController {
         ));
     }
 
-    // ── Utilidad ─────────────────────────────────────────────────────────────
+    // Oculta parcialmente un correo electrónico para mostrarlo de forma segura en la interfaz
     private String ocultarEmail(String email) {
         int at = email.indexOf('@');
         if (at <= 2) return email;

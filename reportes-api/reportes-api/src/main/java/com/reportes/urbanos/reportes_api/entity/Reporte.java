@@ -12,6 +12,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+// Documento principal en MongoDB que representa un reporte creado por un usuario
 @CompoundIndexes({
     @CompoundIndex(name = "idx_usuario_fecha", def = "{'usuario.$id': 1, 'fechaModificacion': -1}"),
     @CompoundIndex(name = "idx_fecha_modificacion", def = "{'fechaModificacion': -1}")
@@ -25,15 +26,20 @@ public class Reporte {
     @Id
     private String id;
 
-    private String titulo;
+    private String titulo; 
+
     private String descripcion;
+
     private String direccion;
 
     private Long estadoReporteId;
+
     private Long tipoReporteId;
+
     private Long barrioId;
 
     private LocalDateTime fechaCreacion;
+
     private LocalDateTime fechaModificacion;
 
     @DBRef

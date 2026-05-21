@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+// Controlador que se encarga de las páginas de confirmación de reportes
 @Controller
 @RequestMapping("/confirmacion")
 public class ConfirmacionController {

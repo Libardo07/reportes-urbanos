@@ -28,10 +28,7 @@ public class LimpiezaService {
     @Autowired 
     private PasswordResetTokenRepository passwordResetTokenRepository;
 
-    /**
-     * Cada 30 segundos: elimina usuarios no verificados con más de 90 segundos.
-     * Esto da el margen justo después del cooldown de 60 s del registro.
-     */
+  // Limpia automáticamente los usuarios pendientes que no verificaron su correo a tiempo
     @Scheduled(fixedDelay = 30_000)
     public void limpiarUsuariosPendientes() {
         LocalDateTime limite = LocalDateTime.now(BOGOTA).minusSeconds(90);
@@ -48,9 +45,7 @@ public class LimpiezaService {
         }
     }
 
-    /**
-     * Cada 5 minutos: elimina tokens expirados y tokens ya utilizados.
-     */
+  // Elimina automáticamente los tokens vencidos y los que ya fueron utilizados
     @Scheduled(fixedDelay = 300_000)
     public void limpiarTokens() {
         LocalDateTime ahora = LocalDateTime.now(BOGOTA);
@@ -65,7 +60,7 @@ public class LimpiezaService {
 
 
 
-    // Cada 5 minutos: elimina tokens de contraseña expirados
+    // Elimina automáticamente los tokens de recuperación de contraseña que ya expiraron
     @Scheduled(fixedDelay = 300_000)
     public void limpiarTokensPassword() {
         List<PasswordResetToken> expirados =

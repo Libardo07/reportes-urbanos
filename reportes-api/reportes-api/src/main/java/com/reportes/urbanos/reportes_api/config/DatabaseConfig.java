@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+// Configuracion de MongoDB para entidades principales del sistema
+// y JPA para catálogos relacionales y datos de referencia
 @Configuration
 @EnableMongoRepositories(basePackages = "com.reportes.urbanos.reportes_api.repository",
     includeFilters = @org.springframework.context.annotation.ComponentScan.Filter(

@@ -22,6 +22,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    // Servicio que gestiona el inicio de sesión con Google OAuth2 y registra usuarios nuevos automáticamente
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -32,11 +33,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         Usuario usuario = usuarioRepository.findByEmail(email);
         if (usuario == null) {
-            // Si no existe lo creamos automáticamente como CIUDADANO
             usuario = new Usuario();
             usuario.setEmail(email);
             usuario.setNombre(nombre);
-            usuario.setPassword(""); // sin contraseña porque usa Google
+            usuario.setPassword("");
             usuario.setRol(Rol.CIUDADANO);
             usuario.setFechaCreacion(LocalDateTime.now(ZoneId.of("America/Bogota")));
             usuario.setVerificado(true);

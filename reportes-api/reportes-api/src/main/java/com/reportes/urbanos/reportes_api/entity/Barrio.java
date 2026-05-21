@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 import lombok.*;
+// Tabla de barrios en la MySQL
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(name = "barrios")

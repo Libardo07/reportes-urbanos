@@ -1,8 +1,4 @@
-/* ============================================================
-   VERIFICACIÓN DE CORREO
-   ============================================================ */
 
-/* ── Spinner de carga ──────────────────────────────────────── */
 .spinner {
     display: inline-block;
     width: 14px;
@@ -25,7 +21,6 @@
     to { transform: rotate(360deg); }
 }
 
-/* ── Panel izquierdo ───────────────────────────────────────── */
 .ve-left-icon {
     width: 88px;
     height: 88px;
@@ -37,7 +32,6 @@
     margin: 0 auto 20px;
 }
 
-/* ── Cabecera del panel derecho ────────────────────────────── */
 .ve-header {
     text-align: center;
     margin-bottom: 24px;
@@ -67,7 +61,6 @@
     margin: 0;
 }
 
-/* ── Tarjeta email destino ─────────────────────────────────── */
 .ve-email-card {
     display: flex;
     align-items: center;
@@ -129,7 +122,6 @@
     flex-shrink: 0;
 }
 
-/* ── Pasos ─────────────────────────────────────────────────── */
 .ve-steps {
     list-style: none;
     margin: 0 0 20px;
@@ -176,7 +168,6 @@
     line-height: 1.5;
 }
 
-/* ── Nota de seguridad ─────────────────────────────────────── */
 .ve-security-note {
     display: flex;
     align-items: flex-start;
@@ -191,7 +182,6 @@
     margin-bottom: 20px;
 }
 
-/* ── Alertas ───────────────────────────────────────────────── */
 .ve-alerta {
     border-radius: 10px;
     padding: 10px 14px;
@@ -204,7 +194,6 @@
 .ve-alerta--warn    { background: #fff8e1; border: 1px solid #f6c90e; color: #7d5a00; }
 .ve-alerta--error   { background: #fdf2f2; border: 1px solid #f5c6cb; color: #721c24; }
 
-/* ── Acciones ──────────────────────────────────────────────── */
 .ve-actions {
     display: flex;
     flex-direction: column;
@@ -220,7 +209,6 @@
     margin: 0;
 }
 
-/* ── Botones ───────────────────────────────────────────────── */
 .btn-secondary {
     background: #f0f4ff;
     color: #1a73e8;
@@ -256,9 +244,6 @@
 }
 .ve-btn-danger:hover { opacity: .9; }
 
-/* ══════════════════════════════════════════════
-   MODALES (genérico)
-══════════════════════════════════════════════ */
 .ve-modal-overlay {
     position: fixed;
     inset: 0;
@@ -285,7 +270,6 @@
     to   { transform: scale(1)   translateY(0);   opacity: 1; }
 }
 
-/* Cabecera del modal */
 .ve-modal-header {
     background: linear-gradient(135deg, #1a73e8, #1557b0);
     padding: 24px 28px 20px;
@@ -319,7 +303,6 @@
     letter-spacing: -.2px;
 }
 
-/* Botón cerrar flota sobre la cabecera */
 .ve-modal-close {
     position: absolute;
     top: 12px;
@@ -336,7 +319,6 @@
 }
 .ve-modal-close:hover { background: rgba(255, 255, 255, .28); }
 
-/* Cuerpo del modal */
 .ve-modal-body {
     padding: 20px 28px 8px;
 }
@@ -363,7 +345,6 @@
     margin-bottom: 12px;
 }
 
-/* Campo de texto igual al del sistema */
 .ve-modal-field .form-control {
     width: 100%;
     padding: 13px 45px 13px 16px;
@@ -388,7 +369,6 @@
     font-size: 13px;
 }
 
-/* Acciones del modal */
 .ve-modal-actions {
     display: flex;
     gap: 10px;
@@ -399,15 +379,13 @@
 .ve-modal-actions .btn-secondary {
     flex: 1;
     width: 100%;
-    padding: 13px;          /* ← mismo padding que .btn del sistema */
+    padding: 13px;        
     font-size: 14px;
     text-align: center;
     justify-content: center;
-    margin-top: 0;          /* ← .btn tiene margin-top:8px, lo neutralizamos */
+    margin-top: 0;        
 }
-/* ══════════════════════════════════════════════
-   PÁGINAS DE RESULTADO (éxito / error)
-══════════════════════════════════════════════ */
+
 .ve-resultado-wrapper {
     min-height: 100vh;
     background: #f4f7fb;

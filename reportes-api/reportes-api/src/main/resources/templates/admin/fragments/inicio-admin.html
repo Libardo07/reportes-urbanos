@@ -5,8 +5,6 @@
         <h1>Panel de control</h1>
     </div>
     <div class="stats-grid">
-
-        <!-- Total reportes -->
         <div class="stat-card stat-primary">
             <span class="stat-label">Total reportes</span>
             <span class="stat-valor" th:text="${totalReportes}">0</span>
@@ -18,7 +16,6 @@
             </svg>
         </div>
 
-        <!-- Pendientes -->
         <div class="stat-card stat-warning">
             <span class="stat-label">Pendientes</span>
             <span class="stat-valor" th:text="${totalPendientes}">0</span>
@@ -31,7 +28,6 @@
             </svg>
         </div>
 
-        <!-- En Progreso -->
         <div class="stat-card stat-info">
             <span class="stat-label">En Proceso</span>
             <span class="stat-valor" th:text="${totalEnProgreso}">0</span>
@@ -44,7 +40,6 @@
             </svg>
         </div>
 
-        <!-- Resueltos -->
         <div class="stat-card stat-success">
             <span class="stat-label">Resueltos</span>
             <span class="stat-valor" th:text="${totalResueltos}">0</span>
@@ -57,7 +52,6 @@
             </svg>
         </div>
 
-        <!-- Infraestructura -->
         <div class="stat-card stat-secondary">
             <span class="stat-label">Infraestructura</span>
             <span class="stat-valor" th:text="${totalInfraestructura}">0</span>
@@ -69,7 +63,6 @@
             </svg>
         </div>
 
-        <!-- Servicios Públicos -->
         <div class="stat-card stat-secondary">
             <span class="stat-label">Servicios Públicos</span>
             <span class="stat-valor" th:text="${totalServicios}">0</span>
@@ -81,7 +74,6 @@
             </svg>
         </div>
 
-        <!-- Total usuarios -->
         <div class="stat-card stat-primary">
             <span class="stat-label">Total usuarios</span>
             <span class="stat-valor" th:text="${totalUsuarios}">0</span>
@@ -93,7 +85,6 @@
             </svg>
         </div>
 
-        <!-- Total admins -->
         <div class="stat-card stat-primary">
             <span class="stat-label">Total admin</span>
             <span class="stat-valor" th:text="${totalAdmins}">0</span>
@@ -105,7 +96,6 @@
             </svg>
         </div>
 
-        <!-- Barrio con más reportes -->
         <div class="stat-card stat-barrio">
             <div>
                 <span class="stat-label">Barrio con más reportes</span>

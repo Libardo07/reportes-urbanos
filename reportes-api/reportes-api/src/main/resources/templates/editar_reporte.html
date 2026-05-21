@@ -71,7 +71,6 @@
         <form th:action="@{/usuario/guardar-reporte}" th:object="${reporte}"
         method="post" data-ajax="true" enctype="multipart/form-data">
 
-        <!-- Imágenes actuales -->
         <div class="form-group" th:if="${reporte.imagenes != null and !reporte.imagenes.isEmpty()}">
             <label>Fotos actuales</label>
             <div class="imagenes-preview" style="display:flex;">
@@ -83,8 +82,7 @@
                 Si subes nuevas fotos reemplazarán las actuales.
             </p>
         </div>
-
-        <!-- Subir nuevas imágenes -->
+        
         <div class="form-group">
             <label>Actualizar fotos
                 <span class="opcional-label">(opcional, máx. 3)</span>

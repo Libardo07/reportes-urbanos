@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
+// Repositorio de MongoDB para gestionar comentarios de los reportes
 public interface ComentarioRepository extends MongoRepository<Comentario, String> {
     List<Comentario> findByReporteIdAndParentIdIsNullOrderByFechaCreacionDesc(String reporteId);
     List<Comentario> findByParentIdOrderByFechaCreacionAsc(String parentId);

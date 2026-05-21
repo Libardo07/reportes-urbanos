@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+// Documento de MongoDB que almacena los tokens para verificar correos electrónicos
 @Document(collection = "verificacion_tokens")
 @Getter @Setter @NoArgsConstructor
 public class VerificacionToken {

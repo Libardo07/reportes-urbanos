@@ -50,11 +50,10 @@
         </tbody>
     </table>
 
-    <!-- Modales con imágenes -->
     <div th:each="r : ${reportes}">
         <div th:id="'modal-u-' + ${r.id}"
-             class="modal-overlay"
-             th:attr="data-modal-id='modal-u-' + ${r.id}">
+            class="modal-overlay"
+            th:attr="data-modal-id='modal-u-' + ${r.id}">
             <div class="modal-contenido">
                 <div class="modal-top">
                     <div class="modal-title-block">
@@ -67,8 +66,8 @@
                         <div class="modal-field">
                             <span class="modal-label">Estado</span>
                             <span class="badge"
-                                  th:classappend="'badge-' + ${#strings.toLowerCase(#strings.replace(estadosMap[r.estadoReporteId], '_', ''))}"
-                                  th:text="${#strings.replace(estadosMap[r.estadoReporteId], '_', ' ')}"></span>
+                                th:classappend="'badge-' + ${#strings.toLowerCase(#strings.replace(estadosMap[r.estadoReporteId], '_', ''))}"
+                                th:text="${#strings.replace(estadosMap[r.estadoReporteId], '_', ' ')}"></span>
                         </div>
                         <div class="modal-field">
                             <span class="modal-label">Tipo</span>
@@ -91,24 +90,23 @@
                             <span class="modal-value" th:text="${r.descripcion}"></span>
                         </div>
 
-                        <!-- Imágenes -->
                         <div class="modal-field modal-field-full"
-                             th:if="${r.imagenes != null and !r.imagenes.isEmpty()}">
+                            th:if="${r.imagenes != null and !r.imagenes.isEmpty()}">
                             <span class="modal-label">Fotos del problema</span>
                             <div class="modal-imagenes">
                                 <a th:each="img : ${r.imagenes}"
-                                   th:href="${img}"
-                                   target="_blank"
-                                   class="modal-imagen-link">
+                                th:href="${img}"
+                                target="_blank"
+                                class="modal-imagen-link">
                                     <img th:src="${img}"
-                                         alt="Foto del reporte"
-                                         class="modal-imagen"
-                                         loading="lazy">
+                                        alt="Foto del reporte"
+                                        class="modal-imagen"
+                                        loading="lazy">
                                 </a>
                             </div>
                         </div>
                         <div class="modal-field modal-field-full"
-                             th:if="${r.imagenes == null or r.imagenes.isEmpty()}">
+                            th:if="${r.imagenes == null or r.imagenes.isEmpty()}">
                             <span class="modal-label">Fotos del problema</span>
                             <span class="modal-value" style="color:#9e9e9e;font-style:italic;">
                                 Sin fotos adjuntas
@@ -121,7 +119,6 @@
         </div>
     </div>
 
-    <!-- Ver más -->
     <div class="paginacion" th:if="${totalPaginas > 1}">
         <button class="paginacion-btn"
                 th:disabled="${!hayAnterior}"

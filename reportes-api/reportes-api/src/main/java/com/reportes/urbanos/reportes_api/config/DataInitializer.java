@@ -30,6 +30,7 @@ public class DataInitializer implements CommandLineRunner {
     @Value("${admin.nombre}")
     private String adminNombre;
 
+    // Método para inicializar datos al arrancar la aplicación
     @Override
     public void run(String... args) throws Exception {
         if (usuarioRepository == null) {

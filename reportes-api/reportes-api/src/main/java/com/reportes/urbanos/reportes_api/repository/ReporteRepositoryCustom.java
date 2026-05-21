@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+// Repositorio personalizado para realizar filtros avanzados sobre los reportes en MongoDB
 @Repository
 public class ReporteRepositoryCustom {
 

@@ -1,4 +1,4 @@
-// Scroll suave para los enlaces del navbar
+
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
@@ -9,7 +9,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Efecto navbar al hacer scroll
 window.addEventListener('scroll', () => {
     const nav = document.querySelector('nav');
     if (window.scrollY > 50) {
@@ -19,7 +18,6 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Animación de números en stats
 const stats = document.querySelectorAll('.stat-number');
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -42,8 +40,6 @@ const observer = new IntersectionObserver((entries) => {
 });
 
 stats.forEach(stat => observer.observe(stat));
-
-// Animación de aparición de cards al hacer scroll
 const cards = document.querySelectorAll('.feature-card, .role-card, .team-card');
 const cardObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry, index) => {

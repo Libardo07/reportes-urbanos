@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// Servicio que obtiene los barrios desde la base de datos y los devuelve ordenados con caché para mejorar rendimiento
 @Service
 public class BarrioService {
 

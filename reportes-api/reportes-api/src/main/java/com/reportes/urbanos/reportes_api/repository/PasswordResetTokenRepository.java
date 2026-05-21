@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-
+// Repositorio de MongoDB para gestionar tokens de recuperación de contraseña
 public interface PasswordResetTokenRepository extends MongoRepository<PasswordResetToken, String> {
     PasswordResetToken findByToken(String token);
     void deleteByEmail(String email);

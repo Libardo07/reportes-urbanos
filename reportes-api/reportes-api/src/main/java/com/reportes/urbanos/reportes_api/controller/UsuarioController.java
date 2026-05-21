@@ -50,14 +50,15 @@ public class UsuarioController {
     @Autowired
     private EstadoReporteService estadoReporteService;
 
+    // Obteniene el usuario actualmente autenticado en la sesión
     private Usuario getUsuarioLogueado() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return usuarioService.getUsuarioPorEmail(email);
     }
 
+    // Carga la información base. barrios, tipos y estados para uso en formularios y vistas
     @ModelAttribute
     public void populateModelsWithCommonData(Model model) {
-        //  Todos desde caché Redis
         List<Barrio> barrios = barrioService.getBarriosOrdenados();
         List<TipoReporte> tipos = tipoReporteService.getTipos();
         List<EstadoReporte> estados = estadoReporteService.getEstados();
@@ -72,6 +73,7 @@ public class UsuarioController {
             barrios.stream().collect(Collectors.toMap(Barrio::getId, Barrio::getNombre)));
     }
 
+    // Carga la página principal del ciudadano con su información y formulario de reporte
     @GetMapping("/inicio")
     public String inicioCiudadano(Model model) {
         Usuario usuario = getUsuarioLogueado();
@@ -80,6 +82,7 @@ public class UsuarioController {
         return "usuario_inicio";
     }
 
+    // Carga la lista paginada de reportes del usuario para el fragmento de vista
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(
             @RequestParam(defaultValue = "0") int page,
@@ -94,12 +97,14 @@ public class UsuarioController {
         return "usuario/fragments/lista-reportes :: lista-reportes";
     }
 
+    // Cargar el formulario de creación de reportes como fragmento de vista
     @GetMapping(value = "/fragmento/formulario-reporte", produces = "text/html")
     public String fragmentoFormularioReporte(Model model) {
         model.addAttribute("reporte", new Reporte());
         return "usuario/fragments/formulario-reporte :: formulario-reporte";
     }
 
+    // Cargar el formulario de edición de un reporte. solo si cumple las validaciones
     @GetMapping(value = "/editar-reporte/{id}", produces = "text/html")
     public String fragmentoEditarReporte(@PathVariable String id, Model model) {
         Usuario usuario = getUsuarioLogueado();
@@ -116,6 +121,7 @@ public class UsuarioController {
         return "editar_reporte :: formulario-reporte";
     }
 
+    // Crear o actualizar un reporte según si viene o no un ID
     @PostMapping("/guardar-reporte")
     public ResponseEntity<Map<String, String>> guardarReporte(
             @RequestParam(required = false) String id,
@@ -137,6 +143,7 @@ public class UsuarioController {
                 .filter(t -> t.getNombre().equals(tipoReporte))
                 .findFirst().orElseThrow();
 
+                // ACTUALIZA REPORTE 
             EstadoReporte pendiente = estadoReporteService.getByNombre("Pendiente");
 
             if (id != null && !id.isBlank()) {
@@ -171,6 +178,7 @@ public class UsuarioController {
                 response.put("message", "Reporte actualizado correctamente.");
 
             } else {
+                //CREA REPORTE
                 Reporte reporte = new Reporte();
                 reporte.setTitulo(titulo);
                 reporte.setDescripcion(descripcion);
@@ -197,6 +205,7 @@ public class UsuarioController {
         return ResponseEntity.ok(response);
     }
 
+    // Eliminar un reporte del usuario si cumple las condiciones de seguridad
     @PostMapping("/eliminar-reporte/{id}")
     public ResponseEntity<Map<String, String>> eliminarReporte(@PathVariable String id) {
         Map<String, String> response = new HashMap<>();
@@ -226,6 +235,7 @@ public class UsuarioController {
         return ResponseEntity.ok(response);
     }
 
+    // Cargar el fragmento del inicio del usuario con estadísticas de sus reportes
     @GetMapping(value = "/fragmento/inicio", produces = "text/html")
     public String fragmentoInicio(Model model) {
         Usuario usuario = getUsuarioLogueado();

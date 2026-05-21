@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
+// Documento de MongoDB que almacena el token para recuperación de contraseña
 @Document(collection = "password_reset_tokens")
 @Getter @Setter
 @NoArgsConstructor
