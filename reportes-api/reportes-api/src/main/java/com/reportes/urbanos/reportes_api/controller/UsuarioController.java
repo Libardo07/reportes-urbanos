@@ -250,11 +250,11 @@ public class UsuarioController {
             .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre));
 
         long totalReportes        = todos.size();
-        long totalPendientes      = todos.stream().filter(r -> "Pendiente".equals(estadosMap.get(r.getEstadoReporteId()))).count();
-        long totalEnProceso      = todos.stream().filter(r -> "En_Proceso".equals(estadosMap.get(r.getEstadoReporteId()))).count();
-        long totalResueltos       = todos.stream().filter(r -> "Resuelto".equals(estadosMap.get(r.getEstadoReporteId()))).count();
-        long totalInfraestructura = todos.stream().filter(r -> "Infraestructura".equals(tiposMap.get(r.getTipoReporteId()))).count();
-        long totalServicios       = todos.stream().filter(r -> "Servicios Publicos".equals(tiposMap.get(r.getTipoReporteId()))).count();
+        long totalPendientes      = todos.stream().filter(r -> "Pendiente".equalsIgnoreCase(estadosMap.get(r.getEstadoReporteId()))).count();
+        long totalEnProceso       = todos.stream().filter(r -> "En_Proceso".equalsIgnoreCase(estadosMap.get(r.getEstadoReporteId()))).count();
+        long totalResueltos       = todos.stream().filter(r -> "Resuelto".equalsIgnoreCase(estadosMap.get(r.getEstadoReporteId()))).count();
+        long totalInfraestructura = todos.stream().filter(r -> "Infraestructura".equalsIgnoreCase(tiposMap.get(r.getTipoReporteId()))).count();
+        long totalServicios       = todos.stream().filter(r -> "Servicios Publicos".equalsIgnoreCase(tiposMap.get(r.getTipoReporteId()))).count();
 
         String ultimoReporte = todos.stream()
             .filter(r -> r.getFechaModificacion() != null)

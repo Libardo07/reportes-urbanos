@@ -27,7 +27,7 @@
                         Ver
                     </button>
 
-                    <span th:if="${estadosMap[r.estadoReporteId] == 'Pendiente'}">
+                    <span th:if="${#strings.equalsIgnoreCase(estadosMap[r.estadoReporteId], 'pendiente')}">
                         <button class="action-btn edit-reporte"
                                 th:attr="data-id=${r.id}, data-url=@{'/usuario/editar-reporte/' + ${r.id}}"
                                 title="Editar">
@@ -41,7 +41,7 @@
                             <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
                         </button>
                     </span>
-                    <span th:unless="${estadosMap[r.estadoReporteId] == 'Pendiente'}" title="No editable">
+                    <span th:unless="${#strings.equalsIgnoreCase(estadosMap[r.estadoReporteId], 'pendiente')}" title="No editable">
                         <button class="action-btn" disabled><img th:src="@{/images/icono-edit.png}" alt="No editable" style="opacity:.4;" loading="lazy"></button>
                         <button class="action-btn" disabled><img th:src="@{/images/icono-trash.png}" alt="No eliminable" style="opacity:.4;" loading="lazy"></button>
                     </span>
