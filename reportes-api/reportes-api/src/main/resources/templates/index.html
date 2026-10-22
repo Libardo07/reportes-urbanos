@@ -4,170 +4,191 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Reportes Urbanos - Cartagena</title>
+    <link rel="icon" th:href="@{/images/logo.svg}"  alt="" width="80" height="80">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/landing.css}">
 </head>
 <body>
 
+    <!-- Icono de GitHub: se define una sola vez y se reutiliza en el equipo -->
+    <svg class="sprite" aria-hidden="true" focusable="false">
+        <symbol id="ico-github" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+        </symbol>
+    </svg>
+
     <nav>
         <a href="#" class="nav-logo">
-            <div class="dot"></div>
+            <img th:src="@{/images/logo.svg}" alt="" width="36" height="36">
             Reportes Urbanos
         </a>
         <ul class="nav-links">
+            <li><a href="#como-funciona">Cómo funciona</a></li>
             <li><a href="#funcionalidades">Funcionalidades</a></li>
+            <li><a href="#casos">Casos</a></li>
             <li><a href="#roles">Roles</a></li>
             <li><a href="#equipo">Equipo</a></li>
         </ul>
-        <a th:href="@{/login}" class="btn-nav" target="_blank">Iniciar sesión</a>
+        <a th:href="@{/login}" class="btn-nav">Iniciar sesión</a>
     </nav>
 
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-badge">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                    <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                </svg>
-                Cartagena de Indias, Colombia
-            </div>
-            <h1>Sistema de <span>Reportes</span><br>Urbanos</h1>
-            <p>Plataforma digital para que los ciudadanos de Cartagena reporten problemas de infraestructura y servicios públicos, conectando a la comunidad con los organismos encargados de resolver los problemas de la ciudad.</p>
-            <div class="hero-buttons">
-                <a th:href="@{/registro}" class="btn-primary">Crear cuenta gratis</a>
-                <a th:href="@{/login}" class="btn-secondary">Iniciar sesión</a>
-            </div>
-            <div class="stats">
-                <div class="stat">
-                    <span class="stat-number">187</span>
-                    <span class="stat-label">Barrios de Cartagena</span>
+    <section class="hero escena escena-hero">
+        <div class="hero-inner">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Cartagena de Indias, Colombia
                 </div>
-                <div class="stat">
-                    <span class="stat-number">2</span>
-                    <span class="stat-label">Tipos de reporte</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">3</span>
-                    <span class="stat-label">Estados de gestión</span>
+                <h1>Reporta lo que pasa en tu barrio</h1>
+                <div class="hero-row">
+                    <p>Avisa de un problema de infraestructura o de servicios públicos. Tu reporte llega a quienes pueden arreglarlo y tú ves cómo avanza en los 187 barrios de Cartagena.</p>
+                    <div class="hero-buttons">
+                        <a th:href="@{/registro}" class="btn-primary">Crear cuenta gratis
+                            <span class="flecha"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9"/></svg></span>
+                        </a>
+                        <a th:href="@{/login}" class="btn-secondary">Iniciar sesión</a>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="features" id="funcionalidades">
+    <section class="steps escena escena-pasos" id="como-funciona">
         <div class="section-title">
-            <h2>¿Qué puedes hacer con <span>nuestra plataforma</span>?</h2>
-            <p>Herramientas diseñadas para facilitar la comunicación entre ciudadanos y administradores de la ciudad.</p>
+            <h2>Del reporte a la solución, en tres pasos</h2>
+            <p>Cada reporte pasa por tres estados y tú los ves todos.</p>
+        </div>
+        <ol class="steps-grid">
+            <li><h3>Reportas</h3><p>Cuentas qué pasa, dónde y con fotos. Queda como <strong>Pendiente</strong>.</p></li>
+            <li><h3>Lo gestionan</h3><p>Un administrador lo revisa y lo pasa a <strong>En proceso</strong>. Te llega un correo con cada cambio.</p></li>
+            <li><h3>Confirmas</h3><p>Cuando queda <strong>Resuelto</strong>, tú confirmas que el problema se arregló.</p></li>
+        </ol>
+    </section>
+
+    <section class="features escena escena-funciones" id="funcionalidades">
+        <div class="section-title">
+            <h2>Lo que puedes hacer en la plataforma</h2>
+            <p>Herramientas para que ciudadanos y administradores de la ciudad se comuniquen.</p>
         </div>
         <div class="features-grid">
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                </div>
+            <div class="feature-card"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 <h3>Crear reportes</h3>
-                <p>Registra problemas de infraestructura o servicios públicos con título, descripción, dirección, barrio y fotos del problema.</p>
+                <p>Registra el problema con título, descripción, dirección, barrio y fotos.</p>
             </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                </div>
-                <h3>Seguimiento en tiempo real</h3>
-                <p>Consulta el estado de tus reportes: Pendiente, En Proceso o Resuelto, y recibe notificaciones por correo cuando cambien.</p>
+            <div class="feature-card"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <h3>Seguir el estado</h3>
+                <p>Consulta si tu reporte está Pendiente, En Proceso o Resuelto y recibe avisos por correo.</p>
             </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    </svg>
-                </div>
+            <div class="feature-card"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 <h3>Comentar reportes</h3>
-                <p>Comenta y responde en los reportes de la comunidad. Mantén una conversación sobre los problemas del barrio.</p>
+                <p>Comenta y responde en los reportes de la comunidad para hablar de los problemas del barrio.</p>
             </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                    </svg>
-                </div>
-                <h3>Dashboard de estadísticas</h3>
-                <p>Visualiza el estado general de los reportes de la ciudad con métricas en tiempo real para ciudadanos y administradores.</p>
+            <div class="feature-card"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <h3>Ver estadísticas</h3>
+                <p>Mira el estado general de los reportes de la ciudad con métricas para ciudadanos y administradores.</p>
             </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-                    </svg>
-                </div>
-                <h3>Filtros avanzados</h3>
-                <p>Filtra reportes por barrio, tipo, estado y rango de fechas. Encuentra exactamente lo que buscas en segundos.</p>
+            <div class="feature-card"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                <h3>Filtrar reportes</h3>
+                <p>Busca por barrio, tipo, estado y rango de fechas.</p>
             </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                </div>
-                <h3>Acceso seguro por roles</h3>
-                <p>Autenticación con Google OAuth2 y roles diferenciados para ciudadanos y administradores con verificación de correo.</p>
+            <div class="feature-card"><svg class="ico" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <h3>Entrar con seguridad</h3>
+                <p>Inicia sesión con Google o con correo verificado. Cada rol ve solo lo suyo.</p>
             </div>
+        </div>
+    </section>
 
+<!-- MAPA: mapa real de Cartagena (Leaflet). Los reportes que se ven son de ejemplo y están en js/mapa.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+    <section class="mapa escena escena-mapa" id="mapa">
+        <div class="mapa-wrap">
+            <div class="mapa-texto vidrio">
+                <h2>Cada reporte es un punto en el mapa</h2>
+                <p>Así se ve la ciudad cuando la gente reporta desde sus barrios. Toca un punto para ver el reporte. Los de este mapa son de ejemplo.</p>
+                <ul class="mapa-leyenda">
+                    <li><i class="mp-pendiente"></i>Pendiente</li>
+                    <li><i class="mp-proceso"></i>En proceso</li>
+                    <li><i class="mp-resuelto"></i>Resuelto</li>
+                </ul>
+            </div>
+            <div class="mapa-lienzo vidrio">
+                <div id="mapa-leaflet" role="img" aria-label="Mapa de Cartagena con reportes de ejemplo en distintos barrios"></div>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script th:src="@{/js/mapa.js}"></script>
+    <section class="casos escena escena-casos" id="casos">
+        <div class="section-title">
+            <h2>Los problemas de todos los días</h2>
+            <p>Hay dos tipos de reporte: infraestructura y servicios públicos.</p>
+        </div>
+        <div class="casos-grid">
+            <figure class="caso caso-hueco" role="img" aria-label="Foto de ejemplo: hueco en una vía de Cartagena">
+                <figcaption class="caso-label">
+                    <span class="caso-grupo">Infraestructura</span>
+                    <strong>Huecos en la vía</strong>
+                </figcaption>
+            </figure>
+            <figure class="caso caso-alumbrado" role="img" aria-label="Foto de ejemplo: alumbrado público dañado">
+                <figcaption class="caso-label">
+                    <span class="caso-grupo">Infraestructura</span>
+                    <strong>Alumbrado dañado</strong>
+                </figcaption>
+            </figure>
+            <figure class="caso caso-agua" role="img" aria-label="Foto de ejemplo: fuga de agua en la calle">
+                <figcaption class="caso-label">
+                    <span class="caso-grupo">Servicios públicos</span>
+                    <strong>Fugas de agua</strong>
+                </figcaption>
+            </figure>
+            <figure class="caso caso-basura" role="img" aria-label="Foto de ejemplo: basura acumulada en una esquina">
+                <figcaption class="caso-label">
+                    <span class="caso-grupo">Servicios públicos</span>
+                    <strong>Basura acumulada</strong>
+                </figcaption>
+            </figure>
         </div>
     </section>
 
     <section class="roles" id="roles">
-        <div class="section-title">
-            <h2>Diseñado para <span>todos</span></h2>
-            <p>Dos perfiles de usuario con funciones específicas para una gestión eficiente.</p>
-        </div>
-        <div class="roles-grid">
-            <div class="role-card">
-                <div class="role-icon">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                </div>
-                <h3>Ciudadano</h3>
-                <p>Crea reportes, adjunta fotos, comenta en reportes de la comunidad, recibe notificaciones por correo y confirma si tu problema fue resuelto.</p>
-                <span class="role-tag">Ciudadano</span>
+        <div class="role-card escena escena-rol-ciudadano">
+            <div class="vidrio">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <h3>Ciudadano</h3>
+            <p>Crea reportes, adjunta fotos, comenta en los de la comunidad, recibe notificaciones por correo y confirma si tu problema fue resuelto.</p>
+            <span class="role-tag">Ciudadano</span>
             </div>
-            <div class="role-card">
-                <div class="role-icon">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                </div>
-                <h3>Administrador</h3>
-                <p>Gestiona todos los reportes del sistema, filtra por múltiples criterios, cambia estados, notifica ciudadanos y visualiza estadísticas generales.</p>
-                <span class="role-tag">Admin</span>
+        </div>
+        <div class="role-card escena escena-rol-admin">
+            <div class="vidrio">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <h3>Administrador</h3>
+            <p>Gestiona todos los reportes, filtra por varios criterios, cambia estados, avisa a los ciudadanos y revisa las estadísticas generales.</p>
+            <span class="role-tag">Admin</span>
             </div>
         </div>
     </section>
 
-    <section class="team" id="equipo">
+    <section class="team escena escena-equipo" id="equipo">
         <div class="section-title">
-            <h2>Nuestro <span>equipo</span></h2>
-            <p>Desarrollado por estudiantes comprometidos con la tecnología y la ciudad.</p>
+            <h2>Nuestro equipo</h2>
+            <p>Hecho por estudiantes que quieren mejorar su ciudad con tecnología.</p>
         </div>
-        <div class="team-grid">
+        <div class="team-strip">
             <div class="team-card">
                 <div class="team-avatar">LV</div>
                 <h4>Libardo Villero</h4>
                 <span class="team-role">Desarrollador</span>
-                <a href="https://github.com/Libardo07" target="_blank" class="team-github">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                <a href="https://github.com/Libardo07" target="_blank" rel="noopener noreferrer" class="team-github">
+                    <svg width="16" height="16" aria-hidden="true"><use href="#ico-github"/></svg>
                     GitHub
                 </a>
             </div>
@@ -175,8 +196,8 @@
                 <div class="team-avatar">EA</div>
                 <h4>Emanuel Arroyo</h4>
                 <span class="team-role">Desarrollador</span>
-                <a href="https://github.com/peta1308" target="_blank" class="team-github">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                <a href="https://github.com/peta1308" target="_blank" rel="noopener noreferrer" class="team-github">
+                    <svg width="16" height="16" aria-hidden="true"><use href="#ico-github"/></svg>
                     GitHub
                 </a>
             </div>
@@ -184,26 +205,28 @@
                 <div class="team-avatar">JO</div>
                 <h4>Jose Ortiz</h4>
                 <span class="team-role">Desarrollador</span>
-                <a href="https://github.com/joseoertiz-24" target="_blank" class="team-github">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                <a href="https://github.com/joseoertiz-24" target="_blank" rel="noopener noreferrer" class="team-github">
+                    <svg width="16" height="16" aria-hidden="true"><use href="#ico-github"/></svg>
                     GitHub
                 </a>
             </div>
         </div>
     </section>
 
-    <section class="cta">
-        <h2>¿Listo para mejorar tu ciudad?</h2>
-        <p>Únete a la plataforma y empieza a reportar problemas en tu barrio hoy mismo.</p>
+    <section class="cta escena escena-cta">
+        <div class="cta-panel vidrio">
+        <h2>Tu barrio también cuenta</h2>
+        <p>Crea tu cuenta y haz tu primer reporte hoy.</p>
         <div class="cta-buttons">
-            <a th:href="@{/registro}" class="btn-white" target="_blank">Registrarme ahora</a>
-            <a th:href="@{/login}" class="btn-outline-white" target="_blank">Ya tengo cuenta</a>
+            <a th:href="@{/registro}" class="btn-white">Registrarme ahora</a>
+            <a th:href="@{/login}" class="btn-outline-white">Ya tengo cuenta</a>
+        </div>
         </div>
     </section>
 
-    <footer>
-        <p>© 2026 <span>Sistema de Reportes Urbanos</span> — Cartagena de Indias, Colombia</p>
-        <p style="margin-top: 6px;">Desarrollado por Libardo Villero • Emanuel Arroyo • Jose Ortiz</p>
+    <footer class="escena escena-cta">
+        <p>© 2026 <span>Sistema de Reportes Urbanos</span>. Cartagena de Indias, Colombia</p>
+        <p>Desarrollado por Libardo Villero, Emanuel Arroyo y Jose Ortiz</p>
     </footer>
 
     <script th:src="@{/js/landing.js}"></script>
