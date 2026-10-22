@@ -4,47 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Reportes Urbanos</title>
-    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
 <body>
 
-    <div class="page-wrapper">
+<main class="auth escena escena-registro">
+    <div class="auth-wrap">
 
-        <div class="left-panel">
-            <div class="icon"><img src="/images/registro.png" alt="" loading="lazy"></div>
-            <h2>¡Únete ahora!</h2>
-            <p>Crea tu cuenta y empieza a reportar problemas en tu barrio de Cartagena de Indias.</p>
-            <a th:href="@{/login}" class="btn-outline">Ya tengo cuenta</a>
-        </div>
+        <section class="auth-info vidrio">
+            <a th:href="@{/}" class="auth-logo">
+                <img th:src="@{/images/logo.svg}" alt="" width="40" height="40">
+                Reportes Urbanos
+            </a>
+            <p class="auth-lema">Tu barrio también cuenta</p>
+            <div>
+                <p>Crea tu cuenta y empieza a reportar problemas en tu barrio de Cartagena de Indias.</p>
+                <a th:href="@{/login}" class="btn-outline">Ya tengo cuenta</a>
+            </div>
+        </section>
 
-        <div class="right-panel">
-            <h2>Crear cuenta</h2>
-            <p class="subtitle">Regístrate gratis y reporta problemas en tu ciudad</p>
+        <section class="auth-form vidrio">
+            <h1>Crear cuenta</h1>
+            <p class="subtitulo">Regístrate gratis y reporta problemas en tu ciudad</p>
 
-            <div th:if="${error}" class="error-message">
+            <div th:if="${error}" class="login-notice login-notice--error" role="alert">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
                 <span th:text="${error}"></span>
             </div>
 
-            <form th:action="@{/registro}" th:object="${usuario}" method="post">
-                <div class="input-group">
-                    <img th:src="@{/images/icono-login.png}" alt="Usuario" class="icon" loading="lazy">
-                    <input type="text" th:field="*{nombre}" placeholder="Nombre completo" minlength="4" required>
+            <form th:action="@{/registro}" th:object="${usuario}" method="post" id="registroForm">
+                <div class="campo">
+                    <label for="nombre">Nombre completo</label>
+                    <div class="entrada">
+                        <svg class="ico-campo" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <input type="text" id="nombre" th:field="*{nombre}"
+                            placeholder="Tu nombre y apellido" minlength="4" required autocomplete="name">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <img th:src="@{/images/icono-email.png}" alt="Email" class="icon" loading="lazy">
-                    <input type="email" th:field="*{email}" placeholder="Correo electrónico" minlength="14" required>
+
+                <div class="campo">
+                    <label for="email">Correo electrónico</label>
+                    <div class="entrada">
+                        <svg class="ico-campo" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <input type="email" id="email" th:field="*{email}"
+                            placeholder="nombre@correo.com" minlength="14" required autocomplete="email">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <img th:src="@{/images/icono-password.png}" alt="Contraseña" class="icon" loading="lazy">
-                    <input type="password" id="password" th:field="*{password}" placeholder="Contraseña" minlength="6" required>
-                    <img th:src="@{/images/icono-ojo-visible.png}" alt="Mostrar contraseña" class="password-toggle" loading="lazy">
+
+                <div class="campo">
+                    <label for="password">Contraseña</label>
+                    <div class="entrada">
+                        <svg class="ico-campo" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <input type="password" id="password" th:field="*{password}"
+                            placeholder="Mínimo 6 caracteres" minlength="6" required autocomplete="new-password">
+                        <button type="button" class="ver-clave" aria-label="Mostrar contraseña" aria-pressed="false">
+                            <svg class="ojo-abierto" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg class="ojo-cerrado" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <button type="submit" class="btn">Registrarme</button>
+
+                <button type="submit" class="btn-principal">Registrarme</button>
             </form>
-        </div>
+        </section>
 
     </div>
+</main>
 
-    <script th:src="@{/js/script.js}"></script>
+<script th:src="@{/js/auth.js}" defer></script>
 </body>
 </html>
