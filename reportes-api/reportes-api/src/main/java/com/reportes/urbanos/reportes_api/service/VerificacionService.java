@@ -59,7 +59,7 @@ public class VerificacionService {
         return "OK";
     }
 
-    // Envía un correo HTML con el enlace para verificar la cuenta del usuario
+    // Envía un correo con versión HTML y versión de texto plano con el enlace para verificar la cuenta
     private void enviarEmailHtml(String destinatario, String enlace) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -67,7 +67,7 @@ public class VerificacionService {
             helper.setTo(destinatario);
             helper.setFrom("serviciodereporte@gmail.com", "Reportes Urbanos");
             helper.setSubject("Verifica tu correo electrónico — Reportes Urbanos");
-            helper.setText(buildEmailHtml(enlace), true);
+            helper.setText(buildEmailTexto(enlace), buildEmailHtml(enlace));
             mailSender.send(message);
         } catch (Exception e) {
             throw new RuntimeException("Error al enviar email: " + e.getMessage() 
@@ -86,7 +86,26 @@ public class VerificacionService {
         enviarEnlaceVerificacion(emailNuevo);
     }
 
-    // Construye el contenido HTML del correo de verificación de cuenta
+    // Construye la versión de texto plano del correo (para clientes que no muestran HTML)
+    private String buildEmailTexto(String enlace) {
+        return """
+            Reportes Urbanos
+
+            Confirma tu correo para activar tu cuenta.
+
+            Gracias por unirte. Abre este enlace para verificar tu correo electrónico:
+            %s
+
+            El enlace expira en 3 minutos y solo puede usarse una vez.
+            Si no creaste esta cuenta, ignora este correo.
+
+            Reportes Urbanos · Cartagena de Indias, Colombia
+            """.formatted(enlace);
+    }
+
+    // Construye el contenido HTML del correo de verificación de cuenta.
+    // Usa tablas y estilos en línea, y no depende de imágenes: la marca es texto y color.
+    // Ojo: cada % literal se escribe %% porque el texto pasa por .formatted(); los tres %s son el enlace.
     private String buildEmailHtml(String enlace) {
         return """
             <!DOCTYPE html>
@@ -94,82 +113,97 @@ public class VerificacionService {
             <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width,initial-scale=1.0">
+              <title>Verifica tu correo electrónico</title>
+              <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&display=swap" rel="stylesheet">
             </head>
-            <body style="margin:0;padding:0;background:#f4f7fb;
-                      font-family:'Google Sans',Roboto,Arial,sans-serif;">
-              <table width="100%%" cellpadding="0" cellspacing="0"
-                    style="background:#f4f7fb;padding:48px 0;">
-                <tr><td align="center">
-                  <table width="520" cellpadding="0" cellspacing="0"
-                        style="background:#fff;border-radius:16px;
-                                box-shadow:0 2px 16px rgba(26,115,232,.10);overflow:hidden;">
+            <body bgcolor="#070B10" style="margin:0;padding:0;background-color:#070B10;">
 
-                    <!-- CABECERA -->
-                    <tr>
-                      <td style="background:linear-gradient(135deg,#1a73e8,#1557b0);
-                                padding:36px 40px;text-align:center;">
-                        <table cellpadding="0" cellspacing="0"
-                              style="margin:0 auto 18px;">
-                          <tr><td align="center" valign="middle"
-                                  style="width:60px;height:60px;
-                                        background:rgba(255,255,255,.15);
-                                        border-radius:50%%;
-                                        font-size:28px;line-height:60px;">
-                            &#9993;
-                          </td></tr>
-                        </table>
-                        <h1 style="color:#fff;font-size:22px;font-weight:700;
-                                  margin:0;letter-spacing:-.3px;">
-                          Verifica tu correo electrónico
-                        </h1>
-                      </td>
-                    </tr>
+              <!-- Texto de vista previa que se ve en la bandeja de entrada -->
+              <div style="display:none;max-height:0;overflow:hidden;opacity:0;mso-hide:all;font-size:1px;line-height:1px;color:#070B10;">
+                Confirma tu correo y activa tu cuenta. El enlace dura 3 minutos.
+              </div>
 
-                    <!-- CUERPO -->
-                    <tr>
-                      <td style="padding:36px 40px 28px;">
-                        <p style="font-size:15px;color:#3c4043;margin:0 0 10px;">Hola,</p>
-                        <p style="font-size:15px;color:#3c4043;line-height:1.7;margin:0 0 32px;">
-                          Gracias por registrarte en <strong>Reportes Urbanos</strong>.
-                          Haz clic en el botón de abajo para confirmar tu correo
-                          electrónico y activar tu cuenta.
-                        </p>
+              <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" bgcolor="#070B10"
+                    style="background-color:#070B10;">
+                <tr><td align="center" style="padding:32px 12px;">
 
-                        <!-- BOTÓN -->
-                        <table cellpadding="0" cellspacing="0" width="100%%">
-                          <tr><td align="center" style="padding-bottom:32px;">
-                            <a href="%s"
-                              style="display:inline-block;background:#1a73e8;color:#fff;
-                                      font-size:15px;font-weight:600;text-decoration:none;
-                                      padding:15px 40px;border-radius:8px;letter-spacing:.2px;">
-                              Verificar correo electrónico
-                            </a>
-                          </td></tr>
-                        </table>
+                  <table role="presentation" width="560" cellpadding="0" cellspacing="0"
+                        style="width:100%%;max-width:560px;">
 
-                        <p style="font-size:12px;color:#80868b;line-height:1.6;margin:0 0 24px;">
-                          Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
-                          <a href="%s" style="color:#1a73e8;word-break:break-all;">%s</a>
-                        </p>
+                    <!-- MARCA: se arma con texto y color, sin imágenes -->
+                    <tr><td style="padding:0 4px 18px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+                        <td width="12" height="12" bgcolor="#D9A441"
+                            style="width:12px;height:12px;border-radius:50%%;font-size:0;line-height:0;">&nbsp;</td>
+                        <td style="padding-left:10px;font-family:'Bricolage Grotesque','Segoe UI',Helvetica,Arial,sans-serif;
+                                  font-size:19px;font-weight:800;color:#FFFFFF;">
+                          Reportes Urbanos
+                        </td>
+                      </tr></table>
+                    </td></tr>
 
-                        <hr style="border:none;border-top:1px solid #e8eaed;margin:0 0 24px;">
+                    <!-- TARJETA -->
+                    <tr><td bgcolor="#0E1620"
+                            style="background-color:#0E1620;border:1px solid #26333F;border-radius:16px;">
+                      <table role="presentation" width="100%%" cellpadding="0" cellspacing="0">
 
-                        <p style="font-size:12px;color:#80868b;line-height:1.6;margin:0;">
-                          🔒 Este enlace expira en <strong>3 minutos</strong> y solo puede
-                          usarse una vez. Si no creaste esta cuenta, ignora este correo.
-                        </p>
-                      </td>
-                    </tr>
+                        <tr><td height="4" bgcolor="#D9A441"
+                                style="height:4px;font-size:0;line-height:0;border-radius:16px 16px 0 0;">&nbsp;</td></tr>
+
+                        <tr><td style="padding:36px 36px 8px;">
+                          <h1 style="margin:0 0 16px;font-family:'Bricolage Grotesque','Segoe UI',Helvetica,Arial,sans-serif;
+                                    font-size:30px;line-height:1.15;font-weight:800;color:#FFFFFF;letter-spacing:-0.5px;">
+                            Confirma tu correo y activa tu cuenta
+                          </h1>
+                          <p style="margin:0 0 28px;font-family:'Segoe UI',Helvetica,Arial,sans-serif;
+                                   font-size:16px;line-height:1.65;color:#C9D4D7;">
+                            Gracias por unirte a <strong style="color:#FFFFFF;">Reportes Urbanos</strong>.
+                            Con tu cuenta puedes reportar huecos en la vía, fugas de agua, alumbrado dañado
+                            y más en tu barrio de Cartagena, y seguir cómo avanza cada reporte.
+                          </p>
+
+                          <!-- BOTÓN: color sólido, se ve aunque el correo bloquee las imágenes -->
+                          <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+                            <tr><td bgcolor="#D9A441" align="center" style="border-radius:50px;background-color:#D9A441;">
+                              <a href="%s"
+                                style="display:inline-block;padding:15px 36px;font-family:'Segoe UI',Helvetica,Arial,sans-serif;
+                                      font-size:16px;font-weight:bold;color:#070B10;text-decoration:none;border-radius:50px;">
+                                Verificar correo electrónico
+                              </a>
+                            </td></tr>
+                          </table>
+
+                          <p style="margin:0 0 6px;font-family:'Segoe UI',Helvetica,Arial,sans-serif;
+                                   font-size:13px;line-height:1.6;color:#A9B8BC;">
+                            Si el botón no funciona, copia y pega este enlace en tu navegador:
+                          </p>
+                          <p style="margin:0 0 28px;font-family:'Segoe UI',Helvetica,Arial,sans-serif;
+                                   font-size:13px;line-height:1.6;">
+                            <a href="%s" style="color:#D9A441;word-break:break-all;">%s</a>
+                          </p>
+                        </td></tr>
+
+                        <tr><td style="padding:0 36px 36px;">
+                          <table role="presentation" width="100%%" cellpadding="0" cellspacing="0">
+                            <tr><td style="border-top:1px solid #26333F;padding-top:20px;
+                                          font-family:'Segoe UI',Helvetica,Arial,sans-serif;
+                                          font-size:13px;line-height:1.6;color:#A9B8BC;">
+                              <strong style="color:#FFFFFF;">Seguridad.</strong>
+                              Este enlace expira en <strong style="color:#FFFFFF;">3 minutos</strong> y solo puede
+                              usarse una vez. Si no creaste esta cuenta, ignora este correo.
+                            </td></tr>
+                          </table>
+                        </td></tr>
+
+                      </table>
+                    </td></tr>
 
                     <!-- PIE -->
-                    <tr>
-                      <td style="background:#f8f9fa;padding:16px 40px;text-align:center;
-                                border-top:1px solid #e8eaed;">
-                        <p style="font-size:11px;color:#bdc1c6;margin:0;">
-                          © 2025 Reportes Urbanos · Cartagena de Indias, Colombia
-                        </p>
-                      </td>
-                    </tr>
+                    <tr><td align="center" style="padding:22px 8px 0;font-family:'Segoe UI',Helvetica,Arial,sans-serif;
+                                                font-size:12px;line-height:1.6;color:#7F8E94;">
+                      Reportes Urbanos &middot; Cartagena de Indias, Colombia<br>
+                      Recibiste este correo porque alguien usó esta dirección para crear una cuenta.
+                    </td></tr>
 
                   </table>
                 </td></tr>
