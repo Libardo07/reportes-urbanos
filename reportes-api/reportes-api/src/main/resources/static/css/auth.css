@@ -65,6 +65,9 @@ button:focus-visible {
 /* Un encuadre distinto para cada página */
 .escena-login { --foto: url('../images/hero.jpg'); --dx: 10%; --dy: 4%; }
 .escena-registro { --foto: url('../images/hero.jpg'); --dx: -10%; --dy: -4%; }
+.escena-recuperar { --foto: url('../images/hero.jpg'); --dx: 8%; --dy: -6%; }
+.escena-reset { --foto: url('../images/hero.jpg'); --dx: -8%; --dy: 6%; }
+.escena-exito { --foto: url('../images/hero.jpg'); --dx: 4%; --dy: 8%; }
 
 .vidrio {
     background: var(--vidrio);
@@ -368,6 +371,62 @@ button:focus-visible {
     background: rgba(46, 204, 113, 0.14);
     border-color: rgba(46, 204, 113, 0.45);
     color: #A8E6C1;
+}
+
+/* Nota de seguridad debajo del formulario */
+.nota {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--suave);
+}
+
+.nota svg {
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+/* Tarjeta de resultado (contraseña restablecida y páginas parecidas) */
+.resultado {
+    width: min(460px, 100%);
+    padding: 40px 36px;
+    text-align: center;
+}
+
+.resultado-icono {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: var(--oro);
+    color: var(--negro);
+}
+
+.resultado h1 {
+    margin-bottom: 10px;
+    font-size: clamp(28px, 4vw, 34px);
+    font-weight: 800;
+}
+
+.resultado p {
+    margin-bottom: 24px;
+    color: var(--suave);
+}
+
+.resultado .btn-principal {
+    text-align: center;
+    text-decoration: none;
+}
+
+.resultado-pie {
+    display: block;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--suave);
 }
 
 /* Pantalla de carga al iniciar sesión */

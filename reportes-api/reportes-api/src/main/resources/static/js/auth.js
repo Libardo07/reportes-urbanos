@@ -14,12 +14,13 @@ document.querySelectorAll('.ver-clave').forEach((boton) => {
     });
 });
 
-// Pantalla de carga mientras el servidor responde al iniciar sesión
-const formLogin = document.getElementById('loginForm');
+// Pantalla de carga mientras el servidor responde (login y formularios con data-carga)
 const loader = document.getElementById('loader');
 
-if (formLogin && loader) {
-    formLogin.addEventListener('submit', () => loader.classList.add('show'));
+if (loader) {
+    document.querySelectorAll('#loginForm, form[data-carga]').forEach((formulario) => {
+        formulario.addEventListener('submit', () => loader.classList.add('show'));
+    });
 }
 
 // Si el usuario vuelve atrás con el botón del navegador, la pantalla de carga se apaga
