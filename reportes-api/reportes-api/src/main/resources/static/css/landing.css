@@ -15,6 +15,7 @@
     --suave: #BCCACD;
     --mono: ui-monospace, 'SF Mono', Consolas, monospace;
     --radio: 16px;
+    --cielo: linear-gradient(180deg, #2b2030 0%, #5a3a3c 40%, #2a1d17 75%, #0b0a0c 100%);
 }
 
 html {
@@ -61,18 +62,19 @@ a:focus-visible {
     z-index: -1;
     transform: translate(var(--dx, 0%), var(--dy, 0%));
     background: var(--foto, none) center / cover no-repeat, var(--negro);
+    background: var(--foto, none) center / cover no-repeat, var(--cielo), var(--negro);
 }
 
 /* La misma foto con encuadres distintos. Cuando tengas más fotos, cambia cada --foto,
    por ejemplo: --foto: url('../images/escenas/pasos.jpg'); */
-.escena-hero { --foto: url('../images/hero.jpg'); --margen: 0; }
-.escena-pasos { --foto: url('../images/hero.jpg'); --dx: -12%; --dy: 6%; }
-.escena-funciones { --foto: url('../images/hero.jpg'); --dx: 12%; --dy: -6%; }
-.escena-casos { --foto: url('../images/hero.jpg'); --dx: -6%; --dy: -10%; }
-.escena-rol-ciudadano { --foto: url('../images/hero.jpg'); --dx: 10%; --dy: 8%; }
-.escena-rol-admin { --foto: url('../images/hero.jpg'); --dx: -10%; --dy: -8%; }
-.escena-equipo { --foto: url('../images/hero.jpg'); --dx: 6%; --dy: 10%; }
-.escena-cta { --foto: url('../images/hero.jpg'); --margen: 0; }
+.escena-hero { --foto: url('../images/hero.webp'); --margen: 0; }
+.escena-pasos { --foto: url('../images/hero.webp'); --dx: -12%; --dy: 6%; }
+.escena-funciones { --foto: url('../images/hero.webp'); --dx: 12%; --dy: -6%; }
+.escena-casos { --foto: url('../images/hero.webp'); --dx: -6%; --dy: -10%; }
+.escena-rol-ciudadano { --foto: url('../images/hero.webp'); --dx: 10%; --dy: 8%; }
+.escena-rol-admin { --foto: url('../images/hero.webp'); --dx: -10%; --dy: -8%; }
+.escena-equipo { --foto: url('../images/hero.webp'); --dx: 6%; --dy: 10%; }
+.escena-cta { --foto: url('../images/hero.webp'); --margen: 0; }
 
 /* Vidrio: transparente como los botones. Si el texto no se lee bien sobre una foto clara,
    sube el 0.34 de --vidrio hasta 0.5 */
@@ -457,10 +459,10 @@ nav.scrolled {
     background-position: center;
 }
 
-.caso-hueco { grid-column: span 7; background-image: url('../images/hueco.jpg'); }
-.caso-alumbrado { grid-column: span 5; background-image: url('../images/alumbrado.jpg'); }
-.caso-agua { grid-column: span 5; background-image: url('../images/agua.jpg'); }
-.caso-basura { grid-column: span 7; background-image: url('../images/basura.jpg'); }
+.caso-hueco { grid-column: span 7; background-image: url('../images/hueco.webp'); }
+.caso-alumbrado { grid-column: span 5; background-image: url('../images/alumbrado.webp'); }
+.caso-agua { grid-column: span 5; background-image: url('../images/basura.webp'); }
+.caso-basura { grid-column: span 7; background-image: url('../images/basura.webp'); }
 
 .caso-label {
     display: flex;
@@ -921,7 +923,7 @@ footer span {
 }
 
 /* Mapa de Cartagena con reportes de ejemplo */
-.escena-mapa { --foto: url('../images/hero.jpg'); --dx: -2%; --dy: 0%; }
+.escena-mapa { --foto: url('../images/hero.webp'); --dx: -2%; --dy: 0%; }
 .mapa::after {
     content: '';
     position: absolute;

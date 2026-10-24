@@ -16,6 +16,7 @@
     --texto: #EEF3F4;
     --suave: #BCCACD;
     --radio: 16px;
+    --cielo: linear-gradient(180deg, #2b2030 0%, #5a3a3c 40%, #2a1d17 75%, #0b0a0c 100%);
 }
 
 body {
@@ -55,6 +56,7 @@ button:focus-visible {
     transition: translate 0.5s ease-out;
     animation: zoom-lento 26s ease-in-out infinite alternate;
     background: var(--foto, none) center / cover no-repeat, var(--negro);
+    background: var(--foto, none) center / cover no-repeat, var(--cielo), var(--negro);
 }
 
 @keyframes zoom-lento {
@@ -63,13 +65,13 @@ button:focus-visible {
 }
 
 /* Un encuadre distinto para cada página */
-.escena-login { --foto: url('../images/hero.jpg'); --dx: 10%; --dy: 4%; }
-.escena-registro { --foto: url('../images/hero.jpg'); --dx: -10%; --dy: -4%; }
-.escena-recuperar { --foto: url('../images/hero.jpg'); --dx: 8%; --dy: -6%; }
-.escena-reset { --foto: url('../images/hero.jpg'); --dx: -8%; --dy: 6%; }
-.escena-exito { --foto: url('../images/hero.jpg'); --dx: 4%; --dy: 8%; }
-.escena-verificar { --foto: url('../images/hero.jpg'); --dx: 6%; --dy: -8%; }
-.escena-fallida { --foto: url('../images/hero.jpg'); --dx: -6%; --dy: 6%; }
+.escena-login { --foto: url('../images/hero.webp'); --dx: 10%; --dy: 4%; }
+.escena-registro { --foto: url('../images/hero.webp'); --dx: -10%; --dy: -4%; }
+.escena-recuperar { --foto: url('../images/hero.webp'); --dx: 8%; --dy: -6%; }
+.escena-reset { --foto: url('../images/hero.webp'); --dx: -8%; --dy: 6%; }
+.escena-exito { --foto: url('../images/hero.webp'); --dx: 4%; --dy: 8%; }
+.escena-verificar { --foto: url('../images/hero.webp'); --dx: 6%; --dy: -8%; }
+.escena-fallida { --foto: url('../images/hero.webp'); --dx: -6%; --dy: 6%; }
 
 .vidrio {
     background: var(--vidrio);
@@ -770,8 +772,8 @@ button.btn-outline:hover {
 }
 
 /* ===== Confirmación de reporte ===== */
-.escena-si { --foto: url('../images/hero.jpg'); --dx: 2%; --dy: 6%; }
-.escena-no { --foto: url('../images/hero.jpg'); --dx: -4%; --dy: -6%; }
+.escena-si { --foto: url('../images/hero.webp'); --dx: 2%; --dy: 6%; }
+.escena-no { --foto: url('../images/hero.webp'); --dx: -4%; --dy: -6%; }
 
 /* Los colores siguen los estados del mapa: verde es Resuelto y dorado es Pendiente */
 .resultado-icono--ok {
