@@ -768,3 +768,45 @@ button.btn-outline:hover {
         animation: none;
     }
 }
+
+/* ===== Confirmación de reporte ===== */
+.escena-si { --foto: url('../images/hero.jpg'); --dx: 2%; --dy: 6%; }
+.escena-no { --foto: url('../images/hero.jpg'); --dx: -4%; --dy: -6%; }
+
+/* Los colores siguen los estados del mapa: verde es Resuelto y dorado es Pendiente */
+.resultado-icono--ok {
+    background: #6FBF8E;
+    color: var(--negro);
+}
+
+.estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 6px 14px;
+    border: 1px solid;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.estado::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.estado--ok {
+    background: rgba(46, 204, 113, 0.14);
+    border-color: rgba(46, 204, 113, 0.45);
+    color: #A8E6C1;
+}
+
+.estado--pendiente {
+    background: rgba(217, 164, 65, 0.16);
+    border-color: rgba(217, 164, 65, 0.5);
+    color: #F3D9A0;
+}
