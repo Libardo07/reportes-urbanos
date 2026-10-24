@@ -4,31 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Correo verificado — Reportes Urbanos</title>
-    <link rel="stylesheet" th:href="@{/css/login.css}">
-    <link rel="stylesheet" th:href="@{/css/verificacion.css}">
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/logo.svg}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
 <body>
-<div class="ve-resultado-wrapper">
-    <div class="ve-resultado-card">
 
-        <div class="ve-resultado-icon ve-resultado-icon--exito">
+<main class="auth escena escena-exito">
+    <section class="resultado vidrio">
+
+        <div class="resultado-icono">
             <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
-                stroke="white" stroke-width="2.5" stroke-linecap="round"
-                stroke-linejoin="round">
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12"/>
             </svg>
         </div>
 
         <h1>¡Correo verificado!</h1>
-        <p>Tu cuenta ha sido activada correctamente.<br>
+        <p>Tu cuenta ha sido activada correctamente.
             Redirigiendo al inicio de sesión en
-        <strong><span id="countdown">3</span>s</strong>...</p>
+            <strong><span id="countdown">3</span>s</strong>...</p>
 
-        <span class="ve-resultado-footer">
-            Reportes Urbanos · Cartagena de Indias
-        </span>
-    </div>
-</div>
-<script th:src="@{/js/verificacion_exitosa.js}"></script>
+        <a th:href="@{/login}" id="btn-login" class="btn-principal">Ir al inicio de sesión</a>
+
+        <span class="resultado-pie">Reportes Urbanos · Cartagena de Indias</span>
+    </section>
+</main>
+
+<script th:src="@{/js/auth.js}" defer></script>
+<script th:src="@{/js/verificacion_exitosa.js}" defer></script>
 </body>
 </html>
