@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="preload" as="image" th:href="@{/images/hero.webp}" type="image/webp" fetchpriority="high">
     <link rel="stylesheet" th:href="@{/css/landing.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 </head>
 <body>
 
@@ -102,7 +103,7 @@
     </section>
 
 <!-- MAPA: mapa real de Cartagena (Leaflet). Los reportes que se ven son de ejemplo y están en js/mapa.js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+    
     <section class="mapa escena escena-mapa" id="mapa">
         <div class="mapa-wrap">
             <div class="mapa-texto vidrio">
@@ -119,7 +120,7 @@
             </div>
         </div>
     </section>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
     <script th:src="@{/js/mapa.js}"></script>
     <section class="casos escena escena-casos" id="casos">
         <div class="section-title">
@@ -230,6 +231,6 @@
         <p>Desarrollado por Libardo Villero, Emanuel Arroyo y Jose Ortiz</p>
     </footer>
 
-    <script th:src="@{/js/landing.js}"></script>
+    <script th:src="@{/js/mapa.js}" defer></script>
 </body>
 </html>
