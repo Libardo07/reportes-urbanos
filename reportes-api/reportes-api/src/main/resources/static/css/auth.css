@@ -16,7 +16,6 @@
     --texto: #EEF3F4;
     --suave: #BCCACD;
     --radio: 16px;
-    --cielo: linear-gradient(180deg, #2b2030 0%, #5a3a3c 40%, #2a1d17 75%, #0b0a0c 100%);
 }
 
 body {
@@ -53,15 +52,26 @@ button:focus-visible {
     z-index: -1;
     transform: translate(var(--dx, 0%), var(--dy, 0%));
     translate: var(--px, 0px) var(--py, 0px);
-    transition: translate 0.5s ease-out;
+    transition: opacity 0.8s ease, translate 0.5s ease-out;
     animation: zoom-lento 26s ease-in-out infinite alternate;
     background: var(--foto, none) center / cover no-repeat, var(--negro);
-    background: var(--foto, none) center / cover no-repeat, var(--cielo), var(--negro);
 }
 
 @keyframes zoom-lento {
     from { scale: 1; }
     to { scale: 1.08; }
+}
+
+/* La foto aparece con un fundido cuando termina de cargar (auth.js agrega .foto-lista).
+   Mientras tanto se ve un fondo liso, sin degradados. */
+@media (scripting: enabled) {
+    .escena::before {
+        opacity: 0;
+    }
+
+    .foto-lista .escena::before {
+        opacity: 1;
+    }
 }
 
 /* Un encuadre distinto para cada página */
