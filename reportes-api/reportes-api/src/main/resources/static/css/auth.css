@@ -16,6 +16,7 @@
     --texto: #EEF3F4;
     --suave: #BCCACD;
     --radio: 16px;
+    --cielo: linear-gradient(180deg, #2b2030 0%, #5a3a3c 40%, #2a1d17 75%, #0b0a0c 100%);
 }
 
 body {
@@ -23,7 +24,7 @@ body {
     font-size: 17px;
     line-height: 1.6;
     color: var(--texto);
-    background: var(--negro);
+    background: var(--cielo) center / cover no-repeat fixed, var(--negro);
 }
 
 h1 {
@@ -52,7 +53,7 @@ button:focus-visible {
     z-index: -1;
     transform: translate(var(--dx, 0%), var(--dy, 0%));
     translate: var(--px, 0px) var(--py, 0px);
-    transition: opacity 0.8s ease, translate 0.5s ease-out;
+    transition: opacity 0.4s ease, translate 0.5s ease-out;
     animation: zoom-lento 26s ease-in-out infinite alternate;
     background: var(--foto, none) center / cover no-repeat, var(--negro);
 }
