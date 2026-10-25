@@ -1061,3 +1061,162 @@ footer span {
         animation: none;
     }
 }
+
+/* ===== RENDIMIENTO: solo la escena visible se anima ===== */
+.escena::before {
+    translate: none;
+    transition: none;
+    animation: none;
+}
+
+.escena.activa::before {
+    translate: var(--px, 0px) var(--py, 0px);
+    transition: translate 0.5s ease-out;
+    animation: zoom-lento-escena 26s ease-in-out infinite alternate;
+}
+
+/* Vidrio más liviano: menos desenfoque, y sin desenfoque en celular */
+.vidrio,
+.section-title,
+.steps-grid li,
+.features-grid,
+.team-strip,
+.caso-label {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+@media (max-width: 800px) {
+    :root {
+        --vidrio: rgba(10, 14, 20, 0.62);
+    }
+
+    .vidrio,
+    .section-title,
+    .steps-grid li,
+    .features-grid,
+    .team-strip,
+    .caso-label {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
+    .escena.activa::before {
+        animation: none;
+        translate: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .escena.activa::before {
+        animation: none;
+        translate: none;
+        transition: none;
+    }
+}
+
+/* ===== SCROLL SUAVE: rectángulos transparentes sin desenfoque ===== */
+:root {
+    --vidrio: rgba(10, 14, 20, 0.58);
+}
+
+.vidrio,
+.section-title,
+.steps-grid li,
+.features-grid,
+.team-strip,
+.caso-label {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+nav.scrolled {
+    background: rgba(5, 8, 13, 0.82);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+/* ===== Solo la escena visible se anima ===== */
+.escena::before {
+    translate: none;
+    transition: none;
+    animation: none;
+}
+
+.escena.activa::before {
+    translate: var(--px, 0px) var(--py, 0px);
+    transition: translate 0.5s ease-out;
+    animation: zoom-lento-escena 26s ease-in-out infinite alternate;
+}
+
+@media (max-width: 800px) {
+    .escena.activa::before {
+        animation: none;
+        translate: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .escena.activa::before {
+        animation: none;
+        translate: none;
+        transition: none;
+    }
+}
+
+/* ===== FONDO ÚNICO: una sola foto fija detrás de toda la página ===== */
+:root {
+    --foto-fondo: url('../images/hero.webp');
+}
+
+/* Las escenas ya no pintan su propia foto ni se recortan */
+.escena::before {
+    display: none !important;
+}
+
+.escena {
+    clip-path: none;
+}
+
+/* Los fundidos oscuros de los bordes ya no hacen falta, porque no hay cortes entre fotos */
+.steps::after,
+.features::after,
+.casos::after,
+.team::after,
+.role-card::after,
+.mapa::after {
+    display: none;
+}
+
+/* El hero y el cierre muestran la foto casi completa */
+.escena-hero,
+.escena-cta {
+    --escala: 0.75;
+}
+
+.fondo {
+    position: fixed;
+    inset: -20%;
+    z-index: -1;
+    background: var(--foto-fondo) center / cover no-repeat, var(--negro);
+    transform: translate(var(--dx, 0%), var(--dy, 0%)) scale(var(--escala, 1));
+    translate: var(--px, 0px) var(--py, 0px);
+    transition: transform 1.4s ease, translate 0.5s ease-out;
+    will-change: transform;
+}
+
+@media (max-width: 800px) {
+    .fondo {
+        inset: 0;
+        transform: none;
+        translate: none;
+        transition: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fondo {
+        translate: none;
+        transition: none;
+    }
+}
