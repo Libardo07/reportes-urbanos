@@ -66,3 +66,23 @@ if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !sinMovim
         });
     }, { passive: true });
 }
+
+// Cuando la foto ya está descargada y lista, se activa el fundido de entrada.
+// Usa la misma foto del <link rel="preload"> del <head>, así no se descarga dos veces.
+{
+    const precarga = document.querySelector('link[rel="preload"][as="image"]');
+    const mostrar = () => document.documentElement.classList.add('foto-lista');
+
+    if (precarga) {
+        const foto = new Image();
+        foto.src = precarga.href;
+        if (foto.decode) {
+            foto.decode().then(mostrar, mostrar);
+        } else {
+            foto.onload = mostrar;
+            foto.onerror = mostrar;
+        }
+    } else {
+        mostrar();
+    }
+}

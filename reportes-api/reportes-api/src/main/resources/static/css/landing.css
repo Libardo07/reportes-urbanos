@@ -12,7 +12,7 @@
     --oro: #D9A441;
     --oro-oscuro: #B8862F;
     --texto: #EEF3F4;
-    --suave: #BCCACD;
+    --suave: #D3DEE0;
     --mono: ui-monospace, 'SF Mono', Consolas, monospace;
     --radio: 16px;
     --cielo: linear-gradient(180deg, #2b2030 0%, #5a3a3c 40%, #2a1d17 75%, #0b0a0c 100%);
@@ -1086,7 +1086,7 @@ footer span {
     -webkit-backdrop-filter: blur(8px);
 }
 
-@media (max-width: 800px) {
+@media (max-width: 800px) and (pointer: coarse) {
     :root {
         --vidrio: rgba(10, 14, 20, 0.62);
     }
@@ -1113,27 +1113,6 @@ footer span {
         translate: none;
         transition: none;
     }
-}
-
-/* ===== SCROLL SUAVE: rectángulos transparentes sin desenfoque ===== */
-:root {
-    --vidrio: rgba(10, 14, 20, 0.58);
-}
-
-.vidrio,
-.section-title,
-.steps-grid li,
-.features-grid,
-.team-strip,
-.caso-label {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-
-nav.scrolled {
-    background: rgba(5, 8, 13, 0.82);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
 }
 
 /* ===== Solo la escena visible se anima ===== */
@@ -1219,4 +1198,25 @@ nav.scrolled {
         translate: none;
         transition: none;
     }
+}
+
+/* ===== VIDRIO: transparente con desenfoque moderado ===== */
+:root {
+    --vidrio: rgba(70, 82, 98, 0.30);
+}
+
+.vidrio,
+.section-title,
+.steps-grid li,
+.features-grid,
+.team-strip,
+.caso-label {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+nav.scrolled {
+    background: rgba(5, 8, 13, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
