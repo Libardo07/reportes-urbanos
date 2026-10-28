@@ -461,7 +461,7 @@ nav.scrolled {
 
 .caso-hueco { grid-column: span 7; background-image: url('../images/hueco.webp'); }
 .caso-alumbrado { grid-column: span 5; background-image: url('../images/alumbrado.webp'); }
-.caso-agua { grid-column: span 5; background-image: url('../images/basura.webp'); }
+.caso-agua { grid-column: span 5; background-image: url('../images/agua.webp'); }
 .caso-basura { grid-column: span 7; background-image: url('../images/basura.webp'); }
 
 .caso-label {

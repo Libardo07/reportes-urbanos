@@ -5,92 +5,102 @@
 
     <form th:action="@{/usuario/guardar-reporte}" th:object="${reporte}" method="post" enctype="multipart/form-data" data-ajax="true" data-form-type="create">
 
-        <div class="form-group">
-            <label for="titulo">Título del reporte:</label>
-            <input type="text" id="titulo" th:field="*{titulo}" class="form-control" spellcheck="true" placeholder="Escribir..." required>
-        </div>
+        <div class="form-cols">
 
-        <div class="form-group">
-            <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4" spellcheck="true" placeholder="Escribir..." required></textarea>
-        </div>
+            <div class="form-col">
+                <h2 class="form-bloque-titulo"><span>01</span>Qué pasó</h2>
 
-        <div class="form-group">
-            <label for="tipo">Tipo de reporte:</label>
-            <select name="tipoReporte" class="form-control" required>
-                <option value="" disabled selected>Escoger tipo de reporte</option>
-                <option th:each="t : ${tipos}" th:value="${t.nombre}" th:text="${t.nombre}"></option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="direccion">Dirección exacta:</label>
-            <div class="direccion-wrapper">
-                <input type="text" id="direccion" th:field="*{direccion}" class="form-control" placeholder="Escribe o selecciona en el mapa..." required>
-                <button type="button" class="btn-mapa" id="btnMapa" title="Seleccionar en el mapa">
-                    <img src="/images/mapa.png" alt="" loading="lazy">
-                </button>
-            </div>
-            <div id="mapa-container">
-                <div id="mapa"></div>
-                <div id="geo-banner">
-                    <div class="geo-spinner"></div>
-                    <span id="geo-texto">Obteniendo tu ubicación...</span>
+                <div class="form-group">
+                    <label for="titulo">Título del reporte:</label>
+                    <input type="text" id="titulo" th:field="*{titulo}" class="form-control" spellcheck="true" placeholder="Escribir..." required>
                 </div>
-                <div class="mapa-info">Haz clic en el mapa para seleccionar la ubicación del problema</div>
-            </div>
-        </div>
 
-        <div class="form-group">
-            <label for="barrioId">Barrio:</label>
-            <input type="hidden" name="barrioId" id="barrioId" required>
-            <div class="custom-select-wrapper">
-                <div class="custom-select-display" id="barrioDisplay">Seleccione un barrio</div>
-                <div class="custom-select-dropdown" id="barrioDropdown" style="display:none;">
-                    <input type="text" id="barrioFiltro" placeholder="Escribe su barrio..." autocomplete="off">
-                    <ul id="barrioLista">
-                        <option th:each="barrio : ${barrios}"
-                                th:value="${barrio.id}"
-                                th:text="${barrio.nombre}">
-                        </option>
-                    </ul>
+                <div class="form-group">
+                    <label for="tipo">Tipo de reporte:</label>
+                    <select name="tipoReporte" id="tipo" class="form-control" required>
+                        <option value="" disabled selected>Escoger tipo de reporte</option>
+                        <option th:each="t : ${tipos}" th:value="${t.nombre}" th:text="${t.nombre}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group grow">
+                    <label for="descripcion">Descripción:</label>
+                    <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4" spellcheck="true" placeholder="Escribir..." required></textarea>
                 </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label>Fotos del problema
-                <span class="opcional-label">(opcional, máx. 3)</span>
-            </label>
-            <div class="imagenes-upload-area" id="imagenesArea">
-                <div class="imagenes-placeholder" id="imagenesPlaceholder">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-                        stroke="#1a73e8" stroke-width="1.5" stroke-linecap="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                        <polyline points="21 15 16 10 5 21"/>
-                    </svg>
-                    <p>Arrastra fotos aquí o
-                        <span class="upload-link">selecciona archivos</span>
-                    </p>
-                    <p class="upload-hint">JPG, PNG o WEBP · Máx. 5MB por imagen</p>
+            <div class="form-col">
+                <h2 class="form-bloque-titulo"><span>02</span>Dónde</h2>
+
+                <div class="form-group">
+                    <label for="barrioId">Barrio:</label>
+                    <input type="hidden" name="barrioId" id="barrioId" required>
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select-display" id="barrioDisplay">Seleccione un barrio</div>
+                        <div class="custom-select-dropdown" id="barrioDropdown" style="display:none;">
+                            <input type="text" id="barrioFiltro" placeholder="Escribe su barrio..." autocomplete="off">
+                            <ul id="barrioLista">
+                                <option th:each="barrio : ${barrios}"
+                                        th:value="${barrio.id}"
+                                        th:text="${barrio.nombre}">
+                                </option>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div class="imagenes-preview" id="imagenesPreview" style="display:none;"></div>
+
+                <div class="form-group">
+                    <label for="direccion">Dirección exacta:</label>
+                    <div class="direccion-wrapper">
+                        <input type="text" id="direccion" th:field="*{direccion}" class="form-control" placeholder="Escribe o selecciona en el mapa..." required>
+                        <button type="button" class="btn-mapa" id="btnMapa" title="Seleccionar en el mapa" aria-label="Seleccionar en el mapa">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Fotos del problema
+                        <span class="opcional-label">(opcional, máx. 3)</span>
+                    </label>
+                    <div class="imagenes-upload-area" id="imagenesArea">
+                        <div class="imagenes-placeholder" id="imagenesPlaceholder">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            <p>Arrastra fotos aquí o
+                                <span class="upload-link">selecciona archivos</span>
+                            </p>
+                            <p class="upload-hint">JPG, PNG o WEBP · Máx. 5MB por imagen</p>
+                        </div>
+                        <div class="imagenes-preview" id="imagenesPreview" style="display:none;"></div>
+                    </div>
+                    <input type="file" id="imagenesInput" name="imagenes"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple style="display:none;">
+                </div>
             </div>
-            <input type="file" id="imagenesInput" name="imagenes"
-                accept="image/jpeg,image/png,image/webp"
-                multiple style="display:none;">
+
         </div>
 
-        <div>
+        <!-- El mapa se abre aquí, a todo el ancho, para no estirar las columnas -->
+        <div id="mapa-container">
+            <div id="mapa"></div>
+            <div id="geo-banner">
+                <div class="geo-spinner"></div>
+                <span id="geo-texto">Obteniendo tu ubicación...</span>
+            </div>
+            <div class="mapa-info">Haz clic en el mapa para seleccionar la ubicación del problema</div>
+        </div>
+
+        <div class="form-acciones">
             <button type="submit" class="btn-enviar-animated">
-                <span class="button__icon-wrapper">
-                    <svg viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" class="button__icon-svg" width="10">
-                        <path d="M13.376 11.552l-.264-10.44-10.44-.24.024 2.28 6.96-.048L.2 12.56l1.488 1.488 9.432-9.432-.048 6.912 2.304.024z" fill="currentColor"></path>
-                    </svg>
-                    <svg viewBox="0 0 14 15" fill="none" width="10" xmlns="http://www.w3.org/2000/svg" class="button__icon-svg button__icon-svg--copy">
-                        <path d="M13.376 11.552l-.264-10.44-10.44-.24.024 2.28 6.96-.048L.2 12.56l1.488 1.488 9.432-9.432-.048 6.912 2.304.024z" fill="currentColor"></path>
-                    </svg>
+                <span class="flecha">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
                 </span>
                 Enviar reporte
             </button>
