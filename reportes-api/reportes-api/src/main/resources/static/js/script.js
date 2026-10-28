@@ -26,20 +26,12 @@ function setupRealtimeValidation() {
 document.addEventListener('DOMContentLoaded', function() {
     const lastView = sessionStorage.getItem('lastView');
     sessionStorage.removeItem('lastView');
-    if (lastView) {
-        setTimeout(() => {
-            const menuItemToActivate = document.querySelector(`.menu-item[data-view="${lastView}"]`);
-            if (menuItemToActivate) {
-                menuItemToActivate.click();
-            }
-        }, 100);
-    }
 
     const contentArea = document.getElementById('content-area');
     if (contentArea) {
         if (contentArea.innerHTML.trim() === '') {
-            const activeItem = document.querySelector('.menu-item.active');
-            if (activeItem) loadView(activeItem.getAttribute('data-view'));
+            const itemInicial = (lastView && itemDeVista(lastView)) || document.querySelector('.menu-item.active');
+            if (itemInicial) loadView(itemInicial.getAttribute('data-view'));
         }
         contentArea.addEventListener('click', function(event) {
             const deleteBtn = event.target.closest('.delete-reporte');
@@ -163,12 +155,32 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+let controladorVista = null;
+let numeroVista = 0;
+
+// Devuelve el botón del menú que corresponde a una vista (o null si la vista no es del menú)
+function itemDeVista(view) {
+    return Array.from(document.querySelectorAll('.menu-item[data-view]'))
+        .find(item => item.getAttribute('data-view') === view) || null;
+}
+
+// El menú siempre sigue a la vista que se está mostrando
+function marcarMenu(view) {
+    const activo = itemDeVista(view);
+    if (!activo) return;
+    document.querySelectorAll('.menu-item[data-view]').forEach(i => i.classList.toggle('active', i === activo));
+}
+
+// Cancela la petición anterior para que una respuesta lenta no pise a la nueva
+function cancelarVistaEnCurso() {
+    if (controladorVista) controladorVista.abort();
+    controladorVista = null;
+    numeroVista++;
+}
+
 function setupMenuNavigation() {
-    const menuItems = document.querySelectorAll('.menu-item[data-view]');
-    menuItems.forEach(item => {
+    document.querySelectorAll('.menu-item[data-view]').forEach(item => {
         item.addEventListener('click', function() {
-            menuItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
             const view = this.getAttribute('data-view');
             sessionStorage.setItem('lastView', view);
             loadView(view);
@@ -180,14 +192,21 @@ function loadView(view) {
     const contentArea = document.getElementById('content-area');
     if (!contentArea) return;
 
+    cancelarVistaEnCurso();
+    const mio = numeroVista;
+    controladorVista = new AbortController();
+
+    marcarMenu(view);
+    contentArea.scrollTop = 0;
     contentArea.innerHTML = skeletonLoader();
 
-    fetch(view)
+    fetch(view, { signal: controladorVista.signal })
         .then(response => {
             if (!response.ok) throw new Error('Error en la respuesta del servidor');
             return response.text();
         })
         .then(html => {
+            if (mio !== numeroVista) return;
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const fragment = doc.querySelector('[th\\:fragment], div, table');
@@ -208,6 +227,7 @@ function loadView(view) {
             }
         })
         .catch(error => {
+            if (error.name === 'AbortError' || mio !== numeroVista) return;
             console.error('Error al cargar la vista:', error);
             contentArea.innerHTML = '<div class="card error-message">Error al cargar el contenido.</div>';
         });
@@ -253,6 +273,7 @@ function setupPasswordToggles() {
 }
 
 function loadEditForm(url) {
+    cancelarVistaEnCurso();
     const activeMenuItem = document.querySelector('.menu-item.active');
     if (activeMenuItem) {
         sessionStorage.setItem('returnToView', activeMenuItem.getAttribute('data-view'));
@@ -498,6 +519,7 @@ function verMasReportes(btn) {
 }
 
 function verDetalleReporte(id) {
+    cancelarVistaEnCurso();
     currentReporteId = id;
     const contentArea = document.getElementById('content-area');
     if (!contentArea) return;

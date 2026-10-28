@@ -1,0 +1,83 @@
+/* base.css: colores, letras y recetas de la landing. Primero lo usa el panel; la landing y el login pasan después. */
+:root {
+    color-scheme: dark;
+    --negro: #070B10;
+    --oro: #D9A441;
+    --oro-oscuro: #B8862F;
+    --verde: #6FBF8E;
+    --rojo: #E5584B;
+    --texto: #EEF3F4;
+    --suave: #E6EEF0;
+    --vidrio: rgba(70, 82, 98, 0.30);
+    --vidrio-borde: rgba(255, 255, 255, 0.22);
+    --vidrio-denso: rgba(70, 82, 98, 0.40);
+    --flota: rgba(10, 14, 20, 0.88);
+    --borde: var(--vidrio-borde);
+    --radio: 16px;
+    --titulos: 'Bricolage Grotesque', 'Segoe UI', Helvetica, Arial, sans-serif;
+    --foto-panel: url('../images/hero.webp');
+}
+
+/* Receta 1: vidrio (lo grande y pocas veces repetido) */
+.vidrio, .card {
+    background: var(--vidrio);
+    border: 1px solid var(--vidrio-borde);
+    border-radius: var(--radio);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+/* Receta 2: lo que flota (listas, ventanas, avisos), más opaco para que se lea */
+.flota, .custom-select-dropdown, .modal-contenido, .filtro-panel {
+    background: var(--flota);
+    border: 1px solid var(--vidrio-borde);
+    border-radius: 12px;
+}
+
+/* Receta 3: botones en pastilla, blancos y dorados al pasar el mouse, como la landing */
+.btn, .btn-usuario, .btn-admin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 26px;
+    border: none;
+    border-radius: 50px;
+    background: #fff;
+    color: var(--negro);
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn:hover, .btn-usuario:hover, .btn-admin:hover { background: var(--oro); }
+
+.btn-contorno {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: #fff;
+}
+
+.btn-contorno:hover { background: #fff; color: var(--negro); }
+
+/* Receta 4: campos */
+.form-control, .custom-select-display {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid var(--vidrio-borde);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--texto);
+    font-size: 16px;
+}
+
+.form-control::placeholder { color: rgba(255, 255, 255, 0.62); }
+
+.form-control:focus, .custom-select-display.abierto {
+    outline: none;
+    border-color: var(--oro);
+    box-shadow: 0 0 0 3px rgba(217, 164, 65, 0.25);
+}
+
+option { background: #101820; color: var(--texto); }

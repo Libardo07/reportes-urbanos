@@ -1,55 +1,81 @@
-<div class="card" th:fragment="lista-reportes">
+<div th:fragment="lista-reportes">
+<div class="card">
     <div class="content-header">
         <h1>Mis Reportes</h1>
     </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Tipo</th>
-                <th>Estado</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="r : ${reportes}">
-                <td th:text="${r.titulo}"></td>
-                <td th:text="${#strings.replace(tiposMap[r.tipoReporteId], '_', ' ')}"></td>
-                <td><span class="badge"
-                        th:classappend="'badge-' + ${#strings.toLowerCase(#strings.replace(estadosMap[r.estadoReporteId], '_', ''))}"
-                        th:text="${#strings.replace(estadosMap[r.estadoReporteId], '_', ' ')}"></span></td>
-                <td th:text="${r.fechaModificacion != null ? #temporals.format(r.fechaModificacion, 'dd/MM/yyyy HH:mm') : 'Sin modificar'}"></td>
-                <td class="actions">
-                    <button class="action-btn ver-detalles-btn"
-                            th:attr="data-modal-id='modal-u-' + ${r.id}"
-                            title="Ver detalles">
-                        Ver
-                    </button>
 
-                    <span th:if="${#strings.equalsIgnoreCase(estadosMap[r.estadoReporteId], 'pendiente')}">
-                        <button class="action-btn edit-reporte"
-                                th:attr="data-id=${r.id}, data-url=@{'/usuario/editar-reporte/' + ${r.id}}"
-                                title="Editar">
-                            <img th:src="@{/images/icono-edit.png}" alt="Editar" loading="lazy">
-                        </button>
-                        <button class="action-btn delete-reporte"
-                                th:attr="data-id=${r.id},
-                                        data-url=@{'/usuario/eliminar-reporte/' + ${r.id}},
-                                        data-reload-view='/usuario/fragmento/lista-reportes'"
-                                title="Eliminar">
-                            <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
-                        </button>
-                    </span>
-                    <span th:unless="${#strings.equalsIgnoreCase(estadosMap[r.estadoReporteId], 'pendiente')}" title="No editable">
-                        <button class="action-btn" disabled><img th:src="@{/images/icono-edit.png}" alt="No editable" style="opacity:.4;" loading="lazy"></button>
-                        <button class="action-btn" disabled><img th:src="@{/images/icono-trash.png}" alt="No eliminable" style="opacity:.4;" loading="lazy"></button>
-                    </span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="tabla-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${reportes}">
+                    <td th:text="${r.titulo}"></td>
+                    <td th:text="${#strings.replace(tiposMap[r.tipoReporteId], '_', ' ')}"></td>
+                    <td><span class="badge"
+                            th:classappend="'badge-' + ${#strings.toLowerCase(#strings.replace(estadosMap[r.estadoReporteId], '_', ''))}"
+                            th:text="${#strings.replace(estadosMap[r.estadoReporteId], '_', ' ')}"></span></td>
+                    <td th:text="${r.fechaModificacion != null ? #temporals.format(r.fechaModificacion, 'dd/MM/yyyy HH:mm') : 'Sin modificar'}"></td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn ver-detalles-btn"
+                                    th:attr="data-modal-id='modal-u-' + ${r.id}"
+                                    title="Ver detalles">
+                                Ver
+                            </button>
 
+                            <span th:if="${#strings.equalsIgnoreCase(estadosMap[r.estadoReporteId], 'pendiente')}">
+                                <button class="action-btn edit-reporte"
+                                        th:attr="data-id=${r.id}, data-url=@{'/usuario/editar-reporte/' + ${r.id}}"
+                                        title="Editar">
+                                    <img th:src="@{/images/icono-edit.png}" alt="Editar" loading="lazy">
+                                </button>
+                                <button class="action-btn delete-reporte"
+                                        th:attr="data-id=${r.id},
+                                                data-url=@{'/usuario/eliminar-reporte/' + ${r.id}},
+                                                data-reload-view='/usuario/fragmento/lista-reportes'"
+                                        title="Eliminar">
+                                    <img th:src="@{/images/icono-trash.png}" alt="Eliminar">
+                                </button>
+                            </span>
+                            <span th:unless="${#strings.equalsIgnoreCase(estadosMap[r.estadoReporteId], 'pendiente')}" title="No editable">
+                                <button class="action-btn" disabled><img th:src="@{/images/icono-edit.png}" alt="No editable" style="opacity:.4;" loading="lazy"></button>
+                                <button class="action-btn" disabled><img th:src="@{/images/icono-trash.png}" alt="No eliminable" style="opacity:.4;" loading="lazy"></button>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="paginacion" th:if="${totalPaginas > 1}">
+        <button class="paginacion-btn"
+                th:disabled="${!hayAnterior}"
+                th:attr="data-page=${paginaActual - 1}"
+                onclick="cambiarPaginaUsuario(this)">
+            ← Anterior
+        </button>
+        <span class="paginacion-info">
+            Página <strong th:text="${paginaActual + 1}"></strong> de <strong th:text="${totalPaginas}"></strong>
+        </span>
+        <button class="paginacion-btn"
+                th:disabled="${!haySiguiente}"
+                th:attr="data-page=${paginaActual + 1}"
+                onclick="cambiarPaginaUsuario(this)">
+            Siguiente →
+        </button>
+    </div>
+</div>
+
+<!-- Las ventanas van fuera de la tarjeta: el vidrio atrapa lo que es "fixed" y las dejaba debajo del menú -->
     <div th:each="r : ${reportes}">
         <div th:id="'modal-u-' + ${r.id}"
             class="modal-overlay"
@@ -119,21 +145,4 @@
         </div>
     </div>
 
-    <div class="paginacion" th:if="${totalPaginas > 1}">
-        <button class="paginacion-btn"
-                th:disabled="${!hayAnterior}"
-                th:attr="data-page=${paginaActual - 1}"
-                onclick="cambiarPaginaUsuario(this)">
-            ← Anterior
-        </button>
-        <span class="paginacion-info">
-            Página <strong th:text="${paginaActual + 1}"></strong> de <strong th:text="${totalPaginas}"></strong>
-        </span>
-        <button class="paginacion-btn"
-                th:disabled="${!haySiguiente}"
-                th:attr="data-page=${paginaActual + 1}"
-                onclick="cambiarPaginaUsuario(this)">
-            Siguiente →
-        </button>
-    </div>
 </div>
