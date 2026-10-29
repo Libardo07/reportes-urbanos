@@ -132,28 +132,32 @@ public class ComentarioController {
         return "fragmentos/detalle_reporte :: detalle-reporte";
     }
 
-    // Permitir responder un comentario dentro de un reporte
+    // Permitir responder un comentario o una respuesta dentro de un reporte
     @PostMapping("/reporte/{id}/responder/{parentId}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> responder(
             @PathVariable String id,
             @PathVariable String parentId,
-            @RequestParam String texto) {
+            @RequestParam String texto,
+            @RequestParam(required = false) String respondeAId) {
 
         Usuario usuario = getUsuarioLogueado();
         if (usuario == null)
             return ResponseEntity.status(401).body(Map.of("error", "Debes iniciar sesión."));
 
         try {
-            Comentario c = comentarioService.responderComentario(texto, usuario, id, parentId);
+            Comentario c = comentarioService.responderComentario(texto, usuario, id, parentId, respondeAId);
             return ResponseEntity.ok(Map.of(
-            "success", true,
-            "id",      c.getId(),
-            "texto",   c.getTexto(),
-            "nombre",  c.getUsuarioNombre(),
-            "inicial", c.getUsuarioNombre().substring(0, 1).toUpperCase(),
-            "fecha",   c.getFechaCreacion().toString()
-        ));
+                "success",         true,
+                "id",              c.getId(),
+                "texto",           c.getTexto(),
+                "nombre",          c.getUsuarioNombre(),
+                "inicial",         c.getUsuarioNombre().substring(0, 1).toUpperCase(),
+                "fecha",           c.getFechaCreacion().toString(),
+                "parentId",        c.getParentId(),
+                "respondeAId",     c.getRespondeAId() != null ? c.getRespondeAId() : "",
+                "respondeANombre", c.getRespondeANombre() != null ? c.getRespondeANombre() : ""
+            ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

@@ -199,6 +199,21 @@
                                         </svg>
                                     </button>
                                 </div>
+
+                                <!-- Pastilla "responde a": solo sale si se contestó a otra respuesta -->
+                                <button type="button" class="det-reply-a"
+                                        th:if="${r.respondeAId != null and r.respondeAId != c.id}"
+                                        th:attr="data-target=${r.respondeAId}"
+                                        onclick="irAComentario(this)"
+                                        title="Ir al comentario">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                        <polyline points="9 14 4 9 9 4"/>
+                                        <path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
+                                    </svg>
+                                    <span th:text="${r.respondeANombre}"></span>
+                                </button>
+
                                 <p class="det-comentario-texto det-reply-texto" th:text="${r.texto}"></p>
                                 <button th:if="${usuario != null}"
                                         class="det-btn-responder"
@@ -215,32 +230,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="det-reply-form" style="display:none;"
-                        th:attr="data-reporte-id=${reporte.id}, data-parent-id=${c.id}">
-                        <div class="det-reply-input-row">
-                            <div class="det-reply-avatar"
-                                th:if="${usuario != null}"
-                                th:attr="data-nombre=${usuario.nombre}"></div>
-                            <textarea class="det-reply-textarea" maxlength="500" rows="2"
-                                    th:placeholder="'Responder a ' + ${c.usuarioNombre} + '...'"></textarea>
-                        </div>
-                        <div class="det-reply-footer">
-                            <span class="det-reply-char"><span class="det-reply-char-count">0</span>/500</span>
-                            <div class="det-reply-actions-btns">
-                                <button class="det-reply-cancel-btn" onclick="cerrarReplyForm(this)">Cancelar</button>
-                                <button class="det-reply-send-btn" onclick="enviarRespuestaDet(this)">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                                        <line x1="22" y1="2" x2="11" y2="13"/>
-                                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                                    </svg>
-                                    Responder
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>

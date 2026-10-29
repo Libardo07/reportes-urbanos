@@ -1,15 +1,35 @@
 'use strict';
+
 function esc(s) {
     return String(s)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+// Nombres de todas las personas que comentaron en este reporte (el más largo primero)
+function nombresDelHilo() {
+    const nombres = new Set();
+    document.querySelectorAll('.det-comentario-nombre').forEach(n => {
+        const nombre = n.textContent.trim();
+        if (nombre) nombres.add(nombre);
+    });
+    return Array.from(nombres).sort((a, b) => b.length - a.length);
+}
+
+// Respuestas ANTIGUAS que empiezan con "@Nombre ...": se resalta el nombre completo,
+// aunque tenga varias palabras. Las respuestas nuevas ya no usan esto: guardan a quién responden.
 function resaltarMencion(texto) {
-    return esc(texto).replace(
-        /^(@[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s+[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*)\s/,
-        '<span class="det-mention">$1</span> '
-    );
+    const seguro = esc(texto);
+    if (seguro.charAt(0) !== '@') return seguro;
+
+    const nombres = nombresDelHilo();
+    for (let i = 0; i < nombres.length; i++) {
+        const marca = '@' + esc(nombres[i]);
+        if (seguro.toLowerCase().startsWith(marca.toLowerCase())) {
+            return '<span class="det-mention">' + seguro.slice(0, marca.length) + '</span>' + seguro.slice(marca.length);
+        }
+    }
+    return seguro;
 }
 
 function sacarIniciales(nombre) {
@@ -18,6 +38,11 @@ function sacarIniciales(nombre) {
     return partes.length >= 2
         ? (partes[0][0] + partes[1][0]).toUpperCase()
         : partes[0][0].toUpperCase();
+}
+
+function miNombreActual() {
+    const avatar = document.querySelector('.det-avatar');
+    return (avatar && avatar.getAttribute('data-nombre')) || '?';
 }
 
 function avatarWrapComentario(nombre, conLinea) {
@@ -36,25 +61,50 @@ function avatarWrapReply(nombre) {
         </div>`;
 }
 
-function htmlReplyForm(reporteId, parentId, nombrePadre, miNombre) {
+const ICONO_RESPONDER = `
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <polyline points="9 14 4 9 9 4"/>
+        <path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
+    </svg>`;
+
+const ICONO_ENVIAR = `
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+    </svg>`;
+
+// Pastilla "↪ Nombre": dice a qué comentario exacto se está respondiendo
+function htmlPastillaRespuesta(respondeAId, nombre) {
     return `
-        <div class="det-reply-form" style="display:none;"
-            data-reporte-id="${reporteId}" data-parent-id="${parentId}">
+        <button type="button" class="det-reply-a" data-target="${esc(respondeAId)}"
+                onclick="irAComentario(this)" title="Ir al comentario de ${esc(nombre)}">
+            ${ICONO_RESPONDER}
+            <span>${esc(nombre)}</span>
+        </button>`;
+}
+
+function htmlFormRespuesta(reporteId, parentId, respondeAId, nombreObjetivo) {
+    return `
+        <div class="det-reply-form" data-reporte-id="${esc(reporteId)}"
+            data-parent-id="${esc(parentId)}" data-responde-a-id="${esc(respondeAId)}">
+            <div class="det-reply-para">
+                Respondiendo a <strong>${esc(nombreObjetivo)}</strong>
+                <button type="button" class="det-reply-para-x" aria-label="Cancelar la respuesta"
+                        onclick="cerrarReplyForm(this)">&times;</button>
+            </div>
             <div class="det-reply-input-row">
-                <div class="det-reply-avatar">${esc(sacarIniciales(miNombre))}</div>
+                <div class="det-reply-avatar">${esc(sacarIniciales(miNombreActual()))}</div>
                 <textarea class="det-reply-textarea" maxlength="500" rows="2"
-                        placeholder="Responder a ${esc(nombrePadre)}..."></textarea>
+                        placeholder="Escribe tu respuesta..."></textarea>
             </div>
             <div class="det-reply-footer">
                 <span class="det-reply-char"><span class="det-reply-char-count">0</span>/500</span>
                 <div class="det-reply-actions-btns">
-                    <button class="det-reply-cancel-btn" onclick="cerrarReplyForm(this)">Cancelar</button>
-                    <button class="det-reply-send-btn" onclick="enviarRespuestaDet(this)">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                            <line x1="22" y1="2" x2="11" y2="13"/>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                        </svg>
+                    <button type="button" class="det-reply-cancel-btn" onclick="cerrarReplyForm(this)">Cancelar</button>
+                    <button type="button" class="det-reply-send-btn" onclick="enviarRespuestaDet(this)">
+                        ${ICONO_ENVIAR}
                         Responder
                     </button>
                 </div>
@@ -116,91 +166,78 @@ window.toggleVerRespuestas = function(btn) {
     actualizarVerBtn(body, repliesDiv, estaOculto);
 };
 
-window.toggleReplyForm = function(btn) {
-    const body   = btn.closest('.det-comentario-body');
-    const nombre = btn.getAttribute('data-nombre');
+/* ---------- Responder: siempre se sabe a qué comentario exacto se contesta ---------- */
 
-    let form = body.querySelector('.det-reply-form');
-    if (!form) {
-        const comentarioDiv = btn.closest('.det-comentario');
-        const reporteId     = btn.getAttribute('data-reporte-id');
-        const parentId      = comentarioDiv.getAttribute('data-id');
-        const miNombre      = btn.getAttribute('data-mi-nombre') || btn.getAttribute('data-mi-inicial') || '?';
-        body.insertAdjacentHTML('beforeend', htmlReplyForm(reporteId, parentId, nombre, miNombre));
-        form = body.querySelector('.det-reply-form');
-    }
+function cerrarFormsRespuesta() {
+    document.querySelectorAll('.det-reply-form').forEach(f => f.remove());
+}
 
-    const estaVisible = form.style.display === 'flex';
-
-    document.querySelectorAll('.det-reply-form').forEach(f => {
-        f.style.display = 'none';
-    });
-
-    if (!estaVisible) {
-        form.style.display = 'flex';
-        const ta = form.querySelector('.det-reply-textarea');
-        ta.value = `@${nombre} `;
-        ta.focus();
-        ta.selectionStart = ta.selectionEnd = ta.value.length;
-        const cc = form.querySelector('.det-reply-char-count');
-        if (!ta._listenerRegistrado) {
-            ta.addEventListener('input', () => cc.textContent = ta.value.length);
-            ta._listenerRegistrado = true;
-        }
-    }
-};
-
-window.responderARespuesta = function(btn) {
-    const nombre       = btn.getAttribute('data-nombre');
-    const comentarioId = btn.getAttribute('data-comentario-id');
-    const replyItem    = btn.closest('.det-reply-item');
-    const comentarioDiv = document.querySelector(`.det-comentario[data-id="${comentarioId}"]`);
+function abrirFormRespuesta(btn) {
+    const nombre        = btn.getAttribute('data-nombre');
+    const replyItem     = btn.closest('.det-reply-item');
+    const comentarioDiv = btn.closest('.det-comentario');
     if (!comentarioDiv) return;
 
-    const reporteId = document.getElementById('det-btn-enviar')?.getAttribute('data-reporte-id') || '';
-    const miNombre  = document.querySelector('.det-avatar')?.getAttribute('data-nombre') || '?';
+    const parentId    = comentarioDiv.getAttribute('data-id');
+    const respondeAId = replyItem ? replyItem.getAttribute('data-id') : parentId;
+    const btnEnviar   = document.getElementById('det-btn-enviar');
+    const reporteId   = btnEnviar ? btnEnviar.getAttribute('data-reporte-id') : '';
 
-    document.querySelectorAll('.det-reply-form-temp').forEach(f => f.remove());
-    document.querySelectorAll('.det-reply-form').forEach(f => f.style.display = 'none');
+    // Si ya está abierta la respuesta a este mismo comentario, se cierra
+    const yaAbierta = document.querySelector('.det-reply-form[data-responde-a-id="' + respondeAId + '"]');
+    cerrarFormsRespuesta();
+    if (yaAbierta) return;
 
-    const tempForm = document.createElement('div');
-    tempForm.className = 'det-reply-form det-reply-form-temp';
-    tempForm.setAttribute('data-reporte-id', reporteId);
-    tempForm.setAttribute('data-parent-id', comentarioId);
-    tempForm.style.display = 'flex';
-    tempForm.innerHTML = `
-        <div class="det-reply-input-row">
-            <div class="det-reply-avatar">${esc(sacarIniciales(miNombre))}</div>
-            <textarea class="det-reply-textarea" maxlength="500" rows="2"
-                    placeholder="Responder a ${esc(nombre)}..."></textarea>
-        </div>
-        <div class="det-reply-footer">
-            <span class="det-reply-char"><span class="det-reply-char-count">0</span>/500</span>
-            <div class="det-reply-actions-btns">
-                <button class="det-reply-cancel-btn" onclick="this.closest('.det-reply-form-temp').remove()">Cancelar</button>
-                <button class="det-reply-send-btn" onclick="enviarRespuestaDet(this)">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                        <line x1="22" y1="2" x2="11" y2="13"/>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                    </svg>
-                    Responder
-                </button>
-            </div>
-        </div>`;
+    const contenedor = document.createElement('div');
+    contenedor.innerHTML = htmlFormRespuesta(reporteId, parentId, respondeAId, nombre).trim();
+    const form = contenedor.firstElementChild;
+    form.style.display = 'flex';
 
-    replyItem.insertAdjacentElement('afterend', tempForm);
+    if (replyItem) {
+        replyItem.insertAdjacentElement('afterend', form);
+    } else {
+        comentarioDiv.querySelector('.det-comentario-body').appendChild(form);
+    }
 
-    const ta = tempForm.querySelector('.det-reply-textarea');
-    ta.value = `@${nombre} `;
+    const ta = form.querySelector('.det-reply-textarea');
+    const cc = form.querySelector('.det-reply-char-count');
+    ta.addEventListener('input', () => { cc.textContent = ta.value.length; });
+    ta.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            enviarRespuestaDet(form.querySelector('.det-reply-send-btn'));
+        }
+    });
     ta.focus();
-    ta.selectionStart = ta.selectionEnd = ta.value.length;
-    const cc = tempForm.querySelector('.det-reply-char-count');
-    ta.addEventListener('input', () => cc.textContent = ta.value.length);
-};
+}
+
+window.toggleReplyForm = function(btn) { abrirFormRespuesta(btn); };
+window.responderARespuesta = function(btn) { abrirFormRespuesta(btn); };
 
 window.cerrarReplyForm = function(btn) {
-    btn.closest('.det-reply-form').style.display = 'none';
+    const form = btn.closest('.det-reply-form');
+    if (form) form.remove();
+};
+
+// Al tocar la pastilla, la página baja hasta el comentario original y lo resalta un momento
+window.irAComentario = function(pastilla) {
+    const id = pastilla.getAttribute('data-target');
+    const destino = document.querySelector(
+        '.det-comentario[data-id="' + id + '"], .det-reply-item[data-id="' + id + '"]');
+    if (!destino) return;   // el comentario original fue eliminado
+
+    const hilo = destino.closest('.det-replies');
+    if (hilo && hilo.classList.contains('det-replies-ocultas')) {
+        const cuerpo = hilo.closest('.det-comentario-body');
+        hilo.classList.remove('det-replies-ocultas');
+        actualizarVerBtn(cuerpo, hilo, true);
+    }
+
+    destino.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    destino.classList.remove('det-resaltado');
+    void destino.offsetWidth;
+    destino.classList.add('det-resaltado');
+    setTimeout(() => destino.classList.remove('det-resaltado'), 1800);
 };
 
 window.enviarComentarioDet = function(btn) {
@@ -224,7 +261,7 @@ window.enviarComentarioDet = function(btn) {
     btn.disabled    = true;
     btn.textContent = 'Enviando...';
 
-    const miNombre = document.querySelector('.det-avatar')?.getAttribute('data-nombre') || '?';
+    const miNombre = miNombreActual();
 
     fetch(`/reporte/${reporteId}/comentar`, { method: 'POST', body: new URLSearchParams({ texto }) })
     .then(r => r.json())
@@ -238,7 +275,7 @@ window.enviarComentarioDet = function(btn) {
             if (vacio) vacio.remove();
 
             const ahora = new Date();
-            const fecha = ahora.toLocaleDateString('es-CO') + ' ' + ahora.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+            const fecha = ahora.toLocaleDateString('es-CO') + ' ' + ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
 
             const div = document.createElement('div');
             div.className = 'det-comentario';
@@ -264,11 +301,7 @@ window.enviarComentarioDet = function(btn) {
                             data-reporte-id="${reporteId}"
                             data-mi-nombre="${esc(miNombre)}"
                             onclick="toggleReplyForm(this)">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                            <polyline points="9 14 4 9 9 4"/>
-                            <path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
-                        </svg>
+                        ${ICONO_RESPONDER}
                         Responder
                     </button>
                 </div>`;
@@ -286,27 +319,34 @@ window.enviarComentarioDet = function(btn) {
 };
 
 window.enviarRespuestaDet = function(btn) {
-    const form      = btn.closest('.det-reply-form');
-    const ta        = form.querySelector('.det-reply-textarea');
-    const texto     = ta.value.trim();
-    const reporteId = form.getAttribute('data-reporte-id');
-    const parentId  = form.getAttribute('data-parent-id');
+    const form        = btn.closest('.det-reply-form');
+    const ta          = form.querySelector('.det-reply-textarea');
+    const texto       = ta.value.trim();
+    const reporteId   = form.getAttribute('data-reporte-id');
+    const parentId    = form.getAttribute('data-parent-id');
+    const respondeAId = form.getAttribute('data-responde-a-id');
     if (!texto) return;
 
     btn.disabled    = true;
     btn.textContent = 'Enviando...';
 
-    fetch(`/reporte/${reporteId}/responder/${parentId}`, { method: 'POST', body: new URLSearchParams({ texto }) })
+    fetch(`/reporte/${reporteId}/responder/${parentId}`, {
+        method: 'POST',
+        body: new URLSearchParams({ texto, respondeAId })
+    })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            form.style.display = 'none';
-            ta.value = '';
+            form.remove();
             actualizarContadorDet(1);
 
-            const comentarioDiv = document.querySelector(`.det-comentario[data-id="${parentId}"]`);
-            const body          = comentarioDiv.querySelector('.det-comentario-body');
-            let repliesDiv      = body.querySelector('.det-replies');
+            // El servidor dice en qué hilo quedó la respuesta
+            const raizId        = data.parentId || parentId;
+            const comentarioDiv = document.querySelector(`.det-comentario[data-id="${raizId}"]`);
+            if (!comentarioDiv) return;
+
+            const body     = comentarioDiv.querySelector('.det-comentario-body');
+            let repliesDiv = body.querySelector('.det-replies');
 
             if (!repliesDiv) {
                 repliesDiv = document.createElement('div');
@@ -318,12 +358,17 @@ window.enviarRespuestaDet = function(btn) {
             }
 
             const ahora = new Date();
-            const fecha = ahora.toLocaleDateString('es-CO') + ' ' + ahora.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+            const fecha = ahora.toLocaleDateString('es-CO') + ' ' + ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
 
             const replyEl = document.createElement('div');
             replyEl.className = 'det-reply-item';
             replyEl.setAttribute('data-id', data.id);
             const esAdmin = document.querySelector('.det-card')?.getAttribute('data-es-admin') === 'true';
+
+            // La pastilla solo aparece si se respondió a otra respuesta (no al comentario principal)
+            const pastilla = (data.respondeAId && data.respondeAId !== raizId && data.respondeANombre)
+                ? htmlPastillaRespuesta(data.respondeAId, data.respondeANombre)
+                : '';
 
             replyEl.innerHTML = `
             ${avatarWrapReply(data.nombre)}
@@ -338,16 +383,13 @@ window.enviarRespuestaDet = function(btn) {
                         </svg>
                     </button>` : ''}
                 </div>
-                <p class="det-comentario-texto">${resaltarMencion(data.texto)}</p>
+                ${pastilla}
+                <p class="det-comentario-texto det-reply-texto">${esc(data.texto)}</p>
                 <button class="det-btn-responder"
                         data-nombre="${esc(data.nombre)}"
-                        data-comentario-id="${parentId}"
+                        data-comentario-id="${raizId}"
                         onclick="responderARespuesta(this)">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                        <polyline points="9 14 4 9 9 4"/>
-                        <path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
-                    </svg>
+                    ${ICONO_RESPONDER}
                     Responder
                 </button>
             </div>`;
@@ -363,13 +405,16 @@ window.enviarRespuestaDet = function(btn) {
             actualizarLineaAvatar(comentarioDiv, repliesDiv);
 
         } else {
+            btn.disabled = false;
             alert(data.error || 'Error al responder.');
         }
     })
-    .catch(() => { alert('Error de conexión.'); })
+    .catch(() => { btn.disabled = false; alert('Error de conexión.'); })
     .finally(() => {
-        btn.disabled = false;
-        btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Responder`;
+        if (btn.isConnected) {
+            btn.disabled = false;
+            btn.innerHTML = `${ICONO_ENVIAR} Responder`;
+        }
     });
 };
 
@@ -422,12 +467,12 @@ function initInicialesComentarios() {
 }
 
 function inicializarComentarios() {
+    // Respuestas antiguas con "@Nombre ..." al principio: se resalta el nombre completo.
+    // Las que ya traen la pastilla de "responde a" no necesitan esto.
     document.querySelectorAll('.det-reply-texto').forEach(p => {
-        const texto = p.textContent;
-        p.innerHTML = esc(texto).replace(
-            /^(@[\w\s]+?)(\s)/,
-            '<span class="det-mention">$1</span>$2'
-        );
+        const item = p.closest('.det-reply-item');
+        if (item && item.querySelector('.det-reply-a')) return;
+        p.innerHTML = resaltarMencion(p.textContent);
     });
 
     document.querySelectorAll('.det-replies').forEach(repliesDiv => {
@@ -456,5 +501,5 @@ if (document.readyState === 'loading') {
 
 document.addEventListener('click', function(e) {
     const overlay = document.getElementById('det-modal-eliminar');
-    if (overlay && e.target === overlay) cerrarModalEliminar();
+    if (overlay && e.target === overlay && typeof cerrarModalEliminar === 'function') cerrarModalEliminar();
 });
