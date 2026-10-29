@@ -37,14 +37,34 @@ public class ComentarioService {
         return comentarioRepository.save(c);
     }
 
-    // Crea y guarda una respuesta a un comentario en un reporte, validando el contenido del texto
+    // Responde al comentario principal (compatibilidad con el código anterior)
     public Comentario responderComentario(String texto, Usuario usuario, String reporteId, String parentId) {
+        return responderComentario(texto, usuario, reporteId, parentId, parentId);
+    }
+
+    // Crea una respuesta guardando A QUÉ comentario exacto contesta (el principal u otra respuesta).
+    // El hilo siempre es el del comentario principal: si se responde a una respuesta,
+    // la nueva respuesta queda en el mismo hilo y apunta a esa respuesta.
+    public Comentario responderComentario(String texto, Usuario usuario, String reporteId,
+                                          String parentId, String respondeAId) {
         if (texto == null || texto.trim().isBlank())
             throw new IllegalArgumentException("La respuesta no puede estar vacía.");
         if (texto.trim().length() > 500)
             throw new IllegalArgumentException("Máximo 500 caracteres.");
+
+        String objetivoId = (respondeAId == null || respondeAId.isBlank()) ? parentId : respondeAId;
+        Comentario objetivo = comentarioRepository.findById(objetivoId)
+            .orElseThrow(() -> new IllegalArgumentException("El comentario al que respondes ya no existe."));
+
+        if (!reporteId.equals(objetivo.getReporteId()))
+            throw new IllegalArgumentException("El comentario no pertenece a este reporte.");
+
+        String raizId = objetivo.getParentId() != null ? objetivo.getParentId() : objetivo.getId();
+
         Comentario c = new Comentario(texto.trim(), usuario, reporteId);
-        c.setParentId(parentId);
+        c.setParentId(raizId);
+        c.setRespondeAId(objetivo.getId());
+        c.setRespondeANombre(objetivo.getUsuarioNombre());
         return comentarioRepository.save(c);
     }
 
