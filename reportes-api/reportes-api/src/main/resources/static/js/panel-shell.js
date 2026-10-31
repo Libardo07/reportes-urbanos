@@ -52,4 +52,16 @@
         nombreEl.textContent = corto;
         nombreEl.title = completo;
     }
+
+        // Ojo de la contraseña (el mismo del login)
+    document.addEventListener('click', (e) => {
+        const boton = e.target.closest('.ver-clave');
+        if (!boton) return;
+        const campo = boton.parentElement.querySelector('input');
+        if (!campo) return;
+        const visible = campo.type === 'password';
+        campo.type = visible ? 'text' : 'password';
+        boton.setAttribute('aria-pressed', String(visible));
+        boton.setAttribute('aria-label', visible ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
 })();
