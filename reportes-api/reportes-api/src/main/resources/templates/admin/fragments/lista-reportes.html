@@ -44,7 +44,7 @@
                                         th:attr="data-id=${r.id}"
                                         th:disabled="${estadosMap[r.estadoReporteId] == 'Resuelto'}">
                                     <option value="" selected disabled>Estado</option>
-                                    <option th:value="'En_Proceso'" th:selected="${estadosMap[r.estadoReporteId] == 'En_Proceso'}">En Proceso</option>
+                                    <option th:value="'En_Proceso'" th:selected="${estadosMap[r.estadoReporteId] == 'En_Proceso'}" th:disabled="${estadosMap[r.estadoReporteId] == 'En_Proceso'}">En Proceso</option>
                                     <option th:value="'Resuelto'" th:selected="${estadosMap[r.estadoReporteId] == 'Resuelto'}">Resuelto</option>
                                 </select>
                             </div>

@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const reporteId = event.target.getAttribute('data-id');
                 const nuevoEstado = event.target.value;
                 if (nuevoEstado) {
-                    confirmarCambioEstado(reporteId, nuevoEstado);
+                    confirmarCambioEstado(reporteId, nuevoEstado, event.target);
                 }
             }
         });
@@ -327,7 +327,7 @@ function confirmDeleteReporte(reporteId, url, reloadViewUrl) {
     );
 }
 
-function confirmarCambioEstado(reporteId, nuevoEstado) {
+function confirmarCambioEstado(reporteId, nuevoEstado, select) {
     showConfirmDialog(
         '¿Cambiar el estado del reporte?',
         `El reporte cambiará a estado: ${nuevoEstado.replace('_', ' ')}.`,
@@ -347,6 +347,12 @@ function confirmarCambioEstado(reporteId, nuevoEstado) {
                     }
                 })
                 .catch(error => showErrorMessage('Error en la solicitud: ' + error.message));
+        },
+        () => {
+            // Si dice "No", el selector vuelve al estado que tenía el reporte
+            if (!select) return;
+            const original = Array.from(select.options).find(o => o.defaultSelected);
+            select.value = original ? original.value : '';
         }
     );
 }
@@ -359,11 +365,14 @@ function showErrorMessage(message) {
     Swal.fire({ icon: 'error', title: 'Error', text: message, confirmButtonText: 'OK' });
 }
 
-function showConfirmDialog(title, text, onConfirm) {
+function showConfirmDialog(title, text, onConfirm, onCancel) {
     Swal.fire({
         title: title, text: text, icon: 'warning',
         showCancelButton: true, confirmButtonText: 'Sí', cancelButtonText: 'No'
-    }).then((result) => { if (result.isConfirmed) onConfirm(); });
+    }).then((result) => {
+        if (result.isConfirmed) onConfirm();
+        else if (onCancel) onCancel();
+    });
 }
 
 function logout() {
