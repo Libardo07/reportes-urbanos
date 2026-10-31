@@ -175,6 +175,8 @@ function marcarMenu(view) {
 function cancelarVistaEnCurso() {
     if (controladorVista) controladorVista.abort();
     controladorVista = null;
+    filtroActivo = false;
+    filtroParams = '';
     numeroVista++;
 }
 
@@ -477,8 +479,8 @@ function buscarReportes(q, page) {
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const fragment = doc.querySelector('.card');
-            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+            contentArea.innerHTML = doc.body.firstElementChild ? doc.body.firstElementChild.outerHTML : '';
+            restaurarFiltros();
         })
         .catch(console.error);
 }
@@ -531,8 +533,8 @@ function verDetalleReporte(id) {
         .then(html => {
             const parser   = new DOMParser();
             const doc      = parser.parseFromString(html, 'text/html');
-            const fragment = doc.querySelector('.card');
-            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+            contentArea.innerHTML = doc.body.firstElementChild ? doc.body.firstElementChild.outerHTML : '';
+            restaurarFiltros();
             if (typeof inicializarComentarios === 'function') {
                 inicializarComentarios();
             }
@@ -598,6 +600,23 @@ function skeletonLoader() {
 let filtroBarriosData = [];
 let filtroActivo = false;
 let filtroParams = '';
+let filtroBarrioNombre = '';
+
+// Vuelve a poner en el panel los filtros aplicados (la lista se repinta y el panel quedaba en blanco)
+function restaurarFiltros() {
+    if (!filtroActivo) return;
+    const p = new URLSearchParams(filtroParams);
+    const poner = (id, valor) => { const el = document.getElementById(id); if (el && valor) el.value = valor; };
+    poner('filtroEstadoSelect', p.get('estadoId'));
+    poner('filtroTipoSelect', p.get('tipoId'));
+    poner('filtroBarrioId', p.get('barrioId'));
+    poner('filtroFechaDesde', p.get('fechaDesde'));
+    poner('filtroHoraDesde', p.get('horaDesde'));
+    poner('filtroFechaHasta', p.get('fechaHasta'));
+    poner('filtroHoraHasta', p.get('horaHasta'));
+    const vista = document.getElementById('filtroBarrioDisplay');
+    if (vista && p.get('barrioId') && filtroBarrioNombre) vista.textContent = filtroBarrioNombre;
+}
 
 function toggleFiltroPanel() {
     const panel = document.getElementById('filtroPanel');
@@ -691,6 +710,9 @@ function limpiarFiltros() {
     document.getElementById('filtroHoraDesde').value = '';
     document.getElementById('filtroFechaHasta').value = '';
     document.getElementById('filtroHoraHasta').value = '';
+    filtroActivo = false;
+    filtroParams = '';
+    filtroBarrioNombre = '';
     renderFiltroBarrios('');
 
     const contentArea = document.getElementById('content-area');
@@ -699,8 +721,8 @@ function limpiarFiltros() {
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const fragment = doc.querySelector('.card');
-            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+            contentArea.innerHTML = doc.body.firstElementChild ? doc.body.firstElementChild.outerHTML : '';
+            restaurarFiltros();
             const overlay = document.getElementById('filtroOverlay');
             if (overlay) overlay.classList.remove('activo');
         })
@@ -735,15 +757,16 @@ function aplicarFiltros() {
     contentArea.innerHTML = skeletonLoader();
 
     filtroActivo = true;
-    filtroParams = params.toString();  
+    filtroParams = params.toString();
+    filtroBarrioNombre = barrioId ? barrioNombre : '';
 
     fetch(`/admin/fragmento/filtrar-reportes?${params.toString()}`)
         .then(r => r.text())
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const fragment = doc.querySelector('.card');
-            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+            contentArea.innerHTML = doc.body.firstElementChild ? doc.body.firstElementChild.outerHTML : '';
+            restaurarFiltros();
         })
         .catch(console.error);
 }
@@ -802,8 +825,8 @@ function cambiarPaginaAdmin(btn) {
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const fragment = doc.querySelector('.card');
-            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+            contentArea.innerHTML = doc.body.firstElementChild ? doc.body.firstElementChild.outerHTML : '';
+            restaurarFiltros();
         })
         .catch(console.error);
 }
@@ -818,8 +841,8 @@ function cambiarPaginaUsuario(btn) {
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const fragment = doc.querySelector('.card');
-            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+            contentArea.innerHTML = doc.body.firstElementChild ? doc.body.firstElementChild.outerHTML : '';
+            restaurarFiltros();
         })
         .catch(console.error);
 }
@@ -835,8 +858,8 @@ function cambiarPaginaExplorar(btn) {
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const fragment = doc.querySelector('.card');
-            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+            contentArea.innerHTML = doc.body.firstElementChild ? doc.body.firstElementChild.outerHTML : '';
+            restaurarFiltros();
         })
         .catch(console.error);
 }
@@ -851,8 +874,8 @@ function cambiarPaginaFiltro(btn) {
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const fragment = doc.querySelector('.card');
-            if (fragment) contentArea.innerHTML = fragment.outerHTML;
+            contentArea.innerHTML = doc.body.firstElementChild ? doc.body.firstElementChild.outerHTML : '';
+            restaurarFiltros();
         })
         .catch(console.error);
 }

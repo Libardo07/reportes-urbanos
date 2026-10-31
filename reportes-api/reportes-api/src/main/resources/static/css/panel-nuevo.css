@@ -747,3 +747,83 @@ body.dashboard-container {
         background: rgba(217, 164, 65, 0.18);
     }
 }
+
+/* ===== PANEL DEL ADMINISTRADOR (pegar al final de panel-nuevo.css) ===== */
+
+/* Menú: el admin tiene más opciones, se ahorra espacio en pantallas medianas */
+.admin .topnav .menu-item { padding: 8px 14px; }
+@media (max-width: 1280px) { .admin .topnav-usuario .details { display: none; } }
+
+/* Inicio */
+.admin .stats-grid .stat-card:nth-child(7) { --c: #D3DEE0; }
+.admin .stats-grid .stat-card:nth-child(8) { --c: #D9A441; }
+.admin .stats-grid .stat-ancho { grid-column: 1 / -1; }
+.atender { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.atender-num { font-family: var(--titulos); font-size: 72px; font-weight: 800; line-height: 1; color: var(--oro); }
+.atender p { font-size: 16px; color: var(--suave); }
+
+/* Lista de reportes: columnas de la tabla del admin */
+.dashboard-container.admin .table th:nth-child(1) { width: 16%; }
+.dashboard-container.admin .table th:nth-child(2) { width: 20%; }
+.dashboard-container.admin .table th:nth-child(3) { width: 13%; }
+.dashboard-container.admin .table th:nth-child(4) { width: 15%; }
+.dashboard-container.admin .table th:nth-child(5) { width: 12%; }
+.dashboard-container.admin .table th:nth-child(6) { width: 24%; }
+
+/* Panel de filtros: fuera de la tarjeta, por encima de la barra y con el mismo vidrio */
+.filtro-overlay { z-index: 3000; background: rgba(4, 7, 11, 0.45); }
+
+.filtro-panel {
+    z-index: 3100;
+    height: calc(100dvh / var(--zoom, 1));
+    border-left-color: var(--vidrio-borde);
+    background: var(--vidrio-denso);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.filtro-panel-header, .filtro-acciones { background: rgba(10, 14, 20, 0.55); }
+.filtro-fila { display: flex; gap: 8px; }
+.filtro-fila .filtro-input:first-child { flex: 1; }
+.filtro-fila .filtro-hora { width: 110px; }
+.filtro-btn svg { width: 16px; height: 16px; }
+@supports (appearance: base-select) { .custom-select::after { display: none; } }
+
+/* Dashboard (Power BI) */
+.bi-frame {
+    display: block;
+    width: 100%;
+    height: calc((100dvh - 250px) / var(--zoom, 1));
+    min-height: 520px;
+    border: 1px solid var(--vidrio-borde);
+    border-radius: 12px;
+}
+
+/* ===== ADMIN: ajustes (pegar al final de panel-nuevo.css, debajo de admin-extras.css) ===== */
+
+/* El panel de filtros no se asoma mientras la ventana hace su entrada:
+   queda oculto y solo se ve cuando está abierto */
+.filtro-panel { visibility: hidden; transition: right 0.3s ease, visibility 0s linear 0.3s; }
+.filtro-panel.abierto { visibility: visible; transition: right 0.3s ease, visibility 0s; }
+
+/* Ojo de la contraseña: el mismo del login */
+.password-wrapper .ver-clave {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    transform: translateY(-50%);
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--suave);
+    cursor: pointer;
+}
+
+.ver-clave:hover { color: #fff; }
+.ver-clave svg { width: 20px; height: 20px; }
+.ver-clave .ojo-cerrado, .ver-clave[aria-pressed="true"] .ojo-abierto { display: none; }
+.ver-clave[aria-pressed="true"] .ojo-cerrado { display: block; }
