@@ -15,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.reportes.urbanos.reportes_api.dto.EstadisticaInicio;
+import java.time.LocalDateTime;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -239,8 +241,9 @@ public class UsuarioController {
     @GetMapping(value = "/fragmento/inicio", produces = "text/html")
     public String fragmentoInicio(Model model) {
         Usuario usuario = getUsuarioLogueado();
-        //  Desde caché Redis
-        List<Reporte> todos = reporteService.getReportesUsuario(usuario);
+
+        // Conteos calculados en Mongo (cacheados en Redis)
+        List<EstadisticaInicio> stats = reporteService.getEstadisticasInicio(usuario);
         List<EstadoReporte> estados = estadoReporteService.getEstados();
         List<TipoReporte> tipos = tipoReporteService.getTipos();
 
@@ -249,19 +252,30 @@ public class UsuarioController {
         Map<Long, String> tiposMap = tipos.stream()
             .collect(Collectors.toMap(TipoReporte::getId, TipoReporte::getNombre));
 
-        long totalReportes        = todos.size();
-        long totalPendientes      = todos.stream().filter(r -> "Pendiente".equalsIgnoreCase(estadosMap.get(r.getEstadoReporteId()))).count();
-        long totalEnProceso       = todos.stream().filter(r -> "En_Proceso".equalsIgnoreCase(estadosMap.get(r.getEstadoReporteId()))).count();
-        long totalResueltos       = todos.stream().filter(r -> "Resuelto".equalsIgnoreCase(estadosMap.get(r.getEstadoReporteId()))).count();
-        long totalInfraestructura = todos.stream().filter(r -> "Infraestructura".equalsIgnoreCase(tiposMap.get(r.getTipoReporteId()))).count();
-        long totalServicios       = todos.stream().filter(r -> "Servicios Publicos".equalsIgnoreCase(tiposMap.get(r.getTipoReporteId()))).count();
+        long totalReportes = 0, totalPendientes = 0, totalEnProceso = 0,
+            totalResueltos = 0, totalInfraestructura = 0, totalServicios = 0;
+        LocalDateTime ultima = null;
 
-        String ultimoReporte = todos.stream()
-            .filter(r -> r.getFechaModificacion() != null)
-            .map(Reporte::getFechaModificacion)
-            .max(java.time.LocalDateTime::compareTo)
-            .map(f -> java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").format(f))
-            .orElse("Sin reportes");
+        for (EstadisticaInicio s : stats) {
+            String estado = estadosMap.getOrDefault(s.getEstadoReporteId(), "");
+            String tipo = tiposMap.getOrDefault(s.getTipoReporteId(), "");
+            long n = s.getTotal();
+
+            totalReportes += n;
+            if ("Pendiente".equalsIgnoreCase(estado)) totalPendientes += n;
+            else if ("En_Proceso".equalsIgnoreCase(estado)) totalEnProceso += n;
+            else if ("Resuelto".equalsIgnoreCase(estado)) totalResueltos += n;
+
+            if ("Infraestructura".equalsIgnoreCase(tipo)) totalInfraestructura += n;
+            else if ("Servicios Publicos".equalsIgnoreCase(tipo)) totalServicios += n;
+
+            if (s.getUltima() != null && (ultima == null || s.getUltima().isAfter(ultima))) {
+                ultima = s.getUltima();
+            }
+        }
+
+        String ultimoReporte = ultima == null ? "Sin reportes"
+            : java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").format(ultima);
 
         model.addAttribute("totalReportes", totalReportes);
         model.addAttribute("totalPendientes", totalPendientes);
