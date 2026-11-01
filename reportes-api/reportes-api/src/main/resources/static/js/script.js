@@ -198,11 +198,19 @@ function loadView(view) {
     const mio = numeroVista;
     controladorVista = new AbortController();
 
+    // La lista del administrador se abre en la pestaña elegida (por defecto, pendientes)
+    let urlPedida = view;
+    if (view === '/admin/fragmento/lista-reportes' && listaPestana !== '') {
+        urlPedida = '/admin/fragmento/filtrar-reportes?estadoId=' + listaPestana;
+        filtroActivo = true;
+        filtroParams = 'estadoId=' + listaPestana;
+    }
+
     marcarMenu(view);
     contentArea.scrollTop = 0;
     contentArea.innerHTML = skeletonLoader();
 
-    fetch(view, { signal: controladorVista.signal })
+    fetch(urlPedida, { signal: controladorVista.signal })
         .then(response => {
             if (!response.ok) throw new Error('Error en la respuesta del servidor');
             return response.text();
@@ -224,6 +232,7 @@ function loadView(view) {
             }
 
             setupPasswordToggles();
+            marcarPestanas();
             if (typeof inicializarComentarios === 'function') {
                 inicializarComentarios();
             }
@@ -312,6 +321,7 @@ function confirmDeleteReporte(reporteId, url, reloadViewUrl) {
         '¿Eliminar este reporte?',
         'Esta acción no se puede deshacer.',
         () => {
+            mostrarCarga();
             fetch(url, { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
@@ -322,7 +332,8 @@ function confirmDeleteReporte(reporteId, url, reloadViewUrl) {
                         showErrorMessage(data.error || 'Error al eliminar el reporte');
                     }
                 })
-                .catch(error => showErrorMessage('Error en la solicitud: ' + error.message));
+                .catch(error => showErrorMessage('Error en la solicitud: ' + error.message))
+                .finally(ocultarCarga);
         }
     );
 }
@@ -336,6 +347,7 @@ function confirmarCambioEstado(reporteId, nuevoEstado, select) {
             formData.append('reporteId', reporteId);
             formData.append('nuevoEstado', nuevoEstado);
 
+            mostrarCarga();
             fetch('/admin/cambiar-estado', { method: 'POST', body: formData })
                 .then(response => response.json())
                 .then(data => {
@@ -346,7 +358,8 @@ function confirmarCambioEstado(reporteId, nuevoEstado, select) {
                         showErrorMessage(data.error || 'Error al cambiar el estado');
                     }
                 })
-                .catch(error => showErrorMessage('Error en la solicitud: ' + error.message));
+                .catch(error => showErrorMessage('Error en la solicitud: ' + error.message))
+                .finally(ocultarCarga);
         },
         () => {
             // Si dice "No", el selector vuelve al estado que tenía el reporte
@@ -355,6 +368,17 @@ function confirmarCambioEstado(reporteId, nuevoEstado, select) {
             select.value = original ? original.value : '';
         }
     );
+}
+
+// La bolita de carga (la misma del login) mientras el servidor responde
+function mostrarCarga() {
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.add('show');
+}
+
+function ocultarCarga() {
+    const loader = document.getElementById('loader');
+    if (loader) loader.classList.remove('show');
 }
 
 function showSuccessMessage(message) {
@@ -611,8 +635,25 @@ let filtroActivo = false;
 let filtroParams = '';
 let filtroBarrioNombre = '';
 
+// Pestañas de la lista del administrador: '1' pendientes, '2' en proceso, '3' resueltos, '' todos
+let listaPestana = '1';
+
+function marcarPestanas() {
+    document.querySelectorAll('.pestana').forEach(b => {
+        const activa = b.getAttribute('data-estado') === listaPestana;
+        b.classList.toggle('activa', activa);
+        b.setAttribute('aria-selected', String(activa));
+    });
+}
+
+function seleccionarPestana(estado) {
+    listaPestana = estado;
+    aplicarFiltros();
+}
+
 // Vuelve a poner en el panel los filtros aplicados (la lista se repinta y el panel quedaba en blanco)
 function restaurarFiltros() {
+    marcarPestanas();
     if (!filtroActivo) return;
     const p = new URLSearchParams(filtroParams);
     const poner = (id, valor) => { const el = document.getElementById(id); if (el && valor) el.value = valor; };
@@ -709,7 +750,6 @@ document.addEventListener('input', function(e) {
 });
 
 function limpiarFiltros() {
-    document.getElementById('filtroEstadoSelect').value = '';
     document.getElementById('filtroTipoSelect').value = '';
     document.getElementById('filtroBarrioId').value = '';
     document.getElementById('filtroBarrioDisplay').textContent = 'Seleccione un barrio';
@@ -719,28 +759,13 @@ function limpiarFiltros() {
     document.getElementById('filtroHoraDesde').value = '';
     document.getElementById('filtroFechaHasta').value = '';
     document.getElementById('filtroHoraHasta').value = '';
-    filtroActivo = false;
-    filtroParams = '';
-    filtroBarrioNombre = '';
     renderFiltroBarrios('');
-
-    const contentArea = document.getElementById('content-area');
-    fetch('/admin/fragmento/lista-reportes')
-        .then(r => r.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            contentArea.innerHTML = doc.body.firstElementChild ? doc.body.firstElementChild.outerHTML : '';
-            restaurarFiltros();
-            const overlay = document.getElementById('filtroOverlay');
-            if (overlay) overlay.classList.remove('activo');
-        })
-        .catch(console.error);
+    aplicarFiltros();   // la pestaña elegida se mantiene
 }
 
 function aplicarFiltros() {
     const params = new URLSearchParams();
-    const estadoId = document.getElementById('filtroEstadoSelect').value;
+    const estadoId = listaPestana;   // el estado lo decide la pestaña
     const tipoId = document.getElementById('filtroTipoSelect').value;
     const barrioId = document.getElementById('filtroBarrioId').value;
     const barrioNombre = document.getElementById('filtroBarrioDisplay').textContent;
@@ -765,11 +790,16 @@ function aplicarFiltros() {
     const contentArea = document.getElementById('content-area');
     contentArea.innerHTML = skeletonLoader();
 
-    filtroActivo = true;
+    const sinFiltros = params.toString() === '';
+    filtroActivo = !sinFiltros;
     filtroParams = params.toString();
     filtroBarrioNombre = barrioId ? barrioNombre : '';
 
-    fetch(`/admin/fragmento/filtrar-reportes?${params.toString()}`)
+    const urlLista = sinFiltros
+        ? '/admin/fragmento/lista-reportes'
+        : `/admin/fragmento/filtrar-reportes?${params.toString()}`;
+
+    fetch(urlLista)
         .then(r => r.text())
         .then(html => {
             const parser = new DOMParser();
