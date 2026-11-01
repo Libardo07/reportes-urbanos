@@ -1,4 +1,4 @@
-<div th:fragment="lista-reportes">
+<div class="card sin-vidrio" th:fragment="lista-reportes">
 
 <div class="card">
     <div class="content-header">
@@ -7,6 +7,13 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
             Filtrar
         </button>
+    </div>
+
+    <div class="pestanas" role="tablist">
+        <button type="button" class="pestana" role="tab" data-estado="1" onclick="seleccionarPestana('1')">Pendientes</button>
+        <button type="button" class="pestana" role="tab" data-estado="2" onclick="seleccionarPestana('2')">En proceso</button>
+        <button type="button" class="pestana" role="tab" data-estado="3" onclick="seleccionarPestana('3')">Resueltos</button>
+        <button type="button" class="pestana" role="tab" data-estado="" onclick="seleccionarPestana('')">Todos</button>
     </div>
 
     <div class="tabla-wrapper">
@@ -22,6 +29,7 @@
                 </tr>
             </thead>
             <tbody>
+                <tr th:if="${#lists.isEmpty(reportes)}"><td colspan="6" class="tabla-vacia">No hay reportes en esta pestaña.</td></tr>
                 <tr th:each="r : ${reportes}">
                     <td th:text="${r.usuario != null ? r.usuario.nombre : 'Usuario eliminado'}"></td>
                     <td th:text="${r.titulo}"></td>
@@ -44,7 +52,7 @@
                                         th:attr="data-id=${r.id}"
                                         th:disabled="${estadosMap[r.estadoReporteId] == 'Resuelto'}">
                                     <option value="" selected disabled>Estado</option>
-                                    <option th:value="'En_Proceso'" th:selected="${estadosMap[r.estadoReporteId] == 'En_Proceso'}" th:disabled="${estadosMap[r.estadoReporteId] == 'En_Proceso'}">En Proceso</option>
+                                    <option th:value="'En_Proceso'" th:selected="${estadosMap[r.estadoReporteId] == 'En_Proceso'}">En Proceso</option>
                                     <option th:value="'Resuelto'" th:selected="${estadosMap[r.estadoReporteId] == 'Resuelto'}">Resuelto</option>
                                 </select>
                             </div>
@@ -88,7 +96,7 @@
         <button class="filtro-cerrar" onclick="toggleFiltroPanel()">✕</button>
     </div>
 
-    <div class="filtro-grupo">
+    <div class="filtro-grupo" hidden>
         <label class="filtro-label">Estado</label>
         <div class="custom-select">
             <select class="form-control" id="filtroEstadoSelect">

@@ -81,3 +81,13 @@
 }
 
 option { background: #101820; color: var(--texto); }
+
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+    scroll-behavior: auto;
+    }
+}

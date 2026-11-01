@@ -827,3 +827,82 @@ body.dashboard-container {
 .ver-clave svg { width: 20px; height: 20px; }
 .ver-clave .ojo-cerrado, .ver-clave[aria-pressed="true"] .ojo-abierto { display: none; }
 .ver-clave[aria-pressed="true"] .ojo-cerrado { display: block; }
+
+/* Pestañas de la lista del administrador */
+.pestanas { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.pestana { padding: 8px 18px; border: 1px solid var(--vidrio-borde); border-radius: 50px; background: rgba(255, 255, 255, 0.05); color: var(--suave); font-size: 15px; font-weight: 700; cursor: pointer; }
+.pestana:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.pestana.activa { border-color: rgba(217, 164, 65, 0.5); background: rgba(217, 164, 65, 0.16); color: var(--oro); }
+.filtro-grupo[hidden] { display: none; }
+.tabla-vacia { padding: 32px; text-align: center; color: var(--suave); }
+
+/* Tabla del administrador: el tipo se ve completo */
+.dashboard-container.admin .table th:nth-child(1),
+.dashboard-container.admin .table td:nth-child(1) {
+    width: 17%;
+}
+
+.dashboard-container.admin .table th:nth-child(2),
+.dashboard-container.admin .table td:nth-child(2) {
+    width: 19%;
+}
+
+.dashboard-container.admin .table th:nth-child(3),
+.dashboard-container.admin .table td:nth-child(3) {
+    width: 18%;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+}
+
+.dashboard-container.admin .table th:nth-child(4),
+.dashboard-container.admin .table td:nth-child(4) {
+    width: 14%;
+}
+
+.dashboard-container.admin .table th:nth-child(5),
+.dashboard-container.admin .table td:nth-child(5) {
+    width: 12%;
+}
+
+.dashboard-container.admin .table th:nth-child(6),
+.dashboard-container.admin .table td:nth-child(6) {
+    width: 20%;
+}
+
+/* La tarjeta de afuera de la lista no tiene vidrio: así no atrapa el panel de filtros */
+.content .card.sin-vidrio {
+    padding: 0;
+    margin-bottom: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    filter: none;
+}
+
+/* Fila "No hay reportes": ocupa todo el ancho de la tabla */
+.dashboard-container.admin .table td.tabla-vacia {
+    width: auto;
+    padding: 32px;
+    text-align: center;
+    white-space: normal;
+    color: var(--suave);
+}
+
+/* Selector "Tipo" del filtro: mismo aspecto que el de "Barrio" */
+.filtro-panel select.form-control {
+    width: 100%;
+    padding: 14px 20px;
+    border: 1px solid var(--vidrio-borde);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--texto);
+    font: inherit;
+}
+
+.filtro-panel select.form-control::picker-icon {
+    color: var(--suave);
+    font-size: 14px;
+}

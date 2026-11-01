@@ -64,4 +64,49 @@
         boton.setAttribute('aria-pressed', String(visible));
         boton.setAttribute('aria-label', visible ? 'Ocultar contraseña' : 'Mostrar contraseña');
     });
+
+    // ----- Nombre del usuario abreviado en la tabla del administrador -----
+// "Libardo José Villero Paternina" -> "Libardo J. Villero P." (el nombre completo sale al pasar el mouse)
+function abreviarNombre(nombre) {
+    const mayuscula = (p) => p.charAt(0).toLocaleUpperCase('es') + p.slice(1);
+    const partes = (nombre || '').trim().split(/\s+/).filter(Boolean);
+
+    if (partes.length <= 2) return partes.map(mayuscula).join(' ');
+
+    const primero     = partes[0];
+    const intermedios = partes.slice(1, partes.length - 2);
+    const apellido1   = partes[partes.length - 2];
+    const apellido2   = partes[partes.length - 1];
+
+    return [
+        mayuscula(primero),
+        ...intermedios.map(p => mayuscula(p).charAt(0) + '.'),
+        mayuscula(apellido1),
+        mayuscula(apellido2).charAt(0) + '.'
+    ].join(' ');
+}
+
+function abreviarUsuariosEnTablas() {
+    document.querySelectorAll('#content-area table').forEach(tabla => {
+        const cabecera = tabla.querySelector('thead th');
+        if (!cabecera || cabecera.textContent.trim().toLowerCase() !== 'usuario') return;
+
+        tabla.querySelectorAll('tbody tr').forEach(fila => {
+            const celda = fila.cells[0];
+            if (!celda || celda.dataset.abreviado || celda.children.length > 0) return;
+
+            const completo = celda.textContent.trim();
+            celda.dataset.abreviado = '1';
+            celda.title = completo;
+            celda.textContent = abreviarNombre(completo);
+        });
+    });
+}
+
+// Se aplica sola cada vez que el panel pinta una lista nueva (cambio de página, filtros, etc.)
+    const contenidoPanel = document.getElementById('content-area');
+    if (contenidoPanel) {
+        new MutationObserver(abreviarUsuariosEnTablas).observe(contenidoPanel, { childList: true, subtree: true });
+        abreviarUsuariosEnTablas();
+    }
 })();
