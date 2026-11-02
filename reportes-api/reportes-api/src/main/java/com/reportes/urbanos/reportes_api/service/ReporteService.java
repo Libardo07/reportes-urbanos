@@ -3,6 +3,9 @@ package com.reportes.urbanos.reportes_api.service;
 import com.reportes.urbanos.reportes_api.entity.Reporte;
 import com.reportes.urbanos.reportes_api.entity.Usuario;
 import com.reportes.urbanos.reportes_api.repository.ReporteRepository;
+
+import org.springframework.data.domain.Sort;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -92,6 +95,13 @@ public class ReporteService {
             return reporteRepository.findByTituloContainingIgnoreCaseOrderByFechaModificacionDesc(q, pageable);
         }
         return reporteRepository.findAllByOrderByFechaModificacionDesc(pageable);
+    }
+
+    // Reportes del usuario filtrados por estado, paginados (sin caché)
+    public Page<Reporte> getReportesUsuarioPorEstado(Usuario usuario, int page, Long estadoId) {
+        int tamano = 10;   // pon aquí el mismo tamaño de página que usa getReportesUsuarioPaginado
+        Pageable pageable = PageRequest.of(page, tamano, Sort.by(Sort.Direction.DESC, "fechaModificacion"));
+        return reporteRepository.findByUsuarioAndEstadoReporteId(usuario, estadoId, pageable);
     }
 
     // Guarda un reporte y limpia la caché de reportes actualizados

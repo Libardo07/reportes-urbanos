@@ -4,6 +4,13 @@
         <h1>Mis Reportes</h1>
     </div>
 
+    <div class="pestanas" role="tablist">
+        <button type="button" class="pestana" role="tab" data-estado="" onclick="seleccionarPestanaUsuario('')">Todos</button>
+        <button type="button" class="pestana" role="tab" data-estado="1" onclick="seleccionarPestanaUsuario('1')">Pendientes</button>
+        <button type="button" class="pestana" role="tab" data-estado="2" onclick="seleccionarPestanaUsuario('2')">En proceso</button>
+        <button type="button" class="pestana" role="tab" data-estado="3" onclick="seleccionarPestanaUsuario('3')">Resueltos</button>
+    </div>    
+
     <div class="tabla-wrapper">
         <table class="table">
             <thead>
@@ -16,6 +23,7 @@
                 </tr>
             </thead>
             <tbody>
+                <tr th:if="${#lists.isEmpty(reportes)}"><td colspan="5" class="tabla-vacia">No hay reportes en esta pestaña.</td></tr>
                 <tr th:each="r : ${reportes}">
                     <td th:text="${r.titulo}"></td>
                     <td th:text="${#strings.replace(tiposMap[r.tipoReporteId], '_', ' ')}"></td>

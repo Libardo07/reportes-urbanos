@@ -88,9 +88,12 @@ public class UsuarioController {
     @GetMapping(value = "/fragmento/lista-reportes", produces = "text/html")
     public String fragmentoListaReportes(
             @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Long estadoId,
             Model model) {
         Usuario usuario = getUsuarioLogueado();
-        var pagina = reporteService.getReportesUsuarioPaginado(usuario, page);
+        var pagina = (estadoId == null)
+            ? reporteService.getReportesUsuarioPaginado(usuario, page)
+            : reporteService.getReportesUsuarioPorEstado(usuario, page, estadoId);
         model.addAttribute("reportes", pagina.getContent());
         model.addAttribute("paginaActual", page);
         model.addAttribute("totalPaginas", pagina.getTotalPages());
