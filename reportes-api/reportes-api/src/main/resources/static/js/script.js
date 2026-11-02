@@ -231,6 +231,15 @@ function loadView(view) {
                 document.body.appendChild(script);
             }
 
+            // Dashboard del administrador: carga su script (los <script> dentro de innerHTML no se ejecutan)
+            if (view.includes('dashboard')) {
+                var scriptDash = document.querySelector('script[src*="dashboard.js"]');
+                if (scriptDash) scriptDash.remove();
+                var sd = document.createElement('script');
+                sd.src = '/js/dashboard.js';
+                document.body.appendChild(sd);
+            }
+
             setupPasswordToggles();
             marcarPestanas();
             if (typeof inicializarComentarios === 'function') {

@@ -1,30 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard - Sistema de Reportes</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-</head>
-<body>
-    <div class="dashboard-container admin">
+<div class="dash" id="dash-raiz" th:fragment="dashboard">
 
-        <div th:replace="~{fragments/sidebar-admin :: sidebar}"></div>
-        <div class="content">
-            <div class="card" th:fragment="dashboard">
-                <div class="content-header">
-                    <h1>Dashboard General de Reportes</h1>
-                </div>
-                
-                <iframe 
-                    width="100%" 
-                    height="720px" 
-                    src="https://app.powerbi.com/view?r=eyJrIjoiNWJkMGYwYmEtYTNhYi00OTNkLWJkNTAtZDk0OTI3N2YwNGE1IiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9"
-                    frameborder="0" 
-                    allowFullScreen="true"
-                    style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                </iframe>
-            </div>
+    <div class="dash-cab">
+        <div>
+            <h1>Dashboard</h1>
+            <p class="dash-sub">Análisis de reportes</p>
         </div>
     </div>
-</body>
+
+    <div class="dash-kpis dash-vidrio">
+        <div>
+            <span class="dash-etq">Total de reportes</span>
+            <span class="dash-num" id="k-total">–</span>
+        </div>
+        <div>
+            <span class="dash-etq">Este mes</span>
+            <span class="dash-num" id="k-mes">–</span>
+            <span class="dash-delta" id="k-delta" hidden></span>
+        </div>
+        <div>
+            <span class="dash-etq">Tasa de resolución</span>
+            <span class="dash-num" id="k-tasa">–</span>
+        </div>
+        <div>
+            <span class="dash-etq">Pendientes de más de 30 días</span>
+            <span class="dash-num dash-oro" id="k-viejos">–</span>
+        </div>
+    </div>
+
+    <div class="dash-chips" id="dash-chips"></div>
+
+    <h2 class="dash-seccion">Resumen</h2>
+
+    <div class="dash-fila dash-fila-1">
+        <section class="dash-vidrio">
+            <h2 class="dash-titulo"><span>01</span>Reportes en el tiempo</h2>
+            <p class="dash-sub">Últimos 12 meses, por tipo de reporte</p>
+            <div class="dash-lienzo" id="g-tiempo"></div>
+        </section>
+        <section class="dash-vidrio">
+            <h2 class="dash-titulo"><span>02</span>Estado de los reportes</h2>
+            <div class="dash-dona" id="g-estado"></div>
+            <ul class="dash-leyenda" id="l-estado"></ul>
+        </section>
+    </div>
+
+    <div class="dash-fila dash-fila-2">
+        <section class="dash-vidrio">
+            <h2 class="dash-titulo"><span>03</span>Tipo de reporte y estado</h2>
+            <p class="dash-sub">Cómo se reparte cada categoría</p>
+            <div id="g-tipos"></div>
+            <div class="dash-leyenda-linea">
+                <span><b style="color:#F6CF7A">●</b> Pendiente</span>
+                <span><b style="color:#7FD6E0">●</b> En proceso</span>
+                <span><b style="color:#8EE3B8">●</b> Resuelto</span>
+            </div>
+        </section>
+        <section class="dash-vidrio">
+            <h2 class="dash-titulo"><span>04</span>Barrios con más reportes</h2>
+            <div class="dash-pills-mini" id="barrio-modo">
+                <button type="button" class="dash-pill activa" data-modo="total">Total</button>
+                <button type="button" class="dash-pill" data-modo="pendiente">Pendientes</button>
+                <button type="button" class="dash-pill" data-modo="resuelto">Resueltos</button>
+            </div>
+            <div id="g-barrios"></div>
+        </section>
+    </div>
+
+    <h2 class="dash-seccion">Atención y tendencias</h2>
+
+    <div class="dash-fila dash-fila-2">
+        <section class="dash-vidrio">
+            <h2 class="dash-titulo"><span>05</span>Antigüedad de los pendientes</h2>
+            <p class="dash-sub">Cuántos días llevan esperando</p>
+            <div class="dash-lienzo" id="g-edad"></div>
+        </section>
+        <section class="dash-vidrio">
+            <h2 class="dash-titulo"><span>06</span>Resolución por barrio</h2>
+            <p class="dash-sub">Los barrios que menos resuelven (con 3 reportes o más)</p>
+            <div id="g-resol"></div>
+        </section>
+    </div>
+
+    <div class="dash-fila dash-fila-2">
+        <section class="dash-vidrio">
+            <h2 class="dash-titulo"><span>07</span>Reportes por día de la semana</h2>
+            <p class="dash-sub">En dorado, el día en que más se reporta</p>
+            <div class="dash-lienzo" id="g-dia"></div>
+        </section>
+        <section class="dash-vidrio">
+            <h2 class="dash-titulo"><span>08</span>Este mes contra el año pasado</h2>
+            <p class="dash-sub">Mismo mes, por tipo de reporte</p>
+            <div class="dash-lienzo" id="g-anio"></div>
+        </section>
+    </div>
+
+</div>
 </html>
