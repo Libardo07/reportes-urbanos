@@ -121,7 +121,7 @@
         const g1 = grafica('g-tiempo');
         if (g1) g1.setOption({
             backgroundColor: 'transparent',
-            grid: { left: 34, right: 12, top: 34, bottom: 24 },
+            grid: { left: 10, right: 12, top: 34, bottom: 24, containLabel: true },
             legend: { top: 0, left: 0, icon: 'circle', itemWidth: 10, textStyle: { color: SUAVE } },
             tooltip: Object.assign({ trigger: 'axis', axisPointer: { type: 'line', lineStyle: { color: 'rgba(255,255,255,0.25)' } } }, TOOLTIP),
             xAxis: { type: 'category', data: claves.map(c => MESES[c % 12]), boundaryGap: false, axisTick: { show: false }, axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } }, axisLabel: { color: SUAVE } },
@@ -174,7 +174,7 @@
             : '<p class="dash-vacio">Sin reportes</p>';
 
         // ===== Atención y tendencias =====
-        const base2 = { backgroundColor: 'transparent', grid: { left: 34, right: 12, top: 30, bottom: 24 }, tooltip: TT_BARRAS };
+        const base2 = { backgroundColor: 'transparent', grid: { left: 10, right: 12, top: 30, bottom: 24, containLabel: true }, tooltip: TT_BARRAS };
         const ejeX = data => ({ type: 'category', data, axisTick: { show: false }, axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } }, axisLabel: { color: SUAVE } });
         const ejeY = { type: 'value', minInterval: 1, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.07)', type: 'dashed' } }, axisLabel: { color: SUAVE } };
         const barra = (p, valor) => ({ value: valor, itemStyle: { color: egV(p), borderRadius: [8, 8, 0, 0] } });
@@ -230,7 +230,7 @@
         const contar = (t, clave) => todos.filter(r => r.tipo === t.id && r.mes === clave).length;
         const g5 = grafica('g-anio');
         if (g5) g5.setOption(Object.assign({}, base2, {
-            grid: { left: 34, right: 12, top: 34, bottom: 24 },
+            grid: { left: 10, right: 12, top: 34, bottom: 24, containLabel: true },
             legend: { top: 0, left: 0, icon: 'circle', itemWidth: 10, textStyle: { color: SUAVE } },
             xAxis: ejeX(tiposVis.map(t => bonito(t.nombre))), yAxis: ejeY,
             series: [

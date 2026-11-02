@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const lastView = sessionStorage.getItem('lastView');
     sessionStorage.removeItem('lastView');
 
+    // La lista de reportes abre en "Todos" en el panel del ciudadano y en "Pendientes" en el del administrador
+    if (!document.querySelector('.dashboard-container.admin')) listaPestana = '';
+
     const contentArea = document.getElementById('content-area');
     if (contentArea) {
         if (contentArea.innerHTML.trim() === '') {
@@ -132,6 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 form.reset();
                                 const barrioIdInput = document.getElementById('barrioId');
                                 if (barrioIdInput) barrioIdInput.value = '';
+                                listaPestana = '';
                                 loadView('/usuario/fragmento/lista-reportes');
                             } else {
                                 loadView('/usuario/fragmento/lista-reportes');
@@ -204,6 +208,11 @@ function loadView(view) {
         urlPedida = '/admin/fragmento/filtrar-reportes?estadoId=' + listaPestana;
         filtroActivo = true;
         filtroParams = 'estadoId=' + listaPestana;
+    }
+
+    // La lista del ciudadano se abre en la pestaña elegida (por defecto, todos)
+    if (view === '/usuario/fragmento/lista-reportes' && listaPestana !== '') {
+        urlPedida = '/usuario/fragmento/lista-reportes?estadoId=' + listaPestana;
     }
 
     marcarMenu(view);
@@ -660,6 +669,23 @@ function seleccionarPestana(estado) {
     aplicarFiltros();
 }
 
+// Pestañas de "Mis reportes" (ciudadano): pide la lista del estado elegido, desde la página 1
+function seleccionarPestanaUsuario(estado) {
+    listaPestana = estado;
+    const contentArea = document.getElementById('content-area');
+    contentArea.innerHTML = skeletonLoader();
+
+    fetch('/usuario/fragmento/lista-reportes' + (estado !== '' ? '?estadoId=' + estado : ''))
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            contentArea.innerHTML = doc.body.firstElementChild ? doc.body.firstElementChild.outerHTML : '';
+            restaurarFiltros();
+        })
+        .catch(console.error);
+}
+
 // Vuelve a poner en el panel los filtros aplicados (la lista se repinta y el panel quedaba en blanco)
 function restaurarFiltros() {
     marcarPestanas();
@@ -884,7 +910,9 @@ function cambiarPaginaUsuario(btn) {
     const contentArea = document.getElementById('content-area');
     contentArea.innerHTML = skeletonLoader();
 
-    fetch(`/usuario/fragmento/lista-reportes?page=${page}`)
+    const filtroEstado = listaPestana !== '' ? `&estadoId=${listaPestana}` : '';
+
+    fetch(`/usuario/fragmento/lista-reportes?page=${page}${filtroEstado}`)
         .then(r => r.text())
         .then(html => {
             const parser = new DOMParser();

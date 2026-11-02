@@ -17,6 +17,7 @@ public interface ReporteRepository extends MongoRepository<Reporte, String> {
     Page<Reporte> findAllByOrderByFechaModificacionDesc(Pageable pageable);
     Page<Reporte> findByUsuarioOrderByFechaModificacionDesc(Usuario usuario, Pageable pageable);
     Page<Reporte> findByTituloContainingIgnoreCaseOrderByFechaModificacionDesc(String titulo, Pageable pageable);  
+    Page<Reporte> findByUsuarioAndEstadoReporteId(Usuario usuario, Long estadoReporteId, Pageable pageable);
     long countByEstadoReporteId(Long estadoReporteId);
     long countByTipoReporteId(Long tipoReporteId);
     long countByBarrioId(Long barrioId);
