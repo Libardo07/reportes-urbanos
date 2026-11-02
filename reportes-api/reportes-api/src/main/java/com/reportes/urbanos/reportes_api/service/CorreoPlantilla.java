@@ -128,7 +128,7 @@ public final class CorreoPlantilla {
     }
 
     private static String logo(String baseUrl) {
-        return (baseUrl == null ? "" : baseUrl) + "/images/logo.png";
+        return (baseUrl == null ? "" : baseUrl) + "/images/logo.svg";
     }
 
     // Arma el correo completo con la estructura general
