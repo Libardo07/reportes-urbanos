@@ -1220,3 +1220,11 @@ nav.scrolled {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
+
+/* Logo más grande y con colores más vivos */
+.nav-logo img {
+    width: 58px;
+    height: 58px;
+    filter: saturate(1.45) contrast(1.05) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+}
+@media (max-width: 800px) { .nav-logo img { width: 46px; height: 46px; } }

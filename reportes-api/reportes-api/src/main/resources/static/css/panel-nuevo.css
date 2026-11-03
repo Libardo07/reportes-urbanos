@@ -335,7 +335,6 @@ body.dashboard-container {
 @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .content > * { animation: none; } }
 
-/* ===== BUG 9: solo #content-area puede hacer scroll ===== */
 html,
 body.dashboard-container {
     overflow: clip;
@@ -352,7 +351,6 @@ body.dashboard-container {
     z-index: 900;
 }
 
-/* ===== BUG 4: el mapa tiene tamaño fijo y nunca estira los paneles ===== */
 .form-cols {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
@@ -983,3 +981,13 @@ body.dashboard-container {
 }
 @keyframes dash-brillo { to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) { .dash-lienzo:empty, .dash-dona:empty { animation: none; } }
+
+/* Logo más grande y con colores más vivos */
+.topnav .marca { gap: 12px; }
+.topnav .marca img {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    filter: saturate(1.45) contrast(1.05) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+}
+@media (max-width: 900px) { .topnav .marca img { width: 40px; height: 40px; } }
