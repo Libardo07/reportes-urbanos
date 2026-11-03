@@ -137,9 +137,10 @@ button:focus-visible {
 }
 
 .auth-logo img {
-    width: 45px;
-    height: 45px;
+    width: 54px;
+    height: 54px;
     object-fit: contain;
+    filter: saturate(1.45) contrast(1.05) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
 }
 
 .auth-info p {
