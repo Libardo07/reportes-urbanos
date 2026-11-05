@@ -1228,3 +1228,15 @@ nav.scrolled {
     filter: saturate(1.45) contrast(1.05) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
 }
 @media (max-width: 800px) { .nav-logo img { width: 46px; height: 46px; } }
+
+/* Equipo de cuatro: dos filas de dos */
+.team-strip { grid-template-columns: repeat(2, 1fr); }
+.team-card + .team-card { border-left: none; }
+.team-card:nth-child(even) { border-left: 1px solid var(--vidrio-borde); }
+.team-card:nth-child(n+3) { border-top: 1px solid var(--vidrio-borde); }
+
+@media (max-width: 800px) {
+    .team-strip { grid-template-columns: 1fr; }
+    .team-card:nth-child(even) { border-left: none; }
+    .team-card + .team-card { border-top: 1px solid var(--vidrio-borde); }
+}
