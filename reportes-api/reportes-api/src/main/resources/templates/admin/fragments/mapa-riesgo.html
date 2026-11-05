@@ -1,0 +1,33 @@
+<div th:fragment="mapa-riesgo">
+
+    <div class="content-header">
+        <div>
+            <h1>Mapa de riesgo</h1>
+            <p class="subtitulo-panel">Riesgo estimado de recibir reportes en: <strong id="riesgo-mes">...</strong></p>
+        </div>
+        <div class="pills" role="tablist">
+            <button type="button" class="pill pill-tipo activa" role="tab" data-tipo="">Todos</button>
+            <button type="button" class="pill pill-tipo" role="tab" data-tipo="1">Infraestructura</button>
+            <button type="button" class="pill pill-tipo" role="tab" data-tipo="2">Servicios públicos</button>
+        </div>
+    </div>
+
+    <div class="riesgo-cols">
+        <section class="card riesgo-mapa-card">
+            <div id="riesgo-mapa"></div>
+            <div class="riesgo-estado" id="riesgo-estado">Cargando predicciones...</div>
+            <div class="riesgo-leyenda"><span>Bajo</span><i></i><span>Alto</span></div>
+        </section>
+
+        <aside class="inicio-bloque">
+            <h2 class="inicio-titulo">Mayor riesgo</h2>
+            <ol class="riesgo-top" id="riesgo-top"></ol>
+        </aside>
+    </div>
+
+    <p class="riesgo-nota">
+        Modelo Random Forest (rf_v1) entrenado con datos simulados, como prueba de concepto. En las pruebas detecta cerca de
+        6 de cada 10 barrios en riesgo alto. Las predicciones se actualizan cada mes con los reportes del mes anterior.
+        El nivel es el riesgo de recibir reportes, no una medida objetiva del estado de la ciudad.
+    </p>
+</div>

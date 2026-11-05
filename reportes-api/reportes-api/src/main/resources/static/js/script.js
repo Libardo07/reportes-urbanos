@@ -254,6 +254,9 @@ function loadView(view) {
             if (typeof inicializarComentarios === 'function') {
                 inicializarComentarios();
             }
+            if (typeof inicializarMapaRiesgo === 'function') {
+                inicializarMapaRiesgo();
+            }
         })
         .catch(error => {
             if (error.name === 'AbortError' || mio !== numeroVista) return;

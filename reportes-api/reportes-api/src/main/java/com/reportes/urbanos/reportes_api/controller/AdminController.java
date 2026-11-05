@@ -128,6 +128,11 @@ public class AdminController {
         return "admin/fragments/lista-reportes :: lista-reportes";
     }
 
+    @GetMapping(value = "/fragmento/mapa-riesgo", produces = "text/html")
+    public String fragmentoMapaRiesgo() {
+        return "admin/fragments/mapa-riesgo :: mapa-riesgo";
+    }
+
     // Carga el fragmento HTML con la lista paginada de reportes para el panel administrador
     @GetMapping(value = "/fragmento/formulario-admin", produces = "text/html")
     public String fragmentoFormularioAdmin(Model model) {
