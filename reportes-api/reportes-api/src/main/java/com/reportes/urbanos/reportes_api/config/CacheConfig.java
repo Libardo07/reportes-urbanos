@@ -38,6 +38,7 @@ public class CacheConfig {
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)
+                .withCacheConfiguration("dashboard", config.entryTtl(Duration.ofSeconds(30)))
                 .build();
         }
 }

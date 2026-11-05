@@ -991,3 +991,93 @@ body.dashboard-container {
     filter: saturate(1.45) contrast(1.05) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
 }
 @media (max-width: 900px) { .topnav .marca img { width: 40px; height: 40px; } }
+
+/* ===== MAPA DE RIESGO (pegar al final de panel-nuevo.css) ===== */
+
+.riesgo-cols { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+
+/* El mapa tiene su propio nivel de capas: así sus controles no se montan sobre la barra de arriba */
+.content .riesgo-mapa-card { position: relative; isolation: isolate; padding: 0; overflow: hidden; }
+#riesgo-mapa { height: 560px; background: #0a0f14; }
+#riesgo-mapa .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(1.1) contrast(0.9) saturate(0.5); }
+#riesgo-mapa .leaflet-bar { border: 1px solid var(--vidrio-borde); border-radius: 12px; overflow: hidden; box-shadow: none; }
+#riesgo-mapa .leaflet-bar a { background: rgba(10, 14, 20, 0.82); color: #fff; border-bottom-color: rgba(255, 255, 255, 0.2); }
+#riesgo-mapa .leaflet-bar a:hover { background: rgba(255, 255, 255, 0.18); }
+#riesgo-mapa .leaflet-control-attribution { background: transparent; color: var(--suave); font-size: 10px; opacity: 0.55; }
+#riesgo-mapa .leaflet-control-attribution a { color: var(--suave); }
+#riesgo-mapa .leaflet-popup-content-wrapper { background: var(--flota); color: var(--texto); border: 1px solid var(--vidrio-borde); border-radius: 16px; box-shadow: none; }
+#riesgo-mapa .leaflet-popup-tip { background: var(--flota); box-shadow: none; }
+#riesgo-mapa .leaflet-popup-close-button { color: var(--suave); }
+
+.riesgo-estado {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 500;
+    padding: 10px 18px;
+    border: 1px solid var(--vidrio-borde);
+    border-radius: 50px;
+    background: var(--flota);
+    transform: translate(-50%, -50%);
+}
+
+.riesgo-leyenda {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--vidrio-borde);
+    border-radius: 50px;
+    background: var(--flota);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.riesgo-leyenda i { width: 90px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #1F5BFF, #00C8FF, #00DC00, #FFEB00, #FF8C00, #FF1A00); }
+
+/* Etiquetas de nivel */
+.riesgo-chip { padding: 2px 12px; border: 1px solid; border-radius: 50px; font-size: 13px; font-weight: 700; }
+.riesgo-bajo { border-color: rgba(111, 191, 142, 0.5); background: rgba(111, 191, 142, 0.14); color: #A8E6C1; }
+.riesgo-medio { border-color: rgba(217, 164, 65, 0.5); background: rgba(217, 164, 65, 0.14); color: #F3D9A0; }
+.riesgo-alto { border-color: rgba(229, 88, 75, 0.55); background: rgba(229, 88, 75, 0.16); color: #F6B5AE; }
+
+/* Ventanita de cada barrio */
+.riesgo-pop { display: flex; flex-direction: column; gap: 4px; min-width: 200px; }
+.riesgo-pop strong { font-family: var(--titulos); font-size: 18px; }
+.riesgo-pop-fila { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; }
+.riesgo-pop small { color: var(--suave); }
+
+/* Lista de mayor riesgo */
+.riesgo-top { display: grid; gap: 6px; list-style: none; }
+
+.riesgo-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.riesgo-fila:hover { border-color: var(--vidrio-borde); background: rgba(255, 255, 255, 0.1); }
+.riesgo-nombre { min-width: 0; overflow: hidden; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.riesgo-nota { margin-top: 12px; font-size: 14px; color: var(--suave); }
+
+/* Botones de tipo (no usan .pestana porque script.js maneja esas) */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { padding: 8px 18px; border: 1px solid var(--vidrio-borde); border-radius: 50px; background: rgba(255, 255, 255, 0.05); color: var(--suave); font-size: 15px; font-weight: 700; cursor: pointer; }
+.pill:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.pill.activa { border-color: rgba(217, 164, 65, 0.5); background: rgba(217, 164, 65, 0.16); color: var(--oro); }
+
+@media (max-width: 1100px) {
+    .riesgo-cols { grid-template-columns: 1fr; }
+    #riesgo-mapa { height: 420px; }
+}

@@ -11,8 +11,10 @@
     <link rel="stylesheet" th:href="@{/css/panel.css}">
     <link rel="stylesheet" th:href="@{/css/base.css}">
     <link rel="stylesheet" th:href="@{/css/panel-nuevo.css}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
-    <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js" as="script">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" defer></script>
 </head>
 <body class="dashboard-container admin">
 
@@ -37,6 +39,7 @@
             <button type="button" class="menu-item" data-view="/admin/dashboard">Dashboard</button>
             <button type="button" class="menu-item" data-view="/admin/fragmento/lista-reportes">Reportes</button>
             <button type="button" class="menu-item" data-view="/reportes/fragmento/explorar">Explorar</button>
+            <button type="button" class="menu-item" data-view="/admin/fragmento/mapa-riesgo">Riesgo</button>
             <button type="button" class="menu-item" th:if="${usuario.email == 'adminMain@gmail.com'}" data-view="/admin/fragmento/formulario-admin">Nuevo admin</button>
         </nav>
 
@@ -58,5 +61,6 @@
     <script th:src="@{/js/script.js}"></script>
     <script th:src="@{/js/panel-shell.js}" defer></script>
     <script th:src="@{/js/reporte_detalle.js}" defer></script>
+    <script th:src="@{/js/mapa-riesgo.js}" defer></script>
 </body>
 </html>
